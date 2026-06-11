@@ -28,4 +28,25 @@ set(COMMON_SOURCE
   Lopez.cpp
 )
 
-add_executable(${PROJECT_NAME} WIN32 ${RESOURCE_FILES} ${COMMON_HEADER} ${COMMON_SOURCE})
+set(D3D11
+  Engine/D3D11/D3D11GlobalFactor.h
+  Engine/D3D11/D3D11GlobalFactor.cpp
+)
+
+set(ENGINE
+  Engine/JokeEngine.h
+  Engine/JokeEngine.cpp
+)
+
+add_executable(${PROJECT_NAME} 
+   WIN32 ${RESOURCE_FILES} 
+   ${COMMON_HEADER} 
+   ${COMMON_SOURCE} 
+   ${ENGINE}
+   ${D3D11}
+)
+
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
+source_group("Engine" FILES ${ENGINE})
+source_group("Engine\\D3D11" FILES ${D3D11})

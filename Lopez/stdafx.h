@@ -13,3 +13,25 @@
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>
+#include <assert.h>
+
+#include <string>
+#include <algorithm>
+#include <vector>
+#include <memory>
+
+#include <d3d11_4.h>
+#include <dxgi1_6.h>
+
+#include <wrl.h>
+#include <d3dcompiler.h>
+
+#include <DirectXMath.h>
+#include <DirectXCollision.h>
+
+#pragma comment(lib, "d3d11.lib")
+#pragma comment(lib, "dxgi.lib")
+#pragma comment(lib, "d3dcompiler.lib")
+
+using namespace DirectX;
+using Microsoft::WRL::ComPtr;

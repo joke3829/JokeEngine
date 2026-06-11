@@ -27,6 +27,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     // TODO: 여기에 코드를 입력합니다.
 
+#if defined(_DEBUG) || defined(DEBUG)
+    if (AllocConsole()) {
+        FILE* fpDummy;
+        freopen_s(&fpDummy, "CONOUT$", "w", stdout);
+        freopen_s(&fpDummy, "CONIN$", "r", stdin);
+        freopen_s(&fpDummy, "CONOUT$", "w", stderr);
+
+        
+    }
+#endif
+
     // 전역 문자열을 초기화합니다.
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_LOPEZ, szWindowClass, MAX_LOADSTRING);
@@ -53,6 +64,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     }
 
     return (int) msg.wParam;
+
+#if defined(_DEBUG) || defined(DEBUG)
+    FreeConsole();
+#endif
 }
 
 
@@ -76,7 +91,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_LOPEZ));
     wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
     wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
-    wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_LOPEZ);
+    wcex.lpszMenuName   = NULL;
     wcex.lpszClassName  = szWindowClass;
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
