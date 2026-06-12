@@ -14,8 +14,6 @@ private:
 	JD3D11GlobalFactor();
 	~JD3D11GlobalFactor() = default;
 
-	bool 
-
 private:
 	ComPtr<ID3D11Device5>				m_Device{};
 	ComPtr<ID3D11DeviceContext4>		m_MainDeviceContext{};

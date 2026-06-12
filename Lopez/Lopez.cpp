@@ -4,6 +4,8 @@
 #include "stdafx.h"
 #include "Lopez.h"
 
+#include "Engine/JokeEngine.h"
+
 #define MAX_LOADSTRING 100
 
 // 전역 변수:
@@ -33,9 +35,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         freopen_s(&fpDummy, "CONOUT$", "w", stdout);
         freopen_s(&fpDummy, "CONIN$", "r", stdin);
         freopen_s(&fpDummy, "CONOUT$", "w", stderr);
-
-        
+        std::ios::sync_with_stdio();
     }
+
+    spdlog::info("Debug Console Start");
+    spdlog::info("spdlog version: {}.{}.{}", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR, SPDLOG_VER_PATCH);
 #endif
 
     // 전역 문자열을 초기화합니다.
@@ -119,6 +123,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    {
       return FALSE;
    }
+
+   auto& t = JD3D11GlobalFactor::GetInstance();
+
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);

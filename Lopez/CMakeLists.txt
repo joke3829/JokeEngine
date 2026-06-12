@@ -3,6 +3,10 @@ cmake_minimum_required(VERSION 3.24)
 
 project(Lopez)
 
+if(MSVC)
+	add_compile_options(/utf-8)
+endif()
+
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Available build configurations" FORCE)
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -46,7 +50,10 @@ add_executable(${PROJECT_NAME}
    ${D3D11}
 )
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE 
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/Package
+)
 
 source_group("Engine" FILES ${ENGINE})
 source_group("Engine\\D3D11" FILES ${D3D11})
