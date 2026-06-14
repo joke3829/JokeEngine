@@ -1,11 +1,13 @@
 ﻿#include "D3D11GlobalFactor.h"
 
+JD3D11GlobalFactor* JD3D11GlobalFactor::m_Instance = nullptr;
 
 
-JD3D11GlobalFactor& JD3D11GlobalFactor::GetInstance()
+JD3D11GlobalFactor* JD3D11GlobalFactor::GetInstance()
 {
-	static JD3D11GlobalFactor instance;
-	return instance;
+	if (!m_Instance)
+		m_Instance = new JD3D11GlobalFactor;
+	return m_Instance;
 }
 
 
@@ -59,4 +61,9 @@ JD3D11GlobalFactor::JD3D11GlobalFactor()
 	spdlog::info("ID3D11Device Create Success");
 #endif
 	
+}
+
+JD3D11GlobalFactor::~JD3D11GlobalFactor()
+{
+	if (m_Instance) delete m_Instance;
 }

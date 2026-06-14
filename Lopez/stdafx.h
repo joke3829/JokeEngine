@@ -21,6 +21,7 @@
 #include <algorithm>
 #include <vector>
 #include <memory>
+#include <fstream>
 
 #include <d3d11_4.h>
 #include <dxgi1_6.h>
@@ -41,10 +42,12 @@ using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
 
-// 디버그용 외부 라이브러리
+// 외부 라이브러리
 #if defined(_DEBUG) || defined(DEBUG)
 #include "Package/spdlog/spdlog.h"
 #endif
+#include "Package/nlohmann/json.hpp"
+
 
 
 // 공용 함수 선언부===============================================================================

@@ -124,8 +124,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
       return FALSE;
    }
 
-   auto& t = JD3D11GlobalFactor::GetInstance();
-
+   JD3D11GlobalFactor* d = JD3D11GlobalFactor::GetInstance();
+   JokeEngineGlobalConfigExample* t = JokeEngineGlobalConfigExample::GetInstance();
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);

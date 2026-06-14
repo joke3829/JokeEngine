@@ -4,7 +4,7 @@
 
 class JD3D11GlobalFactor {
 public:
-	static JD3D11GlobalFactor& GetInstance();
+	static JD3D11GlobalFactor* GetInstance();
 
 	ID3D11Device* GetDevice() { return m_Device.Get(); }
 	ID3D11DeviceContext* GetDeviceContext() { return m_MainDeviceContext.Get(); }
@@ -12,9 +12,11 @@ public:
 	IDXGIFactory* GetFactory() { return m_Factory.Get(); }
 private:
 	JD3D11GlobalFactor();
-	~JD3D11GlobalFactor() = default;
+	~JD3D11GlobalFactor();
 
 private:
+	static JD3D11GlobalFactor*			m_Instance;
+
 	ComPtr<ID3D11Device5>				m_Device{};
 	ComPtr<ID3D11DeviceContext4>		m_MainDeviceContext{};
 

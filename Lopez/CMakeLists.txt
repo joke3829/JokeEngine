@@ -40,6 +40,8 @@ set(D3D11
 set(ENGINE
   Engine/JokeEngine.h
   Engine/JokeEngine.cpp
+  Engine/JokeEngineConfig.h
+  Engine/JokeEngineConfig.cpp
 )
 
 add_executable(${PROJECT_NAME} 
