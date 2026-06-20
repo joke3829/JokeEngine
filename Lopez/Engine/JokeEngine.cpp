@@ -1,13 +1,67 @@
 ﻿#include "JokeEngine.h"
 
+// =======================================================================
+
+void JokeEngine::Initialize(HWND hWnd, HINSTANCE hInstance)
+{
+	m_hWnd = hWnd; m_hInstance = hInstance;
+}
+
+// =======================================================================
 
 void JokeEngineDX11::Initialize(HWND hWnd, HINSTANCE hInstance)
 {
-	globalFactor = JD3D11GlobalFactor::GetInstance();
+	JokeEngine::Initialize(hWnd, hInstance);
+
+	m_GlobalFactor = JD3D11GlobalFactor::GetInstance();
+
+	CreateSwapChain();
+}
+
+void JokeEngineDX11::Resize(UINT width, UINT height, bool FullScreenState)
+{
 
 }
 
 void JokeEngineDX11::CreateSwapChain()
+{
+	auto* factory = m_GlobalFactor->GetFactory();
+	auto* device = m_GlobalFactor->GetDevice();
+
+	auto* config = JokeEngineGlobalConfigExample::GetInstance()->GetConfigFactor();
+
+	ComPtr<IDXGISwapChain1> swapchain{};
+
+	DXGI_SWAP_CHAIN_DESC1 desc{
+	.Width = config->WindowsWidth,
+	.Height = config->WindowsHeight,
+	.Format = DXGI_FORMAT_R8G8B8A8_UNORM,
+	.SampleDesc = {.Count = 1},
+	.BufferCount = 2,
+	.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD,
+	.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING | DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH
+	};
+
+	ThrowIfFailed(factory->CreateSwapChainForHwnd(device, m_hWnd, &desc, nullptr, nullptr, swapchain.GetAddressOf()));
+
+	ThrowIfFailed(swapchain->QueryInterface(IID_PPV_ARGS(m_SwapChain.GetAddressOf())));
+
+#if defined(_DEBUG) || defined(DEBUG)
+	spdlog::info("SwapChain Generate Success");
+#endif
+
+	// 전체 화면 전환
+	if (config->WindowsFullscreenState) {
+
+	}
+}
+
+void JokeEngineDX11::Update(float elapsedTime)
+{
+
+}
+
+void JokeEngineDX11::Render()
 {
 
 }

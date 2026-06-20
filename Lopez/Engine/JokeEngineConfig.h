@@ -13,7 +13,7 @@ struct JEngineConfigFactor {
 	UINT			WindowsWidth{ 1280 };
 	UINT			WindowsHeight{ 720 };
 
-	float			LimitFPS{ 120.f };
+	float			LimitFPS{ 120.f };		// 0.f일 땐 Unlimit Frame
 };
 
 // ==============================================================

@@ -37,11 +37,28 @@ set(D3D11
   Engine/D3D11/D3D11GlobalFactor.cpp
 )
 
+
 set(ENGINE
   Engine/JokeEngine.h
   Engine/JokeEngine.cpp
   Engine/JokeEngineConfig.h
   Engine/JokeEngineConfig.cpp
+  Engine/JEngineScene.h
+  Engine/JEngineScene.cpp
+  Engine/JEngineRenderer.h
+  Engine/JEngineRenderer.cpp
+)
+
+set(ENGINE_OBJECT
+  Engine/JObject/JObject.h
+  Engine/JObject/JObject.cpp
+  Engine/JObject/JCameraObject.h
+  Engine/JObject/JCameraObject.cpp
+)
+
+set(ENGINE_CONTENT
+  Engine/JContent/JContent.h
+  Engine/JContent/JContent.cpp
 )
 
 add_executable(${PROJECT_NAME} 
@@ -49,6 +66,8 @@ add_executable(${PROJECT_NAME}
    ${COMMON_HEADER} 
    ${COMMON_SOURCE} 
    ${ENGINE}
+   ${ENGINE_OBJECT}
+   ${ENGINE_CONTENT}
    ${D3D11}
 )
 
@@ -58,4 +77,6 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 source_group("Engine" FILES ${ENGINE})
+source_group("Engine\\JObject" FILES ${ENGINE_OBJECT})
+source_group("Engine\\JContent" FILES ${ENGINE_CONTENT})
 source_group("Engine\\D3D11" FILES ${D3D11})

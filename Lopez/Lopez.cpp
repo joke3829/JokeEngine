@@ -13,6 +13,8 @@ HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
 
+std::unique_ptr<JokeEngine> g_Engine{};
+
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
@@ -55,19 +57,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_LOPEZ));
 
-    MSG msg;
-
     // 기본 메시지 루프입니다:
-    while (GetMessage(&msg, nullptr, 0, 0))
-    {
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-        {
+    for (MSG msg;;) {
+        while (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE)) {
+            if (msg.message == WM_QUIT)
+                return 0;
             TranslateMessage(&msg);
-            DispatchMessage(&msg);
+            DispatchMessageW(&msg);
         }
+        g_Engine->Render();
     }
-
-    return (int) msg.wParam;
 
 #if defined(_DEBUG) || defined(DEBUG)
     FreeConsole();
@@ -114,18 +113,44 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-   hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
+    hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
-   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+    auto* config = JokeEngineGlobalConfigExample::GetInstance();
+    auto* factors = config->GetConfigFactor();
+
+
+    UINT width = factors->WindowsWidth;
+    UINT height = factors->WindowsHeight;
+
+    DWORD dwStyle = WS_OVERLAPPED | WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU | WS_BORDER;
+    RECT rt = { 0, 0, width, height};
+    // rt는 추후에 화면 크기 조정을 추가하면 바뀔 수 있다.
+
+    AdjustWindowRect(&rt, dwStyle, FALSE);
+
+    HWND hWnd = CreateWindowW(szWindowClass, szTitle, dwStyle,
+        CW_USEDEFAULT, CW_USEDEFAULT, rt.right - rt.left, rt.bottom - rt.top, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
    {
       return FALSE;
    }
 
-   JD3D11GlobalFactor* d = JD3D11GlobalFactor::GetInstance();
-   JokeEngineGlobalConfigExample* t = JokeEngineGlobalConfigExample::GetInstance();
+   switch (factors->DirectX_Version) {
+   case 11:
+       g_Engine = std::make_unique<JokeEngineDX11>();
+       break;
+   case 12:
+       g_Engine = std::make_unique<JokeEngineDX12>();
+       break;
+   default:
+#if defined(_DEBUG) || defined(DEBUG)
+       spdlog::error("Config 파일에 기재된 DX 버젼이 Invalid합니다.");
+#endif
+       assert(0);
+   }
+
+   g_Engine->Initialize(hWnd, hInstance);
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);

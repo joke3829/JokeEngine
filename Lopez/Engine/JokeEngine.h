@@ -7,25 +7,35 @@
 
 class JokeEngine {
 public:
-	virtual void Initialize(HWND hWnd, HINSTANCE hInstance) {}
-	virtual void Resize(UINT width, UINT height) {}
+	virtual void Initialize(HWND hWnd, HINSTANCE hInstance);
+	virtual void Resize(UINT width, UINT height, bool FullScreenState) {}
 	
-	virtual void Tick() {}
+	virtual void Render() {}
 protected:
 	virtual void CreateSwapChain() {}
+	virtual void Update(float elapsedTime) {}
+
+protected:
+
+	HWND m_hWnd{};
+	HINSTANCE m_hInstance{};
 
 	ComPtr<IDXGISwapChain4>			m_SwapChain{};
 };
 
 
-class JokeEngineDX11 final : public JokeEngine {
+class JokeEngineDX11 : public JokeEngine {
 public:
-	void Initialize(HWND hWnd, HINSTANCE hInstance);
+	virtual void Initialize(HWND hWnd, HINSTANCE hInstance);
+	virtual void Resize(UINT width, UINT height, bool FullScreenState);
+
+	virtual void Render();
 
 private:
-	void CreateSwapChain();
+	virtual void CreateSwapChain();
+	virtual void Update(float elapsedTime);
 
-	JD3D11GlobalFactor* globalFactor;
+	JD3D11GlobalFactor* m_GlobalFactor;
 };
 
 class JokeEngineDX12 final : public JokeEngine {
