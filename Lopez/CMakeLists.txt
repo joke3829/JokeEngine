@@ -41,6 +41,8 @@ set(D3D11
 set(D3D11_CONTENT
   Engine/D3D11/JContent/D3D11Material.h
   Engine/D3D11/JContent/D3D11Material.cpp
+  Engine/D3D11/JContent/D3D11StaticMesh.h
+  Engine/D3D11/JContent/D3D11StaticMesh.cpp
   Engine/D3D11/JContent/D3D11ContentManager.h
   Engine/D3D11/JContent/D3D11ContentManager.cpp
 )

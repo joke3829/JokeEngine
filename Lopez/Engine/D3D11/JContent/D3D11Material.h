@@ -2,6 +2,9 @@
 
 #include "Engine/JContent/JMaterial.h"
 
+// 텍스쳐들에 대한 SRV도 가짐
+
+
 struct cbSimpleMaterial {
 	XMFLOAT4 Albedo{ 1.f, 1.f, 1.f, 1.f };
 	XMFLOAT4 Specular{ 1.f, 1.f, 1.f, 1.f };
