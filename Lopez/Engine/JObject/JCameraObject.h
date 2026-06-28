@@ -16,6 +16,8 @@ struct common_viewport {
 	FLOAT MaxDepth;
 };
 
+
+// Active 여부로 멀티 뷰포트 여부 결정
 class JCameraObject : public JObject {
 public:
 	JCameraObject(XMFLOAT4X4* WorldMatrixByScene, const char* name = nullptr);

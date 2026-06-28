@@ -14,11 +14,14 @@ public:
 	virtual void Render(void* command) {}	// command -> 11: DeviceContext, 12: CommandList
 
 	void SetName(const char* name) { m_name = name; }
-	std::string& GetName() { return m_name; }
+	const std::string& GetName() { return m_name; }
 
 	// 렌더링이 필요하면 반드시 셰이더 이름을 작성
 	void SetShaderName(const char* name) { m_ShaderName = name; }
-	std::string& GetShaderName() { return m_ShaderName; }
+	const std::string& GetShaderName() { return m_ShaderName; }
+	
+	void SetActiveState(bool active) { m_Active = active; }
+	bool GetActiveState() { return m_Active; }
 
 	void SetPosition(float x, float y, float z) { m_Position = XMFLOAT3(x, y, z); }
 	void SetPosition(XMFLOAT3 position) { m_Position = position; }
@@ -36,7 +39,7 @@ protected:
 	void MakeLocalTransform();
 
 protected:
-	bool										m_Active{ true };		// 렌더 결정 여부? 혹은 계층 구조를 끊는 여부일 수 도있는데
+	bool										m_Active{ true };		// 렌더 여부, 카메라 사용 여부 등, 오브젝트 별로 기능 
 	std::string									m_name{};
 	std::vector<std::shared_ptr<JObject>>		m_LeafObjects{};
 

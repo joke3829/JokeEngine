@@ -22,6 +22,7 @@
 #include <vector>
 #include <memory>
 #include <fstream>
+#include <unordered_map>
 
 #include <d3d11_4.h>
 #include <d3d12.h>
@@ -66,3 +67,23 @@ inline void ThrowIfFailed(HRESULT hr)
 		assert(0);
 	}
 }
+
+
+// size를 multiple의 배수로 변환한 값을 반환
+// multiple이 2의 제곱수일 때 정상 작동
+inline UINT Align(UINT size, UINT multiple)
+{
+	return (size + (multiple - 1)) & ~(multiple - 1);
+}
+
+// DX11 상수, 열거자 =======================================================================
+
+enum JShaderStage : unsigned char {
+	JS_NONE,
+	JS_VS,
+	JS_PS,
+	JS_GS,
+	JS_HS,
+	JS_DS,
+	JS_CS
+};

@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "JokeEngineConfig.h"
+#include "JContent/JContentManager.h"
 #include "D3D11/D3D11GlobalFactor.h"
 
 // DirectX Engine
@@ -21,6 +22,10 @@ protected:
 	HINSTANCE m_hInstance{};
 
 	ComPtr<IDXGISwapChain4>			m_SwapChain{};
+
+	std::shared_ptr<JContentManager>	m_ContentManager{};		
+	//std::shared_ptr<JEngineRenderer> 메인 렌더러
+	//std::shared_ptr<JEngineScene>
 };
 
 

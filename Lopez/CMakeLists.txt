@@ -30,11 +30,19 @@ set(COMMON_HEADER
 
 set(COMMON_SOURCE
   Lopez.cpp
+  stdafx.cpp
 )
 
 set(D3D11
   Engine/D3D11/D3D11GlobalFactor.h
   Engine/D3D11/D3D11GlobalFactor.cpp
+)
+
+set(D3D11_CONTENT
+  Engine/D3D11/JContent/D3D11Material.h
+  Engine/D3D11/JContent/D3D11Material.cpp
+  Engine/D3D11/JContent/D3D11ContentManager.h
+  Engine/D3D11/JContent/D3D11ContentManager.cpp
 )
 
 
@@ -59,6 +67,12 @@ set(ENGINE_OBJECT
 set(ENGINE_CONTENT
   Engine/JContent/JContent.h
   Engine/JContent/JContent.cpp
+  Engine/JContent/JMaterial.h
+  Engine/JContent/JMaterial.cpp
+  Engine/JContent/JStaticMesh.h
+  Engine/JContent/JStaticMesh.cpp
+  Engine/JContent/JContentManager.h
+  Engine/JContent/JContentManager.cpp
 )
 
 add_executable(${PROJECT_NAME} 
@@ -69,6 +83,7 @@ add_executable(${PROJECT_NAME}
    ${ENGINE_OBJECT}
    ${ENGINE_CONTENT}
    ${D3D11}
+   ${D3D11_CONTENT}
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE 
@@ -80,3 +95,4 @@ source_group("Engine" FILES ${ENGINE})
 source_group("Engine\\JObject" FILES ${ENGINE_OBJECT})
 source_group("Engine\\JContent" FILES ${ENGINE_CONTENT})
 source_group("Engine\\D3D11" FILES ${D3D11})
+source_group("Engine\\D3D11\\JContent" FILES ${D3D11_CONTENT})
