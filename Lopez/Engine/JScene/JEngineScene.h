@@ -1,11 +1,13 @@
 ﻿#pragma once
 #include "stdafx.h"
-#include "JObject/JCameraObject.h"
+#include "Engine/JObject/JCameraObject.h"
 
 
 class JEngineScene {
 public:
 	virtual void BuildDefaultScene() {}
+
+	virtual void SetDXBuffer(UINT parameter, JShaderStage stage) {}
 
 	const std::vector<std::shared_ptr<JObject>>& GetObjects() { return m_Objects; }
 	const std::vector<std::shared_ptr<JCameraObject>>& GetCameras() { return m_Cameras; }

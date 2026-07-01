@@ -21,12 +21,12 @@ protected:
 
 private:
 	template<class T>
-	void CreateBufferByInfo(ID3D11Device* device, ComPtr<ID3D11Buffer>& outBuffer, T& data)
+	void CreateBufferByInfo(ID3D11Device* device, D3D11_BIND_FLAG bindflag, ComPtr<ID3D11Buffer>& outBuffer, T& data)
 	{
 		D3D11_BUFFER_DESC desc{
-			.ByteWidth = data.size() * sizeof(data[0]),
+			.ByteWidth = static_cast<UINT>(data.size()) * sizeof(data[0]),
 			.Usage = D3D11_USAGE_IMMUTABLE,
-			.BindFlags = D3D11_BIND_VERTEX_BUFFER | D3D11_BIND_INDEX_BUFFER,
+			.BindFlags = static_cast<UINT>(bindflag),
 		};
 		D3D11_SUBRESOURCE_DATA sdata{
 			.pSysMem = data.data()

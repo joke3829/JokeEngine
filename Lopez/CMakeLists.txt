@@ -33,30 +33,13 @@ set(COMMON_SOURCE
   stdafx.cpp
 )
 
-set(D3D11
-  Engine/D3D11/D3D11GlobalFactor.h
-  Engine/D3D11/D3D11GlobalFactor.cpp
-)
-
-set(D3D11_CONTENT
-  Engine/D3D11/JContent/D3D11Material.h
-  Engine/D3D11/JContent/D3D11Material.cpp
-  Engine/D3D11/JContent/D3D11StaticMesh.h
-  Engine/D3D11/JContent/D3D11StaticMesh.cpp
-  Engine/D3D11/JContent/D3D11ContentManager.h
-  Engine/D3D11/JContent/D3D11ContentManager.cpp
-)
-
+# Engine 관련 Set ==================================================
 
 set(ENGINE
   Engine/JokeEngine.h
   Engine/JokeEngine.cpp
   Engine/JokeEngineConfig.h
   Engine/JokeEngineConfig.cpp
-  Engine/JEngineScene.h
-  Engine/JEngineScene.cpp
-  Engine/JEngineRenderer.h
-  Engine/JEngineRenderer.cpp
 )
 
 set(ENGINE_OBJECT
@@ -77,15 +60,72 @@ set(ENGINE_CONTENT
   Engine/JContent/JContentManager.cpp
 )
 
+set(ENGINE_RENDERER
+  Engine/JRenderer/JEngineRenderer.h
+  Engine/JRenderer/JEngineRenderer.cpp
+)
+
+set(ENGINE_SCENE
+  Engine/JScene/JEngineScene.h
+  Engine/JScene/JEngineScene.cpp
+)
+
+set(ENGINE_SHADER
+  Engine/JShader/JEngineShader.h
+  Engine/JShader/JEngineShader.cpp
+)
+
+set(ENGINE_INTEGRATE
+  ${ENGINE}
+  ${ENGINE_OBJECT}
+  ${ENGINE_CONTENT}
+  ${ENGINE_RENDERER}
+  ${ENGINE_SCENE}
+  ${ENGINE_SHADER}
+)
+
+# D3D11 관련 Set =================================================
+
+set(D3D11
+  Engine/D3D11/D3D11GlobalFactor.h
+  Engine/D3D11/D3D11GlobalFactor.cpp
+)
+
+set(D3D11_CONTENT
+  Engine/D3D11/Content/D3D11Material.h
+  Engine/D3D11/Content/D3D11Material.cpp
+  Engine/D3D11/Content/D3D11StaticMesh.h
+  Engine/D3D11/Content/D3D11StaticMesh.cpp
+  Engine/D3D11/Content/D3D11ContentManager.h
+  Engine/D3D11/Content/D3D11ContentManager.cpp
+)
+
+
+set(D3D11_RENDERER
+  Engine/D3D11/Renderer/D3D11Renderer.h
+  Engine/D3D11/Renderer/D3D11Renderer.cpp
+)
+
+set(D3D11_SCENE
+  Engine/D3D11/Scene/D3D11Scene.h
+  Engine/D3D11/Scene/D3D11Scene.cpp
+)
+
+set(D3D11_INTEGRATE
+  ${D3D11}
+  ${D3D11_CONTENT}
+  ${D3D11_RENDERER}
+  ${D3D11_SCENE}
+)
+
+
+
 add_executable(${PROJECT_NAME} 
    WIN32 ${RESOURCE_FILES} 
    ${COMMON_HEADER} 
    ${COMMON_SOURCE} 
-   ${ENGINE}
-   ${ENGINE_OBJECT}
-   ${ENGINE_CONTENT}
-   ${D3D11}
-   ${D3D11_CONTENT}
+   ${ENGINE_INTEGRATE}
+   ${D3D11_INTEGRATE}
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE 
@@ -93,8 +133,15 @@ target_include_directories(${PROJECT_NAME} PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/Package
 )
 
+
 source_group("Engine" FILES ${ENGINE})
 source_group("Engine\\JObject" FILES ${ENGINE_OBJECT})
 source_group("Engine\\JContent" FILES ${ENGINE_CONTENT})
+source_group("Engine\\JRenderer" FILES ${ENGINE_RENDERER})
+source_group("Engine\\JScene" FILES ${ENGINE_SCENE})
+source_group("Engine\\JShader" FILES ${ENGINE_SHADER})
+
 source_group("Engine\\D3D11" FILES ${D3D11})
-source_group("Engine\\D3D11\\JContent" FILES ${D3D11_CONTENT})
+source_group("Engine\\D3D11\\Content" FILES ${D3D11_CONTENT})
+source_group("Engine\\D3D11\\Renderer" FILES ${D3D11_RENDERER})
+source_group("Engine\\D3D11\\Scene" FILES ${D3D11_SCENE})

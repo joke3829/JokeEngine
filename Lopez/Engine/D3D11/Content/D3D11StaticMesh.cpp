@@ -34,13 +34,13 @@ void JStaticMeshDX11::BuffersReady()
 	auto* gFactor = JD3D11GlobalFactor::GetInstance();
 	auto* device = gFactor->GetDevice();
 
-	CreateBufferByInfo(device, m_VertexBuffer, m_Vertices);
-	CreateBufferByInfo(device, m_ColorBuffer, m_Colors);
-	CreateBufferByInfo(device, m_NormalBuffer, m_Normals);
-	CreateBufferByInfo(device, m_TangentBuffer, m_Tangents);
-	CreateBufferByInfo(device, m_BiTangentBuffer, m_BiTangents);
-	CreateBufferByInfo(device, m_TexCoord0Buffer, m_TexCoord0);
-	CreateBufferByInfo(device, m_TexCoord1Buffer, m_TexCoord1);
+	CreateBufferByInfo(device, D3D11_BIND_VERTEX_BUFFER, m_VertexBuffer, m_Vertices);
+	CreateBufferByInfo(device, D3D11_BIND_VERTEX_BUFFER, m_ColorBuffer, m_Colors);
+	CreateBufferByInfo(device, D3D11_BIND_VERTEX_BUFFER, m_NormalBuffer, m_Normals);
+	CreateBufferByInfo(device, D3D11_BIND_VERTEX_BUFFER, m_TangentBuffer, m_Tangents);
+	CreateBufferByInfo(device, D3D11_BIND_VERTEX_BUFFER, m_BiTangentBuffer, m_BiTangents);
+	CreateBufferByInfo(device, D3D11_BIND_VERTEX_BUFFER, m_TexCoord0Buffer, m_TexCoord0);
+	CreateBufferByInfo(device, D3D11_BIND_VERTEX_BUFFER, m_TexCoord1Buffer, m_TexCoord1);
 
 	m_strides[0] = m_Vertices.size() > 1 ? sizeof(XMFLOAT3) : 0;
 	m_strides[1] = m_Colors.size() > 1 ? sizeof(XMFLOAT4) : 0;
@@ -53,7 +53,7 @@ void JStaticMeshDX11::BuffersReady()
 	// index 버퍼 ready
 	for (size_t i = 0; i < m_vIndices.size(); ++i) {
 		ComPtr<ID3D11Buffer> indexbuffer{};
-		CreateBufferByInfo(device, indexbuffer, m_vIndices[i]);
+		CreateBufferByInfo(device, D3D11_BIND_INDEX_BUFFER, indexbuffer, m_vIndices[i]);
 		m_vIndexBuffers.emplace_back(indexbuffer);
 	}
 }

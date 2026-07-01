@@ -1,13 +1,11 @@
 ﻿#pragma once
 
 #include "stdafx.h"
-#include "JEngineShader.h"
-#include "JEngineScene.h"
+#include "Engine/JShader/JEngineShader.h"
+#include "Engine/JScene/JEngineScene.h"
 
 class JEngineRenderer {
 public:
-	virtual void Initialize() {}
-	void SetScene(std::shared_ptr<JEngineScene> scene) { m_Scene = scene; }
 
 
 	virtual void ResizeTarget(UINT width, UINT height) {}
