@@ -111,11 +111,17 @@ set(D3D11_SCENE
   Engine/D3D11/Scene/D3D11Scene.cpp
 )
 
+set(D3D11_SHADER
+  Engine/D3D11/Shader/D3D11Shader.h
+  Engine/D3D11/Shader/D3D11Shader.cpp
+)
+
 set(D3D11_INTEGRATE
   ${D3D11}
   ${D3D11_CONTENT}
   ${D3D11_RENDERER}
   ${D3D11_SCENE}
+  ${D3D11_SHADER}
 )
 
 
@@ -145,3 +151,4 @@ source_group("Engine\\D3D11" FILES ${D3D11})
 source_group("Engine\\D3D11\\Content" FILES ${D3D11_CONTENT})
 source_group("Engine\\D3D11\\Renderer" FILES ${D3D11_RENDERER})
 source_group("Engine\\D3D11\\Scene" FILES ${D3D11_SCENE})
+source_group("Engine\\D3D11\\Shader" FILES ${D3D11_SHADER})
