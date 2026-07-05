@@ -126,12 +126,20 @@ set(D3D11_INTEGRATE
 
 
 
+set(SHADER_FILES
+  Shaders/Default/Common.hlsl
+  Shaders/Default/DefaultShader.hlsl
+)
+
+
+
 add_executable(${PROJECT_NAME} 
    WIN32 ${RESOURCE_FILES} 
    ${COMMON_HEADER} 
    ${COMMON_SOURCE} 
    ${ENGINE_INTEGRATE}
    ${D3D11_INTEGRATE}
+   ${SHADER_FILES}
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE 
@@ -152,3 +160,8 @@ source_group("Engine\\D3D11\\Content" FILES ${D3D11_CONTENT})
 source_group("Engine\\D3D11\\Renderer" FILES ${D3D11_RENDERER})
 source_group("Engine\\D3D11\\Scene" FILES ${D3D11_SCENE})
 source_group("Engine\\D3D11\\Shader" FILES ${D3D11_SHADER})
+
+
+# Shader File 솔루션에 추가 + 빌드에 참여 안함
+source_group("Shaders" FILES ${SHADER_FILES})
+set_source_files_properties(${SHADER_FILES} PROPERTIES VS_TOOL_OVERRIDE "None")
