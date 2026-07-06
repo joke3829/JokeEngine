@@ -27,3 +27,58 @@ XMFLOAT4X4 JCameraObject::GetViewMatrix()
 	XMStoreFloat4x4(&VM, XMMatrixLookToLH(EYE, LOOK, UP));
 	return VM;
 }
+
+XMFLOAT4X4 JCameraObject::GetProjMatrix()
+{
+	XMFLOAT4X4 PM{};
+
+	if (m_ProjFactor.bOrtho)
+		XMStoreFloat4x4(&PM, XMMatrixOrthographicOffCenterLH(
+			m_ProjFactor.Left,
+			m_ProjFactor.Right,
+			m_ProjFactor.Bottom,
+			m_ProjFactor.Top,
+			m_ProjFactor.Near,
+			m_ProjFactor.Far
+		));
+	else
+		XMStoreFloat4x4(&PM, XMMatrixPerspectiveFovLH(
+			XMConvertToRadians(m_ProjFactor.Fov),
+			m_ProjFactor.Aspect,
+			m_ProjFactor.Near,
+			m_ProjFactor.Far
+		));
+
+	return PM;
+}
+
+XMFLOAT4X4 JCameraObject::GetViewProjMatrix()
+{
+	XMFLOAT4X4 VM = GetViewMatrix();
+	XMFLOAT4X4 PM = GetProjMatrix();
+	XMFLOAT4X4 VPM{};
+	XMStoreFloat4x4(&VPM, XMLoadFloat4x4(&VM) * XMLoadFloat4x4(&PM));
+
+	return VPM;
+}
+
+
+void JCameraObject::SetProjFactorPerspective(float Fov, float Aspect, float Near, float Far)
+{
+	m_ProjFactor.bOrtho = false;
+	m_ProjFactor.Fov = Fov;
+	m_ProjFactor.Aspect = Aspect;
+	m_ProjFactor.Near = Near;
+	m_ProjFactor.Far = Far;
+}
+
+void JCameraObject::SetProjFactorOrthographic(float Left, float Right, float Bottom, float Top, float Near, float Far)
+{
+	m_ProjFactor.bOrtho = true;
+	m_ProjFactor.Left = Left;
+	m_ProjFactor.Right = Right;
+	m_ProjFactor.Bottom = Bottom;
+	m_ProjFactor.Top = Top;
+	m_ProjFactor.Near = Near;
+	m_ProjFactor.Far = Far;
+}

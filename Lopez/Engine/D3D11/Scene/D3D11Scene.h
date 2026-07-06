@@ -14,10 +14,12 @@ public:
 protected:
 	ComPtr<ID3D11Buffer>				m_WorldMatricesBuffer{};
 	ComPtr<ID3D11ShaderResourceView>	m_WorldMatricesBufferSRV{};
+	size_t								m_nAlignWorldMatrices{};
 
 	ComPtr<ID3D11Buffer>				m_CameraMatricesBuffer{};
 	ComPtr<ID3D11ShaderResourceView>	m_CameraMatricesBufferSRV{};
 	std::vector<XMFLOAT4X4>				m_CameraMatrices{};
+	size_t								m_nAlignCameraMatrices{};
 };
 
 // =============================================================================
