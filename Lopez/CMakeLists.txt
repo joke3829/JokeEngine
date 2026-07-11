@@ -40,6 +40,8 @@ set(ENGINE
   Engine/JokeEngine.cpp
   Engine/JokeEngineConfig.h
   Engine/JokeEngineConfig.cpp
+  Engine/JCommon.h
+  Engine/JCommon.cpp
 )
 
 set(ENGINE_OBJECT

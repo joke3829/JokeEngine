@@ -1,10 +1,10 @@
 ﻿#pragma once
 
-#include "stdafx.h"
+#include "Engine/JCommon.h"
 
 // name은 사실상 filepath
 
-class JContent {
+class JContent : public JCommon {
 public:
 	JContent(const char* name = nullptr);
 
@@ -14,11 +14,7 @@ public:
 	virtual void Render() {}
 	virtual void Render(void* command) {}
 
-	void SetName(const char* name) { m_name = name; }
-	const std::string& GetName() { return m_name; }
 protected:
 	// filepath로 처리하는거 안될 수 있다.(수정 필요)
 	virtual void LoadFromFile(const char* name) {}
-protected:
-	std::string				m_name{};
 };
