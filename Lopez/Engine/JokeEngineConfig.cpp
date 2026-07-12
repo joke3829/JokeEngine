@@ -1,8 +1,8 @@
 ﻿#include "JokeEngineConfig.h"
 
-JokeEngineGlobalConfigExample* JokeEngineGlobalConfigExample::m_Instance = nullptr;
+JEngineDefaultGlobalConfig* JEngineDefaultGlobalConfig::m_Instance = nullptr;
 
-void JEngineConfigFactor::InitFactorsByFile(nlohmann::json json)
+void JEngineConfigDefaultFactor::InitFactorsByFile(nlohmann::json json)
 {
 	if (json.empty()) {
 #if defined(_DEBUG) || defined(DEBUG)
@@ -13,6 +13,7 @@ void JEngineConfigFactor::InitFactorsByFile(nlohmann::json json)
 
 	DirectX_Version = json.value("DX", 11);
 	LimitFPS = json.value("FPS", 120.f);
+	VerticalSYNC = json.value("V_SYNC", false);
 	if (json.contains("Windows"))
 	{
 		auto& windowJson = json["Windows"];
@@ -31,21 +32,21 @@ void JEngineConfigFactor::InitFactorsByFile(nlohmann::json json)
 
 // =====================================================================
 
-JokeEngineGlobalConfigExample* JokeEngineGlobalConfigExample::GetInstance()
+JEngineDefaultGlobalConfig* JEngineDefaultGlobalConfig::GetInstance()
 {
 	if (!m_Instance)
-		m_Instance = new JokeEngineGlobalConfigExample;
+		m_Instance = new JEngineDefaultGlobalConfig;
 	return m_Instance;
 }
 
-JEngineConfigFactor* JokeEngineGlobalConfigExample::GetConfigFactor()
+JEngineConfigDefaultFactor* JEngineDefaultGlobalConfig::GetConfigFactor()
 {
 	return m_ConfigFactor;
 }
 
-void JokeEngineGlobalConfigExample::OptionSaveAndFileGenerate()
+void JEngineDefaultGlobalConfig::OptionSaveAndFileGenerate()
 {
-	const char* optionFileName = "JKEngine_Config.json";
+	const char* optionFileName = "JEngine_Config.json";
 	std::ofstream outFile{ optionFileName };
 	nlohmann::json outJson;
 	outJson["DX"] = m_ConfigFactor->DirectX_Version;
@@ -61,11 +62,11 @@ void JokeEngineGlobalConfigExample::OptionSaveAndFileGenerate()
 #endif
 }
 
-JokeEngineGlobalConfigExample::JokeEngineGlobalConfigExample()
+JEngineDefaultGlobalConfig::JEngineDefaultGlobalConfig()
 {
-	m_ConfigFactor = new JEngineConfigFactor;
+	m_ConfigFactor = new JEngineConfigDefaultFactor;
 
-	const char* optionFileName = "JKEngine_Config.json";
+	const char* optionFileName = "JEngine_Config.json";
 	std::ifstream configFile{ optionFileName };
 	if (!configFile.is_open()) {
 #if defined(_DEBUG) || defined(DEBUG)
@@ -79,6 +80,7 @@ JokeEngineGlobalConfigExample::JokeEngineGlobalConfigExample()
 			outJson["Windows"]["Resolution"]["Width"] = m_ConfigFactor->WindowsWidth;
 			outJson["Windows"]["Resolution"]["Height"] = m_ConfigFactor->WindowsHeight;
 
+			outJson["V_SYNC"] = m_ConfigFactor->VerticalSYNC;
 			outJson["FPS"] = m_ConfigFactor->LimitFPS;			// 30, 60, 120, 144, 240, 999(Unlimit)
 
 			outFile << outJson;
@@ -100,7 +102,7 @@ JokeEngineGlobalConfigExample::JokeEngineGlobalConfigExample()
 #endif
 }
 
-JokeEngineGlobalConfigExample::~JokeEngineGlobalConfigExample()
+JEngineDefaultGlobalConfig::~JEngineDefaultGlobalConfig()
 {
 	if (m_ConfigFactor) delete m_ConfigFactor;
 	if (m_Instance) delete m_Instance;

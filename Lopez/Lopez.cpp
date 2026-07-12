@@ -115,7 +115,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
     hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
-    auto* config = JokeEngineGlobalConfigExample::GetInstance();
+    auto* config = JEngineDefaultGlobalConfig::GetInstance();
     auto* factors = config->GetConfigFactor();
 
 

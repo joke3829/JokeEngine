@@ -12,6 +12,8 @@ public:
 
 	void CopyResult(void* outBuffer);
 
+	void AdvanceBufferIndex();
+
 protected:
 	void CreateRTV_DSV(UINT width, UINT height);
 protected:
