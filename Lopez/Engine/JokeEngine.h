@@ -12,7 +12,7 @@ public:
 	virtual void Initialize(HWND hWnd, HINSTANCE hInstance);
 	virtual void Resize(UINT width, UINT height, bool FullScreenState);
 	
-	virtual void Render() {}
+	virtual void Render() {};
 protected:
 	virtual void CreateSwapChain() {}
 	virtual void Update(float elapsedTime) {}
@@ -34,7 +34,6 @@ protected:
 class JokeEngineDX11 : public JokeEngine {
 public:
 	virtual void Initialize(HWND hWnd, HINSTANCE hInstance);
-	virtual void Resize(UINT width, UINT height, bool FullScreenState);
 
 	virtual void Render();
 

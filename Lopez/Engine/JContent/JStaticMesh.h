@@ -15,8 +15,9 @@ public:
 
 	virtual void Render() {}
 	virtual void Render(void* command) {}
+	virtual void Render(UINT i) {}
 
-
+	const std::vector<std::vector<UINT>>& GetIndices() { return m_vIndices; }
 protected:
 	virtual void LoadFromFile(const char* name) {}
 

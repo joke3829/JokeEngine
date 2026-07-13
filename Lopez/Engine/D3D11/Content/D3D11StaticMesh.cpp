@@ -83,3 +83,26 @@ void JStaticMeshDX11::Render()
 	}
 }
 
+void JStaticMeshDX11::Render(UINT i)
+{
+	auto* gFactor = JD3D11GlobalFactor::GetInstance();
+	auto* context = gFactor->GetDeviceContext();
+
+	context->IASetPrimitiveTopology(m_d3dTopology);
+
+	ID3D11Buffer* buffers[] = {
+		m_VertexBuffer.Get(),
+		m_ColorBuffer.Get(),
+		m_NormalBuffer.Get(),
+		m_TangentBuffer.Get(),
+		m_BiTangentBuffer.Get(),
+		m_TexCoord0Buffer.Get(),
+		m_TexCoord1Buffer.Get()
+	};
+
+	context->IASetVertexBuffers(0, 7, buffers, m_strides, m_offsets);
+
+	context->IASetIndexBuffer(m_vIndexBuffers[i].Get(), DXGI_FORMAT_R32_UINT, 0);
+	context->DrawIndexed(m_vIndices[i].size(), 0, 0);
+}
+

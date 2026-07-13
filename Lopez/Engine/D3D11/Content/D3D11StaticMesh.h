@@ -14,6 +14,7 @@ public:
 
 	void Render();
 	void Render(void* command) {}
+	void Render(UINT i);
 
 
 protected:

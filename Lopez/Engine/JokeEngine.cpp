@@ -5,29 +5,29 @@
 void JokeEngine::Initialize(HWND hWnd, HINSTANCE hInstance)
 {
 	m_hWnd = hWnd; m_hInstance = hInstance;
+
+	CreateSwapChain();
 }
 
 void JokeEngine::Resize(UINT width, UINT height, bool FullScreenState)
 {
 	// 렌더러 사이즈 변경 및 스왑체인 크기 변경
 	// 12에선 앞단에 fence
+
+	m_Renderer->ResizeTarget(width, height);
+	// swapchain 사이즈 변경
+
+
 }
 
 // =======================================================================
 
 void JokeEngineDX11::Initialize(HWND hWnd, HINSTANCE hInstance)
 {
-	JokeEngine::Initialize(hWnd, hInstance);
-
 	m_GlobalFactor = JD3D11GlobalFactor::GetInstance();
-
-	CreateSwapChain();
+	JokeEngine::Initialize(hWnd, hInstance);
 }
 
-void JokeEngineDX11::Resize(UINT width, UINT height, bool FullScreenState)
-{
-
-}
 
 void JokeEngineDX11::CreateSwapChain()
 {

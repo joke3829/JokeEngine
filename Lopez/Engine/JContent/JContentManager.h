@@ -6,12 +6,17 @@
 class JContentManager {
 public:
 	
-	virtual void AddDefaultContent() {}							// Null Texture도 만들어 두기
+	virtual void ReadyDefaultContent() {}							// Null Texture도 만들어 두기
 	virtual void AddContentFromDirectory(const char* dir) {}	// 그 디렉토리 안에 하위 폴더를 전부 탐색 및 콘텐츠 생성
 	virtual void AddContentFromFile(const char* filename) {}	// 하나의 특정 파일만 로드 할 때
 	void AddContent(std::shared_ptr<JContent> content);
 
 	const std::unordered_map<std::string, std::shared_ptr<JContent>>& GetContentTable() { return m_ContentLookupTable; }
 protected:
+#if defined(_DEBUG) || defined(DEBUG)
+	void ShowInsertedFailed(const std::string& name);
+#endif
+
+
 	std::unordered_map<std::string, std::shared_ptr<JContent>>			m_ContentLookupTable{};
 };

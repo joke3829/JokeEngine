@@ -49,6 +49,8 @@ set(ENGINE_OBJECT
   Engine/JObject/JObject.cpp
   Engine/JObject/JCameraObject.h
   Engine/JObject/JCameraObject.cpp
+  Engine/JObject/JStaticMeshObject.h
+  Engine/JObject/JStaticMeshObject.cpp
 )
 
 set(ENGINE_CONTENT

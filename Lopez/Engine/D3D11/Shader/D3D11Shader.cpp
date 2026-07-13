@@ -15,8 +15,55 @@ void JEngineShaderDX11::SetShader()
 	if (m_BlendState) context->OMSetBlendState(m_BlendState.Get(), nullptr, 0xffffffff); else context->OMSetBlendState(nullptr, nullptr, 0xffffffff);
 	if (m_DepthStencilState) context->OMSetDepthStencilState(m_DepthStencilState.Get(), 256); else context->OMSetDepthStencilState(nullptr, 0);
 	if (m_RasterizerState) context->RSSetState(m_RasterizerState.Get()); else context->RSSetState(nullptr);
-
-
-
 }
 
+void JEngineShaderDX11::SetSamplers(UINT parameter, JShaderStage stage)
+{
+	if (0 == m_Samplers.size()) {
+#if defined(_DEBUG) || defined(DEBUG)
+		spdlog::error("{0} Shader에서 잘못된 SetSamplaers를 호출했습니다. - Samplers.size() == 0", m_name.c_str());
+#endif
+		return;
+	}
+	auto* context = JD3D11GlobalFactor::GetInstance()->GetDeviceContext();
+
+	switch (stage) {
+	case JS_VS:
+		context->VSSetSamplers(parameter, m_Samplers.size(), m_Samplers.data());
+		break;
+	case JS_PS:
+		context->PSSetSamplers(parameter, m_Samplers.size(), m_Samplers.data());
+		break;
+	case JS_GS:
+		context->GSSetSamplers(parameter, m_Samplers.size(), m_Samplers.data());
+		break;
+	case JS_HS:
+		context->HSSetSamplers(parameter, m_Samplers.size(), m_Samplers.data());
+		break;
+	case JS_DS:
+		context->DSSetSamplers(parameter, m_Samplers.size(), m_Samplers.data());
+		break;
+	case JS_CS:
+		context->CSSetSamplers(parameter, m_Samplers.size(), m_Samplers.data());
+		break;
+	default:
+#if defined(_DEBUG) || defined(DEBUG)
+		spdlog::error("[DX11] {0}에서 잘못된 SetSampler를 호출했습니다.", m_name.c_str());
+#endif
+		assert(0);
+	}
+}
+
+
+void JEngineShaderDX11::RenderObjects(void** rtv, UINT numRTV, void* dsv)
+{
+	auto* context = JD3D11GlobalFactor::GetInstance()->GetDeviceContext();
+	ID3D11RenderTargetView** drtv = reinterpret_cast<ID3D11RenderTargetView**>(rtv);
+	ID3D11DepthStencilView* ddsv = reinterpret_cast<ID3D11DepthStencilView*>(dsv);
+	
+	// 렌더타겟 Set
+	context->OMSetRenderTargets(numRTV, drtv, ddsv);
+
+	for (auto& object : m_Objects)
+		object->Render();
+}

@@ -12,9 +12,9 @@ struct cbSimpleMaterial {
 	XMFLOAT4 Emissive{ 0.f, 0.f, 0.f, 1.f };
 };
 
-class JMaterialSimpleDX11 final : public JMaterialSimple {
+class JMaterialDX11 final : public JMaterial {
 public:
-	JMaterialSimpleDX11(const char* name = nullptr);
+	JMaterialDX11(const char* name = nullptr);
 
 	void SetDXBuffer(UINT parameter, JShaderStage stage = JS_NONE);
 private:

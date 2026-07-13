@@ -1,8 +1,8 @@
 ﻿#include "D3D11Material.h"
 #include "../D3D11GlobalFactor.h"
 
-JMaterialSimpleDX11::JMaterialSimpleDX11(const char* name)
-	: JMaterialSimple(name)
+JMaterialDX11::JMaterialDX11(const char* name)
+	: JMaterial(name)
 {
 	auto* gFactor = JD3D11GlobalFactor::GetInstance();
 	auto* device = gFactor->GetDevice();
@@ -24,7 +24,7 @@ JMaterialSimpleDX11::JMaterialSimpleDX11(const char* name)
 }
 
 // 이거도 확장할 수 있을 것 이대로는 하나만 넣을 수 있음
-void JMaterialSimpleDX11::SetDXBuffer(UINT parameter, JShaderStage stage)
+void JMaterialDX11::SetDXBuffer(UINT parameter, JShaderStage stage)
 {
 	auto* gFactor = JD3D11GlobalFactor::GetInstance();
 	auto* context = gFactor->GetDeviceContext();

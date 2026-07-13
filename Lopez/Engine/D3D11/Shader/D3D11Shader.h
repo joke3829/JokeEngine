@@ -2,17 +2,20 @@
 
 #include "Engine/JShader/JEngineShader.h"
 
-
+// Base ========================================================
 
 class JEngineShaderDX11 : public JEngineShader {
 public:
 	virtual void Initialize() {}
 	void SetShader();
+	void SetSamplers(UINT parameter, JShaderStage stage = JS_NONE);
 
-	void RenderObjects();
+	void RenderObjects() {};
+	void RenderObjects(void** rtv, UINT numRTV, void* dsv = nullptr);
 
 
 protected:
+
 	ComPtr<ID3D11VertexShader>				m_VS{};
 	ComPtr<ID3D11HullShader>				m_HS{};
 	ComPtr<ID3D11DomainShader>				m_DS{};
@@ -30,3 +33,7 @@ protected:
 	std::vector<ComPtr<ID3D11SamplerState>>	m_SamplerStates{};		// PS가 요구하면 정의
 	std::vector<ID3D11SamplerState*>		m_Samplers{};
 };
+
+// =============================================================
+
+

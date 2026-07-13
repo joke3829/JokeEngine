@@ -1,6 +1,6 @@
 ﻿#include "JMaterial.h"
 
-JMaterialSimple::JMaterialSimple(const char* name)
+JMaterial::JMaterial(const char* name)
 	: JContent(name)
 {
 

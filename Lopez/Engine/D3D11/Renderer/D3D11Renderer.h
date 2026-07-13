@@ -12,7 +12,7 @@ public:
 
 	void CopyResult(void* outBuffer);
 
-	void AdvanceBufferIndex();
+	// 11은 Fence를 쓸 필요가 (있을 수 있지만)없기 때문에 AdvanceBufferIndex override X
 
 protected:
 	void CreateRTV_DSV(UINT width, UINT height);

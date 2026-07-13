@@ -10,6 +10,8 @@ void JEngineRendererDX11::ResizeTarget(UINT width, UINT height)
 
 void JEngineRendererDX11::RenderFrame()
 {
+	AdvanceBufferIndex();
+
 	auto* context = JD3D11GlobalFactor::GetInstance()->GetDeviceContext();
 
 	float clearcolor[] = { 0.f, 0.f, 0.f, 1.f };
@@ -17,11 +19,16 @@ void JEngineRendererDX11::RenderFrame()
 	context->ClearDepthStencilView(m_DepthStencilView[m_CurrentBufferIndex].Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
 
 	// 파이프라인 별 렌더링 하고
+
+
 }
 
 void JEngineRendererDX11::CopyResult(void* outBuffer)
 {
+	auto* context = JD3D11GlobalFactor::GetInstance()->GetDeviceContext();
 	
+	ID3D11Texture2D* dest = reinterpret_cast<ID3D11Texture2D*>(outBuffer);
+	context->CopyResource(dest, m_RenderTarget[m_CurrentBufferIndex].Get());
 }
 
 void JEngineRendererDX11::CreateRTV_DSV(UINT width, UINT height)

@@ -13,7 +13,7 @@ public:
 
 	virtual void CopyResult(void* outBuffer) {}
 
-	virtual void AdvanceBufferIndex() {}
+	virtual void AdvanceBufferIndex();
 
 	void SetScene(std::shared_ptr<JEngineScene> scene) { m_Scene = scene; }
 protected:
