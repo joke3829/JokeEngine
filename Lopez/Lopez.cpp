@@ -38,8 +38,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         freopen_s(&fpDummy, "CONIN$", "r", stdin);
         freopen_s(&fpDummy, "CONOUT$", "w", stderr);
         std::ios::sync_with_stdio();
+        SetConsoleOutputCP(CP_UTF8);
     }
-
     spdlog::info("Debug Console Start");
     spdlog::info("spdlog version: {}.{}.{}", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR, SPDLOG_VER_PATCH);
 #endif

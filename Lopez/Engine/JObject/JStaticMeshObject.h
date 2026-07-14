@@ -16,7 +16,7 @@ public:
 
 	void SetStaticMesh(std::shared_ptr<JStaticMesh> mesh) { m_StaticMesh = mesh; }
 protected:
-
+	// 메시 상수 버퍼가 필요한데
 
 
 	std::vector<std::shared_ptr<JMaterial>>			m_Materials{};

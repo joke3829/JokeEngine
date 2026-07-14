@@ -1,4 +1,5 @@
 ﻿#include "JokeEngine.h"
+#include "D3D11/Content/D3D11ContentManager.h"
 
 // =======================================================================
 
@@ -26,6 +27,9 @@ void JokeEngineDX11::Initialize(HWND hWnd, HINSTANCE hInstance)
 {
 	m_GlobalFactor = JD3D11GlobalFactor::GetInstance();
 	JokeEngine::Initialize(hWnd, hInstance);
+
+	m_ContentManager = std::make_shared<JContentManagerDX11>();
+	m_ContentManager->ReadyDefaultContent();
 }
 
 

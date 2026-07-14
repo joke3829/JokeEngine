@@ -42,6 +42,8 @@ set(ENGINE
   Engine/JokeEngineConfig.cpp
   Engine/JCommon.h
   Engine/JCommon.cpp
+  Engine/JMeshConstant.h
+  Engine/JMeshConstant.cpp
 )
 
 set(ENGINE_OBJECT
@@ -93,6 +95,8 @@ set(ENGINE_INTEGRATE
 set(D3D11
   Engine/D3D11/D3D11GlobalFactor.h
   Engine/D3D11/D3D11GlobalFactor.cpp
+  Engine/D3D11/D3D11MeshConstant.h
+  Engine/D3D11/D3D11MeshConstant.cpp
 )
 
 set(D3D11_CONTENT
