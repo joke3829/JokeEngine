@@ -117,7 +117,7 @@ void JEngineSceneDX11::UpdateBuffers(UINT currentBufferIndex)
 
 void JEngineDefaultSceneDX11::Initialize()
 {
-	BuildDefaultScene();
+
 }
 
 void JEngineDefaultSceneDX11::SetDXBuffer(UINT parameter, JShaderStage stage, UINT currentBufferIndex)

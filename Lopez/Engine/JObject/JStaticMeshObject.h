@@ -4,10 +4,11 @@
 
 class JStaticMesh;
 class JMaterial;
+class JMeshConstant;
 
 class JStaticMeshObject : public JObject {
 public:
-	JStaticMeshObject(XMFLOAT4X4* WorldMatrixByScene, const char* name = nullptr);
+	JStaticMeshObject(XMFLOAT4X4* WorldMatrixByScene, UINT nodeIndex, const char* name = nullptr);
 
 	void Render();
 
@@ -17,7 +18,7 @@ public:
 	void SetStaticMesh(std::shared_ptr<JStaticMesh> mesh) { m_StaticMesh = mesh; }
 protected:
 	// 메시 상수 버퍼가 필요한데
-
+	std::unique_ptr<JMeshConstant>					m_MeshCB{};
 
 	std::vector<std::shared_ptr<JMaterial>>			m_Materials{};
 

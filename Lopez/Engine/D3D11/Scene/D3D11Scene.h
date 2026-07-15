@@ -6,8 +6,6 @@
 
 class JEngineSceneDX11 : public JEngineScene {
 public:
-	virtual void Initialize() {}
-
 	virtual void SetDXBuffer(UINT parameter, JShaderStage stage, UINT currentBufferIndex);
 	virtual void UpdateBuffers(UINT currentBufferIndex);
 
@@ -25,11 +23,10 @@ protected:
 // =============================================================================
 
 
+// Scene을 개조 하고 싶다면 SceneConstant를 직접 선언 관리 하도록
 
 class JEngineDefaultSceneDX11 : public JEngineSceneDX11 {
 public:
-	void Initialize();
-
 	void SetDXBuffer(UINT parameter, JShaderStage stage, UINT currentBufferIndex);
 	void UpdateBuffers(UINT currentBufferIndex);
 protected:

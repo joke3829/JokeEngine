@@ -34,22 +34,23 @@ struct DefaultMaterial
 
 // ================================
 
-
-struct MeshConstant
+struct SceneConstant
 {
-    
+    uint camera;
 };
 
-
-cbuffer cbMeshConstant : register(b0)
+cbuffer cbSceneConstant : register(b1)
 {
-    MeshConstant l_MeshConstant;
+    SceneConstant g_SceneConstant;
 }
 
 
 void DefaultVS(DefaultVSInput input)
 {
     DefaultPSInput output;
-    output.PosW = mul(m)
+    uint nodeindex = g_MeshConstant.nodeIndex;
+    uint cameraindex = g_SceneConstant.camera;
+    
+    output.PosW = mul(float4(input.Position, 1.f), g_WorldMatrices[nodeindex]).xyz;
 
 }
