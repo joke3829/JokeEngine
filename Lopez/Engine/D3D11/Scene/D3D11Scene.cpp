@@ -1,5 +1,6 @@
 ﻿#include "D3D11Scene.h"
 #include "Engine/D3D11/D3D11GlobalFactor.h"
+#include "Engine/JObject/JCameraObject.h"
 
 void JEngineSceneDX11::SetDXBuffer(UINT parameter, JShaderStage stage, UINT currentBufferIndex)
 {
@@ -115,10 +116,6 @@ void JEngineSceneDX11::UpdateBuffers(UINT currentBufferIndex)
 
 // ============================================================
 
-void JEngineDefaultSceneDX11::Initialize()
-{
-
-}
 
 void JEngineDefaultSceneDX11::SetDXBuffer(UINT parameter, JShaderStage stage, UINT currentBufferIndex)
 {

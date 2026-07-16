@@ -2,20 +2,22 @@
 
 #include "JObject.h"
 
+class JContent;
 class JStaticMesh;
 class JMaterial;
 class JMeshConstant;
 
 class JStaticMeshObject : public JObject {
 public:
-	JStaticMeshObject(XMFLOAT4X4* WorldMatrixByScene, UINT nodeIndex, const char* name = nullptr);
+	JStaticMeshObject(std::vector<XMFLOAT4X4>& vWorld, UINT nodeIndex, const char* name = nullptr);
+	~JStaticMeshObject();
 
 	void Render();
 
 public:
 	void AddMaterial(std::shared_ptr<JMaterial> material, int index = -1);
 
-	void SetStaticMesh(std::shared_ptr<JStaticMesh> mesh) { m_StaticMesh = mesh; }
+	void SetStaticMesh(std::shared_ptr<JContent> mesh);
 protected:
 	// 메시 상수 버퍼가 필요한데
 	std::unique_ptr<JMeshConstant>					m_MeshCB{};

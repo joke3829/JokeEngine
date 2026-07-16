@@ -3,7 +3,7 @@
 
 class JObject : public JCommon {
 public:
-	JObject(XMFLOAT4X4* WorldMatrixByScene, const char* name = nullptr);
+	JObject(std::vector<XMFLOAT4X4>& vWorld, UINT nodeIndex, const char* name = nullptr);
 	virtual ~JObject() {}
 
 	void Attach(std::shared_ptr<JObject> leaf) { m_LeafObjects.emplace_back(leaf); }
@@ -44,7 +44,9 @@ protected:
 	XMFLOAT3									m_Scale{ 1.f, 1.f ,1.f };
 
 	XMFLOAT4X4									m_LocalTransform{};
-	XMFLOAT4X4*									m_WorldTransform{};	// 원본은 Scene이 관리함(Bindless를 위한 설정)	반드시 오브젝트 추가할 때 Scene에게서 받아야한다.
-
+	std::vector<XMFLOAT4X4>&					m_WorldTransform;				// 이것에[m_NodeIndex]가 m_WorldTransform
+	UINT										m_NodeIndex{};
+	
 	std::string									m_ShaderName{};	// 이 오브젝트를 렌더링 할 때 사용할 Shader(매핑 할 때 사용)
+
 };

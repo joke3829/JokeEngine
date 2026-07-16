@@ -11,7 +11,7 @@ public:
 	virtual void AddContentFromFile(const char* filename) {}	// 하나의 특정 파일만 로드 할 때
 	void AddContent(std::shared_ptr<JContent> content);
 
-	const std::unordered_map<std::string, std::shared_ptr<JContent>>& GetContentTable() { return m_ContentLookupTable; }
+	std::unordered_map<std::string, std::shared_ptr<JContent>>& GetContentTable() { return m_ContentLookupTable; }
 protected:
 #if defined(_DEBUG) || defined(DEBUG)
 	void ShowInsertedFailed(const std::string& name);

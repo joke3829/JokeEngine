@@ -61,6 +61,18 @@ JD3D11GlobalFactor::JD3D11GlobalFactor()
 	spdlog::info("ID3D11Device Create Success");
 #endif
 	
+
+#if defined(_DEBUG) || defined(DEBUG)
+	{
+		ComPtr<ID3D11InfoQueue> infoqueue{};
+		ThrowIfFailed(m_Device->QueryInterface(IID_PPV_ARGS(infoqueue.GetAddressOf())));
+
+		infoqueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_CORRUPTION, TRUE);
+		infoqueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_ERROR, TRUE);
+
+		spdlog::info("Debug Layer Set Success");
+	}
+#endif
 }
 
 JD3D11GlobalFactor::~JD3D11GlobalFactor()

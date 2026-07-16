@@ -1,5 +1,6 @@
 ﻿#include "JokeEngine.h"
 #include "D3D11/Content/D3D11ContentManager.h"
+#include "D3D11/Scene/D3D11Scene.h"
 
 // =======================================================================
 
@@ -30,6 +31,11 @@ void JokeEngineDX11::Initialize(HWND hWnd, HINSTANCE hInstance)
 
 	m_ContentManager = std::make_shared<JContentManagerDX11>();
 	m_ContentManager->ReadyDefaultContent();
+	
+
+	m_Scene = std::make_shared<JEngineDefaultSceneDX11>();
+	m_Scene->SetContentManager(m_ContentManager);
+	m_Scene->BuildDefaultScene();
 }
 
 

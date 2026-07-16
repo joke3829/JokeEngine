@@ -6,8 +6,8 @@
 
 
 
-JStaticMeshObject::JStaticMeshObject(XMFLOAT4X4* WorldMatrixByScene, UINT nodeIndex, const char* name)
-	: JObject(WorldMatrixByScene, name)
+JStaticMeshObject::JStaticMeshObject(std::vector<XMFLOAT4X4>& vWorld, UINT nodeIndex, const char* name)
+	: JObject(vWorld, nodeIndex, name)
 {
 	auto* opt = JEngineDefaultGlobalConfig::GetInstance()->GetConfigFactor();
 	switch (opt->DirectX_Version) {
@@ -27,8 +27,15 @@ JStaticMeshObject::JStaticMeshObject(XMFLOAT4X4* WorldMatrixByScene, UINT nodeIn
 	}
 }
 
+JStaticMeshObject::~JStaticMeshObject()
+{
+
+}
+
 void JStaticMeshObject::Render()
 {
+	if (!m_StaticMesh)
+		return;
 	m_MeshCB->Update();
 	m_MeshCB->SetDXBuffer(0, JS_VS);
 
@@ -48,4 +55,16 @@ void JStaticMeshObject::AddMaterial(std::shared_ptr<JMaterial> material, int ind
 	else {
 		m_Materials.emplace_back(material);
 	}
+}
+
+void JStaticMeshObject::SetStaticMesh(std::shared_ptr<JContent> mesh)
+{
+	std::shared_ptr<JStaticMesh> temp = std::dynamic_pointer_cast<JStaticMesh>(mesh);
+	if (!temp) {
+#if defined(_DEBUG) || defined(DEBUG)
+		spdlog::error("{0} StaticMeshObject에서 잘못된 SetStaticMesh를 호출했습니다.", m_name.c_str());
+#endif
+		return;
+	}
+	m_StaticMesh = temp;
 }

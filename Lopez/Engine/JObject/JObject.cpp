@@ -1,14 +1,14 @@
 ﻿#include "JObject.h"
 
-JObject::JObject(XMFLOAT4X4* WorldMatrixByScene, const char* name)
-	: m_WorldTransform{ WorldMatrixByScene }
+JObject::JObject(std::vector<XMFLOAT4X4>& vWorld, UINT nodeIndex, const char* name)
+	: m_WorldTransform{ vWorld }
 {
 	if (name) m_name = name;
 	else m_name = "JObject";
 
-	if (!WorldMatrixByScene) {
+	if (nodeIndex >= m_WorldTransform.size()) {
 #if defined(_DEBUG) || defined(DEBUG)
-		spdlog::error("'{0}' Not Aquired WorldMatrixByScene", m_name);
+		spdlog::error("'{0}' Invalid NodeIndex", m_name);
 #endif
 		assert(0);
 	}
@@ -25,10 +25,10 @@ void JObject::Update(float elapsedTime, XMFLOAT4X4* parent)
 	if (parent) parentMatrix = XMLoadFloat4x4(parent);
 	else parentMatrix = XMMatrixIdentity();
 
-	XMStoreFloat4x4(m_WorldTransform, XMLoadFloat4x4(&m_LocalTransform) * parentMatrix);
+	XMStoreFloat4x4(&m_WorldTransform[m_NodeIndex], XMLoadFloat4x4(&m_LocalTransform) * parentMatrix);
 
 	for (auto& child : m_LeafObjects) {
-		child->Update(elapsedTime, m_WorldTransform);
+		child->Update(elapsedTime, &m_WorldTransform[m_NodeIndex]);
 	}
 }
 

@@ -1,7 +1,7 @@
 ﻿#include "JCameraObject.h"
 
-JCameraObject::JCameraObject(XMFLOAT4X4* WorldMatrixByScene, const char* name)
-	: JObject(WorldMatrixByScene, name)
+JCameraObject::JCameraObject(std::vector<XMFLOAT4X4>& vWorld, UINT nodeIndex, const char* name)
+	: JObject(vWorld, nodeIndex, name)
 {
 
 }
@@ -17,7 +17,7 @@ void JCameraObject::Update(float elapsedTime, XMFLOAT4X4* parent)
 XMFLOAT4X4 JCameraObject::GetViewMatrix()
 {
 	// 오차가 누적될 수 있다는데 일단은 지켜보기
-	XMMATRIX world = XMLoadFloat4x4(m_WorldTransform);
+	XMMATRIX world = XMLoadFloat4x4(&m_WorldTransform[m_NodeIndex]);
 	XMVECTOR UP = XMVector3Normalize(world.r[1]);
 	XMVECTOR LOOK = XMVector3Normalize(world.r[2]);
 	XMVECTOR EYE = world.r[3];

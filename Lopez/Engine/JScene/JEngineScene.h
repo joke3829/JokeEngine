@@ -1,7 +1,6 @@
 ﻿#pragma once
-#include "stdafx.h"
+#include "Engine/JObject/JObject.h"
 
-class JObject;
 class JContentManager;
 
 
