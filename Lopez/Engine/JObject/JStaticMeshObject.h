@@ -15,7 +15,7 @@ public:
 	void Render();
 
 public:
-	void AddMaterial(std::shared_ptr<JMaterial> material, int index = -1);
+	void AddMaterial(std::shared_ptr<JContent> material, int index = -1);
 
 	void SetStaticMesh(std::shared_ptr<JContent> mesh);
 protected:

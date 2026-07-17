@@ -1,9 +1,18 @@
 ﻿#include "JCameraObject.h"
+#include "Engine/JokeEngineConfig.h"
 
 JCameraObject::JCameraObject(std::vector<XMFLOAT4X4>& vWorld, UINT nodeIndex, const char* name)
 	: JObject(vWorld, nodeIndex, name)
 {
-
+	auto* o = JEngineDefaultGlobalConfig::GetInstance()->GetConfigFactor();
+	float width = static_cast<float>(o->WindowsWidth);
+	float height = static_cast<float>(o->WindowsHeight);
+	// 뷰포트
+	SetViewport(0.f, 0.f, width, height, 0.f, 1.f);
+	
+	// projection Factor
+	float aspect = width / height;
+	SetProjFactorPerspective(60.f, aspect, 0.01f, 1000.0f);
 }
 
 void JCameraObject::Update(float elapsedTime, XMFLOAT4X4* parent)

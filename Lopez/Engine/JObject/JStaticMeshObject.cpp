@@ -47,13 +47,20 @@ void JStaticMeshObject::Render()
 	}
 }
 
-void JStaticMeshObject::AddMaterial(std::shared_ptr<JMaterial> material, int index)
+void JStaticMeshObject::AddMaterial(std::shared_ptr<JContent> material, int index)
 {
+	std::shared_ptr<JMaterial> temp = std::dynamic_pointer_cast<JMaterial>(material);
+	if (!temp) {
+#if defined(_DEBUG) || defined(DEBUG)
+		spdlog::error("{0} StaticMeshObject에서 잘못된 AddMaterial를 호출했습니다.", m_name.c_str());
+#endif
+		return;
+	}
 	if (index >= 0 && m_Materials.size() > index) {
-		m_Materials[index] = material;
+		m_Materials[index] = temp;
 	}
 	else {
-		m_Materials.emplace_back(material);
+		m_Materials.emplace_back(temp);
 	}
 }
 

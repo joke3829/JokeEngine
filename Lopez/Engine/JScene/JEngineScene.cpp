@@ -14,8 +14,22 @@ void JEngineScene::BuildDefaultScene()
 			static_cast<UINT>(m_WorldMatrices.size() - 1),
 			"MyBox"
 		);
+		meshobject->AddMaterial(contents["DefaultMaterial"]);
 		meshobject->SetShaderName("그거");
 		meshobject->SetStaticMesh(contents["DefaultCube"]);
+	}
+
+	{	// Camera 추가 예제
+		m_WorldMatrices.emplace_back();
+		std::shared_ptr<JCameraObject> camera = std::make_shared<JCameraObject>(
+			m_WorldMatrices,
+			static_cast<UINT>(m_WorldMatrices.size() - 1),
+			"MyCamera"
+		);
+
+		camera->SetRotation(45.f, 45.f, 0.f);
+		camera->SetPosition(-30.f, 30.f, -30.f);
+		m_CameraIndex.emplace_back(static_cast<UINT>(m_WorldMatrices.size() - 1));
 	}
 
 

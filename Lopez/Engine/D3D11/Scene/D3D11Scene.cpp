@@ -154,4 +154,33 @@ void JEngineDefaultSceneDX11::SetDXBuffer(UINT parameter, JShaderStage stage, UI
 void JEngineDefaultSceneDX11::UpdateBuffers(UINT currentBufferIndex)
 {
 	JEngineSceneDX11::UpdateBuffers(currentBufferIndex);
+
+	auto* device = JD3D11GlobalFactor::GetInstance()->GetDevice();
+	auto* context = JD3D11GlobalFactor::GetInstance()->GetDeviceContext();
+	UINT& ci = currentBufferIndex;
+	if (!m_SceneConstantBuffer[ci]) {
+		D3D11_BUFFER_DESC desc{
+			.ByteWidth = Align(sizeof(DefaultSceneConstant), 16),
+			.Usage = D3D11_USAGE_DYNAMIC,
+			.BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+			.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,
+		};
+		ThrowIfFailed(device->CreateBuffer(&desc, nullptr, m_SceneConstantBuffer[ci].ReleaseAndGetAddressOf()));
+	}
+
+	// Scene Constant Update
+	D3D11_MAPPED_SUBRESOURCE data{};
+	context->Map(m_SceneConstantBuffer[ci].Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
+	memcpy(data.pData, &m_SceneConstant, sizeof(DefaultSceneConstant));
+	context->Unmap(m_SceneConstantBuffer[ci].Get(), 0);
+
+	// 카메라에 대한 뷰포트를 지금 여기서 설정할까
+	// 이게 이 씬은 멀티 뷰포트를 상정하지 않음
+
+	std::vector<D3D11_VIEWPORT> viewports{};
+	for (auto& camera : m_CameraIndex) {
+
+	}
+
+	context->RSSetViewports(1, )
 }
