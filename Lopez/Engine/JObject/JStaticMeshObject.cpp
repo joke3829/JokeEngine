@@ -45,6 +45,9 @@ void JStaticMeshObject::Render()
 		m_Materials[i]->SetDXBuffer(0, JS_PS);
 		m_StaticMesh->Render(i);
 	}
+
+	// 이거 애매함, Shader가 가 이 메시를 콕 집고 있을거기에 이것만 호출해야함,
+	//JObject::Render();
 }
 
 void JStaticMeshObject::AddMaterial(std::shared_ptr<JContent> material, int index)

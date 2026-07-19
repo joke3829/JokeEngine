@@ -92,15 +92,8 @@ void JEngineSceneDX11::UpdateBuffers(UINT currentBufferIndex)
 	}
 
 
-	for (UINT i : m_CameraIndex) {
-		std::shared_ptr<JCameraObject> p = std::dynamic_pointer_cast<JCameraObject>(m_Objects[i]);
-#if defined(_DEBUG) || defined(DEBUG)
-		if (!p) {
-			spdlog::error("{0}에서 잘못된 JCameraObject를 호출했습니다.", m_name.c_str());
-			assert(0);
-		}
-#endif
-		m_CameraMatrices[i] = p->GetViewProjMatrix();
+	for (UINT i = 0; i < m_CameraMatrices.size(); ++i) {
+		m_CameraMatrices[i] = m_Cameras[i]->GetViewMatrix();
 	}
 
 	// 버퍼 업데이트
@@ -177,10 +170,26 @@ void JEngineDefaultSceneDX11::UpdateBuffers(UINT currentBufferIndex)
 	// 카메라에 대한 뷰포트를 지금 여기서 설정할까
 	// 이게 이 씬은 멀티 뷰포트를 상정하지 않음
 
-	std::vector<D3D11_VIEWPORT> viewports{};
-	for (auto& camera : m_CameraIndex) {
+	std::vector<D3D11_VIEWPORT> viewports(m_Cameras.size(), {});
+	std::vector<D3D11_RECT> scissorrect(m_Cameras.size(), {});
+	for (UINT i = 0; i < viewports.size(); ++i) {
+		auto& v = m_Cameras[i]->GetViewport();
+		D3D11_VIEWPORT viewport = {
+			.TopLeftX = v.TopLeftX,
+			.TopLeftY = v.TopLeftY,
+			.Width = v.Width,
+			.Height = v.Height,
+			.MinDepth = v.MinDepth,
+			.MaxDepth = v.MaxDepth
+		};
+		viewports[i] = viewport;
 
+		scissorrect[i].left = v.TopLeftX;
+		scissorrect[i].top = v.TopLeftY;
+		scissorrect[i].right = v.TopLeftX + v.Width;
+		scissorrect[i].bottom = v.TopLeftY + v.Height;
 	}
 
-	context->RSSetViewports(1, )
+	context->RSSetViewports(viewports.size(), viewports.data());
+	context->RSSetScissorRects(scissorrect.size(), scissorrect.data());
 }

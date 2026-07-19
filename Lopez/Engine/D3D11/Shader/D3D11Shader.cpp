@@ -67,3 +67,54 @@ void JEngineShaderDX11::RenderObjects(void** rtv, UINT numRTV, void* dsv)
 	for (auto& object : m_Objects)
 		object->Render();
 }
+
+void JEngineShaderDX11::CreateInputLayout(bool skinning)
+{
+	auto* device = JD3D11GlobalFactor::GetInstance()->GetDevice();
+
+	ComPtr<ID3DBlob> vs{};
+
+
+	if (skinning) {
+		
+	}
+	else {
+		vs = CompileHLSL(L"Shaders/DefaultShader.hlsl", nullptr, "DefaultVS", "vs_5_0");
+
+		D3D11_INPUT_ELEMENT_DESC desc[] = {
+			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 1, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 2, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{"TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 3, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{"BITANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 4, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{"TEXCOORD", 0, DXGI_FORMAT_R32G32B32_FLOAT, 5, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{"TEXCOORD", 1, DXGI_FORMAT_R32G32B32_FLOAT, 6, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
+		};
+		ThrowIfFailed(device->CreateInputLayout(desc, std::size(desc), vs->GetBufferPointer(), vs->GetBufferSize(), m_InputLayout.ReleaseAndGetAddressOf()));
+	}
+}
+
+// ================================================================================
+
+JEngineDefaultShaderDX11::JEngineDefaultShaderDX11()
+{
+	auto* device = JD3D11GlobalFactor::GetInstance()->GetDevice();
+	// InputLayout
+	CreateInputLayout(false);
+
+	// VS
+	{
+		ComPtr<ID3DBlob> vs{};
+		vs = CompileHLSL(L"Shaders/DefaultShader.hlsl", nullptr, "DefaultVS", "vs_5_0");
+
+		ThrowIfFailed(device->CreateVertexShader(vs->GetBufferPointer(), vs->GetBufferSize(), nullptr, m_VS.ReleaseAndGetAddressOf()));
+	}
+
+	// PS
+	{
+		ComPtr<ID3DBlob> ps{};
+		ps = CompileHLSL(L"Shaders/DefaultShader.hlsl", nullptr, "DefaultPS", "ps_5_0");
+
+		ThrowIfFailed(device->CreateVertexShader(vs->GetBufferPointer(), vs->GetBufferSize(), nullptr, m_VS.ReleaseAndGetAddressOf()));
+	}
+}

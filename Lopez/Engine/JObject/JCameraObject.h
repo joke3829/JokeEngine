@@ -37,8 +37,6 @@ public:
 	JCameraObject(std::vector<XMFLOAT4X4>& vWorld, UINT nodeIndex, const char* name = nullptr);
 	virtual ~JCameraObject() {}
 
-	virtual void Update(float elapsedTime, XMFLOAT4X4* parent = nullptr);
-
 public:
 	XMFLOAT4X4 GetViewMatrix();
 	XMFLOAT4X4 GetProjMatrix();

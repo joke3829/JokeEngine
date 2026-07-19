@@ -15,8 +15,10 @@ void JEngineScene::BuildDefaultScene()
 			"MyBox"
 		);
 		meshobject->AddMaterial(contents["DefaultMaterial"]);
-		meshobject->SetShaderName("그거");
+		meshobject->SetShaderName("DefaultShader");
 		meshobject->SetStaticMesh(contents["DefaultCube"]);
+
+		m_Objects.emplace_back(meshobject);
 	}
 
 	{	// Camera 추가 예제
@@ -29,7 +31,9 @@ void JEngineScene::BuildDefaultScene()
 
 		camera->SetRotation(45.f, 45.f, 0.f);
 		camera->SetPosition(-30.f, 30.f, -30.f);
-		m_CameraIndex.emplace_back(static_cast<UINT>(m_WorldMatrices.size() - 1));
+		m_Cameras.emplace_back(camera);
+
+		m_Objects.emplace_back(camera);
 	}
 
 

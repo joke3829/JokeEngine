@@ -15,13 +15,6 @@ JCameraObject::JCameraObject(std::vector<XMFLOAT4X4>& vWorld, UINT nodeIndex, co
 	SetProjFactorPerspective(60.f, aspect, 0.01f, 1000.0f);
 }
 
-void JCameraObject::Update(float elapsedTime, XMFLOAT4X4* parent)
-{
-	// 카메라 개인 로직 
-
-	JObject::Update(elapsedTime, parent);
-}
-
 
 XMFLOAT4X4 JCameraObject::GetViewMatrix()
 {

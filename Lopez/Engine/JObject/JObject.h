@@ -10,8 +10,7 @@ public:
 
 	virtual void Update(float elapsedTime, XMFLOAT4X4* parent = nullptr);
 
-	virtual void Render() {}
-	virtual void Render(void* command) {}	// command -> 11: DeviceContext, 12: CommandList
+	virtual void Render() {};
 
 	// 렌더링이 필요하면 반드시 셰이더 이름을 작성
 	void SetShaderName(const char* name) { m_ShaderName = name; }

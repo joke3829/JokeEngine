@@ -16,11 +16,13 @@ JMaterialDX11::JMaterialDX11(const char* name)
 	.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,
 	};
 	
-	D3D11_SUBRESOURCE_DATA data{
-		.pSysMem = &m_SimpleMaterial
-	};
 
-	ThrowIfFailed(device->CreateBuffer(&desc, &data, m_MaterialConstantBuffer.GetAddressOf()));
+	ThrowIfFailed(device->CreateBuffer(&desc, nullptr, m_MaterialConstantBuffer.GetAddressOf()));
+}
+
+void JMaterialDX11::Update()
+{
+
 }
 
 // 이거도 확장할 수 있을 것 이대로는 하나만 넣을 수 있음

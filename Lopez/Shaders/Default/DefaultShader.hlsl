@@ -45,12 +45,22 @@ cbuffer cbSceneConstant : register(b1)
 }
 
 
-void DefaultVS(DefaultVSInput input)
+DefaultPSInput DefaultVS(DefaultVSInput input)
 {
     DefaultPSInput output;
     uint nodeindex = g_MeshConstant.nodeIndex;
     uint cameraindex = g_SceneConstant.camera;
     
     output.PosW = mul(float4(input.Position, 1.f), g_WorldMatrices[nodeindex]).xyz;
-
+    output.Position = mul(float4(output.PosW, 1.f), g_Cameras[cameraindex]);
+    output.Color = input.Color;
+    output.Normal = mul(input.Normal, (float3x3) g_WorldMatrices[nodeindex]);
+    output.Tangent = mul(input.Tangent, (float3x3) g_WorldMatrices[nodeindex]);
+    output.BiTangent = mul(input.BiTangent, (float3x3) g_WorldMatrices[nodeindex]);
+    output.TexCoord0 = input.TexCoord0;
+    output.TexCoord1 = input.TexCoord1;
+    
+    return output;
 }
+
+

@@ -53,7 +53,7 @@ void JokeEngineDX11::CreateSwapChain()
 	.Height = config->WindowsHeight,
 	.Format = DXGI_FORMAT_R8G8B8A8_UNORM,
 	.SampleDesc = {.Count = 1},
-	.BufferCount = 2,
+	.BufferCount = g_NumRenderTarget,
 	.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD,
 	.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING | DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH
 	};
@@ -83,9 +83,8 @@ void JokeEngineDX11::Render()
 	// update section
 	// 
 	// float elapsedTime = Timer -> Tick();
-	// Scene->Update(elapsedTime);
-	// Renderer->AdvanceNextFrame();
-	// Renderer->RenderFrame()
+	// Scene->Update(elapsedTime);   CPU
+	// Renderer->RenderFrame()			GPU(currnet그거) 이 안에서 FrameIndex도 넘어감
 	
 	
 	ComPtr<ID3D11Texture2D> buffer;

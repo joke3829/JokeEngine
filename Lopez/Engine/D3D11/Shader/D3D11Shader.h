@@ -6,13 +6,18 @@
 
 class JEngineShaderDX11 : public JEngineShader {
 public:
-	virtual void Initialize() {}
+	JEngineShaderDX11() : JEngineShader() {}
+
 	void SetShader();
 	void SetSamplers(UINT parameter, JShaderStage stage = JS_NONE);
 
 	void RenderObjects() {};
 	void RenderObjects(void** rtv, UINT numRTV, void* dsv = nullptr);
 
+
+protected:
+	
+	virtual void CreateInputLayout(bool skinning);		
 
 protected:
 
@@ -34,6 +39,10 @@ protected:
 	std::vector<ID3D11SamplerState*>		m_Samplers{};
 };
 
-// =============================================================
+// Default =============================================================
 
 
+class JEngineDefaultShaderDX11 : public JEngineShaderDX11 {
+public:
+	JEngineDefaultShaderDX11();
+};

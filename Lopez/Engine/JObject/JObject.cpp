@@ -32,6 +32,12 @@ void JObject::Update(float elapsedTime, XMFLOAT4X4* parent)
 	}
 }
 
+//void JObject::Render()
+//{
+//	for (auto& child : m_LeafObjects)
+//		child->Render();
+//}
+
 void JObject::MakeLocalTransform()
 {
 	XMVECTOR S, R, T;

@@ -2,10 +2,16 @@
 
 #include "Engine/JObject/JObject.h"
 
+
+ComPtr<ID3DBlob> CompileHLSL(LPCWCHAR pFileName, D3D_SHADER_MACRO* pDefines, LPCSTR pEntryPoint, LPCSTR pTarget);
+
+
+
 // Shader는 자신만의 RenderTarget을 가질 수도 있다.
 class JEngineShader : public JCommon {
 public:
-	virtual void Initialize() {}
+	JEngineShader() = default;
+
 	virtual void SetShader() {}
 	virtual void SetSamplers(UINT parameter, JShaderStage stage = JS_NONE) {}
 

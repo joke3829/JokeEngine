@@ -8,6 +8,7 @@ void JContentManagerDX11::ReadyDefaultContent()
 
 	{
 		std::shared_ptr<JMaterialDX11> material = std::make_shared<JMaterialDX11>("DefaultMaterial");
+		
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(material->GetName(), material);
 #if defined(_DEBUG) || defined(DEBUG)
 		if(not inserted) ShowInsertedFailed(material->GetName());

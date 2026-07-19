@@ -11,8 +11,10 @@ public:
 	// 11: slot, 12: root parameter, 12는 parameter만 채우면 된다.
 	virtual void SetDXBuffer(UINT parameter, JShaderStage stage = JS_NONE) {}
 
-	virtual void Render() {}
-	virtual void Render(void* command) {}
+	virtual void Update(float elapsedTime) {}
+	virtual void UpdateBuffer(UINT currentFrameIndex) {}
+
+	virtual void Render(UINT currentFrameIndex) {}
 
 protected:
 	// filepath로 처리하는거 안될 수 있다.(수정 필요)

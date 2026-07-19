@@ -76,7 +76,7 @@ inline UINT Align(UINT size, UINT multiple)
 	return (size + (multiple - 1)) & ~(multiple - 1);
 }
 
-// DX11 상수, 열거자 =======================================================================
+// DX 상수, 열거자 =======================================================================
 
 enum JShaderStage : unsigned char {
 	JS_NONE,
@@ -87,3 +87,6 @@ enum JShaderStage : unsigned char {
 	JS_DS,
 	JS_CS
 };
+
+// 렌더 타겟 수 - DX12의 경우 fence를 2개를 이용해 렌더링 시간 손해 없---
+constexpr UINT									g_NumRenderTarget = 2;
