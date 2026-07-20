@@ -32,17 +32,27 @@ JStaticMeshObject::~JStaticMeshObject()
 
 }
 
-void JStaticMeshObject::Render()
+void JStaticMeshObject::Update(float elapsedTime, XMFLOAT4X4* parent)
+{
+	m_MeshCB->Update(elapsedTime);
+	for (auto& p : m_Materials)
+		p->Update(elapsedTime);
+
+	JObject::Update(elapsedTime, parent);
+}
+
+void JStaticMeshObject::Render(UINT currentFrameIndex)
 {
 	if (!m_StaticMesh)
 		return;
-	m_MeshCB->Update();
-	m_MeshCB->SetDXBuffer(0, JS_VS);
+	m_MeshCB->UpdateBuffer(currentFrameIndex);
+	m_MeshCB->SetDXBuffer(currentFrameIndex, 0, JS_VS);
 
 	auto& indices = m_StaticMesh->GetIndices();
 
 	for (size_t i = 0; i < indices.size(); ++i) {
-		m_Materials[i]->SetDXBuffer(0, JS_PS);
+		m_Materials[i]->UpdateBuffer(currentFrameIndex);
+		m_Materials[i]->SetDXBuffer(currentFrameIndex, 0, JS_PS);
 		m_StaticMesh->Render(i);
 	}
 

@@ -3,6 +3,12 @@
 #include "Engine/JObject/JCameraObject.h"
 #include "Engine/JObject/JStaticMeshObject.h"
 
+void JEngineScene::Update(float elapsedTime)
+{
+	for (auto& object : m_Objects)
+		object->Update(elapsedTime);
+}
+
 void JEngineScene::BuildDefaultScene()
 {
 	auto& contents = m_ContentManager->GetContentTable();

@@ -12,7 +12,9 @@ public:
 	JStaticMeshObject(std::vector<XMFLOAT4X4>& vWorld, UINT nodeIndex, const char* name = nullptr);
 	~JStaticMeshObject();
 
-	void Render();
+	void Update(float elapsedTime, XMFLOAT4X4* parent = nullptr);
+
+	void Render(UINT currentFrameIndex);
 
 public:
 	void AddMaterial(std::shared_ptr<JContent> material, int index = -1);

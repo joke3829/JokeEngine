@@ -55,7 +55,7 @@ void JEngineShaderDX11::SetSamplers(UINT parameter, JShaderStage stage)
 }
 
 
-void JEngineShaderDX11::RenderObjects(void** rtv, UINT numRTV, void* dsv)
+void JEngineShaderDX11::RenderObjects(UINT currentFrameIndex, void** rtv, UINT numRTV, void* dsv)
 {
 	auto* context = JD3D11GlobalFactor::GetInstance()->GetDeviceContext();
 	ID3D11RenderTargetView** drtv = reinterpret_cast<ID3D11RenderTargetView**>(rtv);
@@ -65,7 +65,7 @@ void JEngineShaderDX11::RenderObjects(void** rtv, UINT numRTV, void* dsv)
 	context->OMSetRenderTargets(numRTV, drtv, ddsv);
 
 	for (auto& object : m_Objects)
-		object->Render();
+		object->Render(currentFrameIndex);
 }
 
 void JEngineShaderDX11::CreateInputLayout(bool skinning)
@@ -115,6 +115,6 @@ JEngineDefaultShaderDX11::JEngineDefaultShaderDX11()
 		ComPtr<ID3DBlob> ps{};
 		ps = CompileHLSL(L"Shaders/DefaultShader.hlsl", nullptr, "DefaultPS", "ps_5_0");
 
-		ThrowIfFailed(device->CreateVertexShader(vs->GetBufferPointer(), vs->GetBufferSize(), nullptr, m_VS.ReleaseAndGetAddressOf()));
+		ThrowIfFailed(device->CreatePixelShader(ps->GetBufferPointer(), ps->GetBufferSize(), nullptr, m_PS.ReleaseAndGetAddressOf()));
 	}
 }

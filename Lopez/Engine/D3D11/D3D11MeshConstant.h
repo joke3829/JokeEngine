@@ -7,11 +7,12 @@ public:
 	JMeshConstantDX11();
 	JMeshConstantDX11(CB_Mesh cb);
 
-	void Update();
-	void SetDXBuffer(UINT parameter, JShaderStage stage);
+	void Update(float elapsedTime) {}
+	void UpdateBuffer(UINT currentFrameIndex);
+	void SetDXBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage);
 
 protected:
 	void BufferReady();
 
-	ComPtr<ID3D11Buffer>		m_CBBuffer{};
+	ComPtr<ID3D11Buffer>		m_CBBuffer[g_NumRenderTarget]{};
 };

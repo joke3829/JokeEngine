@@ -13,39 +13,39 @@ JMeshConstantDX11::JMeshConstantDX11(CB_Mesh cb)
 	BufferReady();
 }
 
-void JMeshConstantDX11::Update()
+void JMeshConstantDX11::UpdateBuffer(UINT currentFrameIndex)
 {
-	if (m_Dirty) {
+	if (m_Dirty[currentFrameIndex]) {
 		auto* context = JD3D11GlobalFactor::GetInstance()->GetDeviceContext();
 		D3D11_MAPPED_SUBRESOURCE mapped{};
-		context->Map(m_CBBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+		context->Map(m_CBBuffer[currentFrameIndex].Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
 		memcpy(mapped.pData, &m_CBMesh, sizeof(CB_Mesh));
-		context->Unmap(m_CBBuffer.Get(), 0);
+		context->Unmap(m_CBBuffer[currentFrameIndex].Get(), 0);
 	}
 }
 
-void JMeshConstantDX11::SetDXBuffer(UINT parameter, JShaderStage stage)
+void JMeshConstantDX11::SetDXBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage)
 {
 	auto* context = JD3D11GlobalFactor::GetInstance()->GetDeviceContext();
 
 	switch (stage) {
 	case JS_VS:
-		context->VSSetConstantBuffers(parameter, 1, m_CBBuffer.GetAddressOf());
+		context->VSSetConstantBuffers(parameter, 1, m_CBBuffer[currentFrameIndex].GetAddressOf());
 		break;
 	case JS_PS:
-		context->PSSetConstantBuffers(parameter, 1, m_CBBuffer.GetAddressOf());
+		context->PSSetConstantBuffers(parameter, 1, m_CBBuffer[currentFrameIndex].GetAddressOf());
 		break;
 	case JS_GS:
-		context->GSSetConstantBuffers(parameter, 1, m_CBBuffer.GetAddressOf());
+		context->GSSetConstantBuffers(parameter, 1, m_CBBuffer[currentFrameIndex].GetAddressOf());
 		break;
 	case JS_HS:
-		context->HSSetConstantBuffers(parameter, 1, m_CBBuffer.GetAddressOf());
+		context->HSSetConstantBuffers(parameter, 1, m_CBBuffer[currentFrameIndex].GetAddressOf());
 		break;
 	case JS_DS:
-		context->DSSetConstantBuffers(parameter, 1, m_CBBuffer.GetAddressOf());
+		context->DSSetConstantBuffers(parameter, 1, m_CBBuffer[currentFrameIndex].GetAddressOf());
 		break;
 	case JS_CS:
-		context->CSSetConstantBuffers(parameter, 1, m_CBBuffer.GetAddressOf());
+		context->CSSetConstantBuffers(parameter, 1, m_CBBuffer[currentFrameIndex].GetAddressOf());
 		break;
 	default:
 #if defined(_DEBUG) || defined(DEBUG)
@@ -65,7 +65,8 @@ void JMeshConstantDX11::BufferReady()
 		.BindFlags = D3D11_BIND_CONSTANT_BUFFER,
 		.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,
 	};
-
-	ThrowIfFailed(device->CreateBuffer(&desc, nullptr, m_CBBuffer.ReleaseAndGetAddressOf()));
-	m_Dirty = true;
+	for (int i = 0; i < g_NumRenderTarget; ++i) {
+		ThrowIfFailed(device->CreateBuffer(&desc, nullptr, m_CBBuffer[i].ReleaseAndGetAddressOf()));
+		m_Dirty[i] = true;
+	}
 }

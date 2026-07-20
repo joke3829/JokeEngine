@@ -16,39 +16,59 @@ JMaterialDX11::JMaterialDX11(const char* name)
 	.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,
 	};
 	
-
-	ThrowIfFailed(device->CreateBuffer(&desc, nullptr, m_MaterialConstantBuffer.GetAddressOf()));
+	for(UINT i = 0 ; i < g_NumRenderTarget; ++i)
+		ThrowIfFailed(device->CreateBuffer(&desc, nullptr, m_MaterialConstantBuffer[i].GetAddressOf()));
 }
 
-void JMaterialDX11::Update()
+void JMaterialDX11::UpdateBuffer(UINT currentFrameIndex)
 {
+	auto* context = JD3D11GlobalFactor::GetInstance()->GetDeviceContext();
+	if (not m_MaterialConstantBuffer[currentFrameIndex]) {
+		auto* device = JD3D11GlobalFactor::GetInstance()->GetDevice();
 
+
+		// Usage, BindFlag 변화 고려
+		D3D11_BUFFER_DESC desc{
+		.ByteWidth = Align(sizeof(m_SimpleMaterial), 16),
+		.Usage = D3D11_USAGE_DYNAMIC,
+		.BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+		.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,
+		};
+
+		ThrowIfFailed(device->CreateBuffer(&desc, nullptr, m_MaterialConstantBuffer[currentFrameIndex].GetAddressOf()));
+	}
+
+	D3D11_MAPPED_SUBRESOURCE data{};
+	context->Map(m_MaterialConstantBuffer[currentFrameIndex].Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
+	memcpy(data.pData, &m_SimpleMaterial, sizeof(m_SimpleMaterial));
+	context->Unmap(m_MaterialConstantBuffer[currentFrameIndex].Get(), 0);
 }
 
 // 이거도 확장할 수 있을 것 이대로는 하나만 넣을 수 있음
-void JMaterialDX11::SetDXBuffer(UINT parameter, JShaderStage stage)
+void JMaterialDX11::SetDXBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage)
 {
 	auto* gFactor = JD3D11GlobalFactor::GetInstance();
 	auto* context = gFactor->GetDeviceContext();
+	auto& ci = currentFrameIndex;
 
 	switch (stage) {
 	case JS_VS:
-		context->VSSetConstantBuffers(parameter, 1, m_MaterialConstantBuffer.GetAddressOf());
+		context->VSSetConstantBuffers(parameter, 1, m_MaterialConstantBuffer[ci].GetAddressOf());
 		break;
 	case JS_PS:
-		context->PSSetConstantBuffers(parameter, 1, m_MaterialConstantBuffer.GetAddressOf());
+		context->PSSetConstantBuffers(parameter, 1, m_MaterialConstantBuffer[ci].GetAddressOf());
 		break;
 	case JS_GS:
-		context->GSSetConstantBuffers(parameter, 1, m_MaterialConstantBuffer.GetAddressOf());
+		context->GSSetConstantBuffers(parameter, 1, m_MaterialConstantBuffer[ci].GetAddressOf());
 		break;
 	case JS_HS:
-		context->HSSetConstantBuffers(parameter, 1, m_MaterialConstantBuffer.GetAddressOf());
+		context->HSSetConstantBuffers(parameter, 1, m_MaterialConstantBuffer[ci].GetAddressOf());
 		break;
 	case JS_DS:
-		context->DSSetConstantBuffers(parameter, 1, m_MaterialConstantBuffer.GetAddressOf());
+		context->DSSetConstantBuffers(parameter, 1, m_MaterialConstantBuffer[ci].GetAddressOf());
 		break;
 	case JS_CS:
-		context->CSSetConstantBuffers(parameter, 1, m_MaterialConstantBuffer.GetAddressOf());
+		context->CSSetConstantBuffers(parameter, 1, m_MaterialConstantBuffer[ci].GetAddressOf());
 		break;
 	default:
 #if defined(_DEBUG) || defined(DEBUG)

@@ -25,9 +25,10 @@ public:
 	// 바꾸면 Dirty를 업데이트 하는 그런거 있으면 좋음
 
 	// 상수버퍼 값 최신화(Map)
-	virtual void Update() {};
-	virtual void SetDXBuffer(UINT parameter, JShaderStage stage) {};
+	virtual void Update(float elapsedTime) {};
+	virtual void UpdateBuffer(UINT currentFrameIndex) {}
+	virtual void SetDXBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage) {};
 
 	CB_Mesh m_CBMesh{};		// public으로 그냥 뽑아 쓰자
-	bool	m_Dirty{};		// 항상 업데이트하지마라
+	bool	m_Dirty[g_NumRenderTarget]{};		// 항상 업데이트하지마라
 };

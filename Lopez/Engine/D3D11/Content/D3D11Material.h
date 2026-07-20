@@ -16,11 +16,12 @@ class JMaterialDX11 final : public JMaterial {
 public:
 	JMaterialDX11(const char* name = nullptr);
 
-	void Update();
-	void SetDXBuffer(UINT parameter, JShaderStage stage = JS_NONE);
+	void Update(float elapsedTime) {}
+	void UpdateBuffer(UINT currentFrameIndex);
+	void SetDXBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage = JS_NONE);
 
 	cbSimpleMaterial& GetMaterial() { return m_SimpleMaterial; }
 private:
-	ComPtr<ID3D11Buffer>						m_MaterialConstantBuffer[g_{};
+	ComPtr<ID3D11Buffer>						m_MaterialConstantBuffer[g_NumRenderTarget]{};
 	cbSimpleMaterial							m_SimpleMaterial{};
 };

@@ -11,7 +11,7 @@ public:
 	JStaticMesh(XMFLOAT3 center = XMFLOAT3(0.f, 0.f, 0.f), float width = 1.f, float height = 1.f, bool bViewport = false, const char* name = nullptr);
 
 	// 11: slot, 12: root parameter, 12는 parameter만 채우면 된다.
-	virtual void SetDXBuffer(UINT parameter, JShaderStage stage = JS_NONE) {}
+	virtual void SetDXBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage = JS_NONE) {}
 
 	virtual void Render() {}
 	virtual void Render(void* command) {}

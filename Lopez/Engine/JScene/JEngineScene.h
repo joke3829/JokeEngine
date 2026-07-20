@@ -9,6 +9,8 @@ class JCameraObject;
 class JEngineScene : public JCommon {
 public:
 	virtual void SetDXBuffer(UINT parameter, JShaderStage stage, UINT currentBufferIndex) {}
+
+	void Update(float elapsedTime);
 	virtual void UpdateBuffers(UINT currentBufferIndex) {}
 	
 

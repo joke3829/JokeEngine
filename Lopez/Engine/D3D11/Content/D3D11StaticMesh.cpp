@@ -83,6 +83,7 @@ void JStaticMeshDX11::Render()
 	}
 }
 
+// parameter 'i' is submesh index
 void JStaticMeshDX11::Render(UINT i)
 {
 	auto* gFactor = JD3D11GlobalFactor::GetInstance();

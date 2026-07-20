@@ -11,8 +11,8 @@ public:
 	void SetShader();
 	void SetSamplers(UINT parameter, JShaderStage stage = JS_NONE);
 
-	void RenderObjects() {};
-	void RenderObjects(void** rtv, UINT numRTV, void* dsv = nullptr);
+	void RenderObjects(UINT currentFrameIndex) {};
+	void RenderObjects(UINT currentFrameIndex, void** rtv, UINT numRTV, void* dsv = nullptr);
 
 
 protected:
