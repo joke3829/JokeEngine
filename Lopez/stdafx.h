@@ -76,6 +76,14 @@ inline UINT Align(UINT size, UINT multiple)
 	return (size + (multiple - 1)) & ~(multiple - 1);
 }
 
+
+#if defined(_DEBUG) || defined(DEBUG)
+inline void ShowInsertedFailed(const std::string& name)
+{
+	spdlog::warn("{0} (이)가 이미 ContentManager에 있어 추가에 실패했습니다.", name.c_str());
+}
+#endif
+
 // DX 상수, 열거자 =======================================================================
 
 enum JShaderStage : unsigned char {

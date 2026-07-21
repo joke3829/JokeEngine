@@ -6,7 +6,7 @@
 
 class JEngineShaderDX11 : public JEngineShader {
 public:
-	JEngineShaderDX11() : JEngineShader() {}
+	JEngineShaderDX11(const char* name = "DefaultShader") : JEngineShader(name) {}
 
 	void SetShader();
 	void SetSamplers(UINT parameter, JShaderStage stage = JS_NONE);
@@ -44,5 +44,5 @@ protected:
 
 class JEngineDefaultShaderDX11 : public JEngineShaderDX11 {
 public:
-	JEngineDefaultShaderDX11();
+	JEngineDefaultShaderDX11(const char* name = "DefaultShader");
 };

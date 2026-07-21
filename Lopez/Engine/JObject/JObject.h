@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include "Engine/JCommon.h"
 
+class JEngineShader;
+
 class JObject : public JCommon {
 public:
 	JObject(std::vector<XMFLOAT4X4>& vWorld, UINT nodeIndex, const char* name = nullptr);
@@ -30,6 +32,8 @@ public:
 	void SetScale(float x, float y, float z) { m_Scale = XMFLOAT3(x, y, z); }
 	void SetScale(XMFLOAT3 scale) { m_Scale = scale; }
 	const XMFLOAT3& GetScale() { return m_Scale; }
+
+	std::vector<std::shared_ptr<JObject>>& GetLeafObjects() { return m_LeafObjects; }
 
 protected:
 	void MakeLocalTransform();

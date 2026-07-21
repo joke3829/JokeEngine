@@ -2,7 +2,7 @@
 #include "Engine/D3D11/D3D11GlobalFactor.h"
 #include "Engine/JObject/JCameraObject.h"
 
-void JEngineSceneDX11::SetDXBuffer(UINT parameter, JShaderStage stage, UINT currentBufferIndex)
+void JEngineSceneDX11::SetDXBuffer(UINT currentBufferIndex, UINT parameter, JShaderStage stage)
 {
 	auto* gFactor = JD3D11GlobalFactor::GetInstance();
 	auto* context = gFactor->GetDeviceContext();
@@ -110,9 +110,9 @@ void JEngineSceneDX11::UpdateBuffers(UINT currentBufferIndex)
 // ============================================================
 
 
-void JEngineDefaultSceneDX11::SetDXBuffer(UINT parameter, JShaderStage stage, UINT currentBufferIndex)
+void JEngineDefaultSceneDX11::SetDXBuffer(UINT currentBufferIndex, UINT parameter, JShaderStage stage)
 {
-	JEngineSceneDX11::SetDXBuffer(parameter, stage, currentBufferIndex);
+	JEngineSceneDX11::SetDXBuffer(currentBufferIndex, parameter, stage);
 
 	auto* gFactor = JD3D11GlobalFactor::GetInstance();
 	auto* context = gFactor->GetDeviceContext();

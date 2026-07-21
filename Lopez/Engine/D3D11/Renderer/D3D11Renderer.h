@@ -5,12 +5,15 @@
 
 class JEngineRendererDX11 : public JEngineRenderer {
 public:
+	JEngineRendererDX11(UINT width, UINT height, const char* name = "DefaultRenderer");
 
 	void ResizeTarget(UINT width, UINT height);
 
 	void RenderFrame();
 
 	void CopyResult(void* outBuffer);
+
+	void SetScene(std::shared_ptr<JEngineScene> scene);
 
 	// 11은 Fence를 쓸 필요가 (있을 수 있지만)없기 때문에 AdvanceBufferIndex override X
 

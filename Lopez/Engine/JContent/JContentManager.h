@@ -13,9 +13,6 @@ public:
 
 	std::unordered_map<std::string, std::shared_ptr<JContent>>& GetContentTable() { return m_ContentLookupTable; }
 protected:
-#if defined(_DEBUG) || defined(DEBUG)
-	void ShowInsertedFailed(const std::string& name);
-#endif
 
 
 	std::unordered_map<std::string, std::shared_ptr<JContent>>			m_ContentLookupTable{};

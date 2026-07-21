@@ -29,8 +29,16 @@ struct DefaultPSInput
 
 struct DefaultMaterial
 {
-    
+    float4 Albedo;
+    float4 Specular;
+    float4 Ambient;
+    float4 Emissive;
 };
+
+cbuffer cbDefaultMaterial : register(b2)
+{
+    DefaultMaterial g_Material;
+}
 
 // ================================
 
@@ -63,4 +71,7 @@ DefaultPSInput DefaultVS(DefaultVSInput input)
     return output;
 }
 
+float4 DefaultPS(DefaultPSInput input) : SV_Target{
+    return g_Material.Albedo;
+}
 

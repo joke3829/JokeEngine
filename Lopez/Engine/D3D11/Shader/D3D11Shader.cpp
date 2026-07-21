@@ -96,7 +96,8 @@ void JEngineShaderDX11::CreateInputLayout(bool skinning)
 
 // ================================================================================
 
-JEngineDefaultShaderDX11::JEngineDefaultShaderDX11()
+JEngineDefaultShaderDX11::JEngineDefaultShaderDX11(const char* name)
+	: JEngineShaderDX11(name)
 {
 	auto* device = JD3D11GlobalFactor::GetInstance()->GetDevice();
 	// InputLayout

@@ -5,7 +5,7 @@
 
 class JEngineRenderer : public JCommon {
 public:
-	virtual void Initialize(UINT width, UINT height);
+	JEngineRenderer(UINT width, UINT height, const char* name = nullptr);
 
 	virtual void ResizeTarget(UINT width, UINT height);
 
@@ -15,7 +15,7 @@ public:
 
 	virtual void AdvanceBufferIndex();
 
-	void SetScene(std::shared_ptr<JEngineScene> scene) { m_Scene = scene; }
+	virtual void SetScene(std::shared_ptr<JEngineScene> scene) { m_Scene = scene; }
 protected:
 	virtual void CreateRTV_DSV(UINT width, UINT height) {}
 
@@ -27,5 +27,5 @@ protected:
 	//렌더 타겟
 
 	// 지금 그릴 버퍼
-	UINT																m_CurrentBufferIndex{};
+	UINT																m_CurrentFrameIndex{};
 };

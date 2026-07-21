@@ -8,7 +8,7 @@ class JCameraObject;
 
 class JEngineScene : public JCommon {
 public:
-	virtual void SetDXBuffer(UINT parameter, JShaderStage stage, UINT currentBufferIndex) {}
+	virtual void SetDXBuffer(UINT currentBufferIndex, UINT parameter, JShaderStage stage) {}
 
 	void Update(float elapsedTime);
 	virtual void UpdateBuffers(UINT currentBufferIndex) {}
@@ -20,7 +20,7 @@ public:
 	// DefaultScene - 불러올 Scene 파일이 없으면 이걸 불러라
 	void BuildDefaultScene();
 
-	const std::vector<std::shared_ptr<JObject>>& GetObjects() { return m_Objects; }
+	std::vector<std::shared_ptr<JObject>>& GetObjects() { return m_Objects; }
 
 protected:
 

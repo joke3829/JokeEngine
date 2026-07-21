@@ -28,13 +28,3 @@ void JContentManagerDX11::ReadyDefaultContent()
 	spdlog::info("ContentManager의 DefualtContent가 준비되었습니다.");
 #endif
 }
-
-
-
-
-#if defined(_DEBUG) || defined(DEBUG)
-void JContentManager::ShowInsertedFailed(const std::string& name)
-{
-	spdlog::warn("{0} (이)가 이미 ContentManager에 있어 추가에 실패했습니다.", name.c_str());
-}
-#endif

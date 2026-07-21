@@ -1,10 +1,12 @@
 ﻿#include "JEngineRenderer.h"
 
-void JEngineRenderer::Initialize(UINT width, UINT height)
+
+
+JEngineRenderer::JEngineRenderer(UINT width, UINT height, const char* name)
+	: JCommon(name)
 {
 	CreateRTV_DSV(width, height);
 }
-
 
 void JEngineRenderer::ResizeTarget(UINT width, UINT height)
 {
@@ -13,5 +15,5 @@ void JEngineRenderer::ResizeTarget(UINT width, UINT height)
 
 void JEngineRenderer::AdvanceBufferIndex()
 {
-	m_CurrentBufferIndex = (m_CurrentBufferIndex + 1) % g_NumRenderTarget;
+	m_CurrentFrameIndex = (m_CurrentFrameIndex + 1) % g_NumRenderTarget;
 }

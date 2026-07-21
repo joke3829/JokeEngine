@@ -1,4 +1,5 @@
 ﻿#include "JObject.h"
+#include "Engine/JShader/JEngineShader.h"
 
 JObject::JObject(std::vector<XMFLOAT4X4>& vWorld, UINT nodeIndex, const char* name)
 	: m_WorldTransform{ vWorld }

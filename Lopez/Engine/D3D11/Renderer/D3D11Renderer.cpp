@@ -1,5 +1,19 @@
 ﻿#include "D3D11Renderer.h"
 #include "Engine/D3D11/D3D11GlobalFactor.h"
+#include "Engine/D3D11/Shader/D3D11Shader.h"
+
+JEngineRendererDX11::JEngineRendererDX11(UINT width, UINT height, const char* name)
+	: JEngineRenderer(width, height, name)
+{
+	// Shader 정의
+	{
+		std::shared_ptr<JEngineDefaultShaderDX11> shader = std::make_shared<JEngineDefaultShaderDX11>("DefaultShader");
+		auto[iter, inserted] = m_PSOMap.try_emplace(shader->GetName(), shader);
+#if defined(_DEBUG) || defined(DEBUG)
+		if (not inserted)  ShowInsertedFailed(shader->GetName());
+#endif
+	}
+}
 
 void JEngineRendererDX11::ResizeTarget(UINT width, UINT height)
 {
@@ -15,12 +29,16 @@ void JEngineRendererDX11::RenderFrame()
 	auto* context = JD3D11GlobalFactor::GetInstance()->GetDeviceContext();
 
 	float clearcolor[] = { 0.f, 0.f, 0.f, 1.f };
-	context->ClearRenderTargetView(m_RenderTargetView[m_CurrentBufferIndex].Get(), clearcolor);
-	context->ClearDepthStencilView(m_DepthStencilView[m_CurrentBufferIndex].Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
+	context->ClearRenderTargetView(m_RenderTargetView[m_CurrentFrameIndex].Get(), clearcolor);
+	context->ClearDepthStencilView(m_DepthStencilView[m_CurrentFrameIndex].Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
 
-	// 파이프라인 별 렌더링 하고
+	// Scene Set
+	m_Scene->UpdateBuffers(m_CurrentFrameIndex);
+	m_Scene->SetDXBuffer(m_CurrentFrameIndex, 1, JS_VS);
 
-
+	// PSO
+	void* rtv[] = { m_RenderTargetView[m_CurrentFrameIndex].Get() };
+	m_PSOMap["DefaultShader"]->RenderObjects(m_CurrentFrameIndex, rtv, 1, m_DepthStencilView[m_CurrentFrameIndex].Get());
 }
 
 void JEngineRendererDX11::CopyResult(void* outBuffer)
@@ -28,7 +46,29 @@ void JEngineRendererDX11::CopyResult(void* outBuffer)
 	auto* context = JD3D11GlobalFactor::GetInstance()->GetDeviceContext();
 	
 	ID3D11Texture2D* dest = reinterpret_cast<ID3D11Texture2D*>(outBuffer);
-	context->CopyResource(dest, m_RenderTarget[m_CurrentBufferIndex].Get());
+	context->CopyResource(dest, m_RenderTarget[m_CurrentFrameIndex].Get());
+}
+
+void JEngineRendererDX11::SetScene(std::shared_ptr<JEngineScene> scene)
+{
+	JEngineRenderer::SetScene(scene);
+	// shader들 object 지정
+
+	for (auto& shader : m_PSOMap)
+		shader.second->ClearObject();
+	
+	auto TravelAndSetObject = [&](auto&& self, std::vector<std::shared_ptr<JObject>>& v) -> void
+		{
+			for (auto& p : v) {
+				self(self, p->GetLeafObjects());
+				if (m_PSOMap.contains(p->GetShaderName())) {
+					m_PSOMap[p->GetShaderName()]->AddObject(p);
+				}
+			}
+		};
+
+	auto& objects = m_Scene->GetObjects();
+	TravelAndSetObject(TravelAndSetObject, objects);
 }
 
 void JEngineRendererDX11::CreateRTV_DSV(UINT width, UINT height)
