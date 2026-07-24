@@ -24,6 +24,8 @@ void JEngineScene::BuildDefaultScene()
 		meshobject->SetShaderName("DefaultShader");
 		meshobject->SetStaticMesh(contents["DefaultCube"]);
 
+		meshobject->SetRotation(45.f, 45.f, 45.f);
+
 		m_Objects.emplace_back(meshobject);
 	}
 
@@ -35,8 +37,10 @@ void JEngineScene::BuildDefaultScene()
 			"MyCamera"
 		);
 
-		camera->SetRotation(45.f, 45.f, 0.f);
-		camera->SetPosition(-30.f, 30.f, -30.f);
+		//camera->SetRotation(45.f, 45.f, 0.f);
+		//camera->SetPosition(-30.f, 30.f, -30.f);
+		//camera->SetRotation(45.f, 0.f, 0.f);
+		camera->SetPosition(0.f, 0.f, -30.f);
 		m_Cameras.emplace_back(camera);
 
 		m_Objects.emplace_back(camera);

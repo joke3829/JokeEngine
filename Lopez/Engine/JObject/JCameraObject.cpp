@@ -12,7 +12,7 @@ JCameraObject::JCameraObject(std::vector<XMFLOAT4X4>& vWorld, UINT nodeIndex, co
 	
 	// projection Factor
 	float aspect = width / height;
-	SetProjFactorPerspective(60.f, aspect, 0.01f, 1000.0f);
+	SetProjFactorPerspective(60.f, aspect, 0.01f, 500.0f);
 }
 
 

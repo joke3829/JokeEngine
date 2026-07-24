@@ -25,11 +25,13 @@ public:
 protected:
 
 
-	std::vector<std::shared_ptr<JObject>>		m_Objects;
+	std::vector<std::shared_ptr<JObject>>			m_Objects;
+	std::vector<std::shared_ptr<JCameraObject>>		m_Cameras{};
 
 	std::vector<XMFLOAT4X4>						m_WorldMatrices{};
+	std::vector<XMFLOAT4X4>						m_CameraMatrices{};
 	// 카메라의 번호(m_WorldMatrices에서 어떤게 카메라인지 
-	std::vector<std::shared_ptr<JCameraObject>>		m_Cameras{};
+
 	
 	// 버퍼들 (SRV로 사용)
 	// 카메라 버퍼들 (마찬가지 SRV)

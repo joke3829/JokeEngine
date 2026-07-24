@@ -2,7 +2,7 @@
 #include "Engine/JShader/JEngineShader.h"
 
 JObject::JObject(std::vector<XMFLOAT4X4>& vWorld, UINT nodeIndex, const char* name)
-	: m_WorldTransform{ vWorld }
+	: m_WorldTransform{ vWorld }, m_NodeIndex{ nodeIndex }
 {
 	if (name) m_name = name;
 	else m_name = "JObject";
@@ -44,6 +44,8 @@ void JObject::MakeLocalTransform()
 	XMVECTOR S, R, T;
 	S = XMLoadFloat3(&m_Scale);
 	T = XMLoadFloat3(&m_Position);
+	XMFLOAT4 quat = EulerToQuaternion(m_Rotation);
+	// R = XMLoadFloat4(&quat);
 	R = XMQuaternionRotationRollPitchYaw(
 		XMConvertToRadians(m_Rotation.x), 
 		XMConvertToRadians(m_Rotation.y), 

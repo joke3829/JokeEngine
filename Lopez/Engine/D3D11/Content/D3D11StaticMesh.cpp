@@ -15,7 +15,7 @@ JStaticMeshDX11::JStaticMeshDX11(XMFLOAT3 center, XMFLOAT3 extent, const char* n
 	BuffersReady();
 }
 
-JStaticMeshDX11::JStaticMeshDX11(XMFLOAT3 center, float radius, UINT sliceCount, UINT stackCount, const char* name)
+JStaticMeshDX11::JStaticMeshDX11(XMFLOAT3 center, float radius, UINT sliceCount, UINT stackCount, int t, const char* name)
 	: JStaticMesh(center, radius, sliceCount, stackCount, name)
 {
 	m_d3dTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;

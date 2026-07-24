@@ -52,7 +52,7 @@ void JStaticMeshObject::Render(UINT currentFrameIndex)
 
 	for (size_t i = 0; i < indices.size(); ++i) {
 		m_Materials[i]->UpdateBuffer(currentFrameIndex);
-		m_Materials[i]->SetDXBuffer(currentFrameIndex, 0, JS_PS);
+		m_Materials[i]->SetDXBuffer(currentFrameIndex, 2, JS_PS);
 		m_StaticMesh->Render(i);
 	}
 

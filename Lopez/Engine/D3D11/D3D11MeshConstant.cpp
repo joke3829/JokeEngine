@@ -21,6 +21,7 @@ void JMeshConstantDX11::UpdateBuffer(UINT currentFrameIndex)
 		context->Map(m_CBBuffer[currentFrameIndex].Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
 		memcpy(mapped.pData, &m_CBMesh, sizeof(CB_Mesh));
 		context->Unmap(m_CBBuffer[currentFrameIndex].Get(), 0);
+		m_Dirty[currentFrameIndex] = false;
 	}
 }
 

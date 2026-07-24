@@ -44,6 +44,8 @@ set(ENGINE
   Engine/JCommon.cpp
   Engine/JMeshConstant.h
   Engine/JMeshConstant.cpp
+  Engine/Timer.h
+  Engine/Timer.cpp
 )
 
 set(ENGINE_OBJECT
@@ -173,3 +175,5 @@ source_group("Engine\\D3D11\\Shader" FILES ${D3D11_SHADER})
 # Shader File 솔루션에 추가 + 빌드에 참여 안함
 source_group("Shaders" FILES ${SHADER_FILES})
 set_source_files_properties(${SHADER_FILES} PROPERTIES VS_TOOL_OVERRIDE "None")
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/Shaders ${CMAKE_BINARY_DIR}/Shaders)

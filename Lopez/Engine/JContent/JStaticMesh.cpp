@@ -9,7 +9,7 @@ JStaticMesh::JStaticMesh(const char* name, bool bloadFromFile)
 
 // 박스 생성자, 
 JStaticMesh::JStaticMesh(XMFLOAT3 center, XMFLOAT3 extent, const char* name)
-	: JContent(name)
+    : JContent(name)
 {
     m_Vertices.reserve(24);
     m_Normals.reserve(24);
@@ -26,55 +26,47 @@ JStaticMesh::JStaticMesh(XMFLOAT3 center, XMFLOAT3 extent, const char* name)
     float minZ = center.z - extent.z;
     float maxZ = center.z + extent.z;
 
-    // --- 6개 면의 정점 데이터 로드 (각 면당 4개의 정점) ---
 
-    // ① 앞면 (Front Face) - Normal: +Z, Tangent: +X, Bitangent: -Y (UV축 기준)
-    m_Vertices.emplace_back(XMFLOAT3(minX, maxY, maxZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, 0.0f, 1.0f)); m_Tangents.emplace_back(XMFLOAT3(1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(0.0f, 0.0f)); // 좌상
-    m_Vertices.emplace_back(XMFLOAT3(maxX, maxY, maxZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, 0.0f, 1.0f)); m_Tangents.emplace_back(XMFLOAT3(1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(1.0f, 0.0f)); // 우상
-    m_Vertices.emplace_back(XMFLOAT3(minX, minY, maxZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, 0.0f, 1.0f)); m_Tangents.emplace_back(XMFLOAT3(1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(0.0f, 1.0f)); // 좌하
-    m_Vertices.emplace_back(XMFLOAT3(maxX, minY, maxZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, 0.0f, 1.0f)); m_Tangents.emplace_back(XMFLOAT3(1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(1.0f, 1.0f)); // 우하
+    m_Vertices.emplace_back(XMFLOAT3(minX, minY, minZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, 0.0f, -1.0f)); m_Tangents.emplace_back(XMFLOAT3(1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(0.0f, 1.0f)); // 0: 좌하
+    m_Vertices.emplace_back(XMFLOAT3(minX, maxY, minZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, 0.0f, -1.0f)); m_Tangents.emplace_back(XMFLOAT3(1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(0.0f, 0.0f)); // 1: 좌상
+    m_Vertices.emplace_back(XMFLOAT3(maxX, maxY, minZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, 0.0f, -1.0f)); m_Tangents.emplace_back(XMFLOAT3(1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(1.0f, 0.0f)); // 2: 우상
+    m_Vertices.emplace_back(XMFLOAT3(maxX, minY, minZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, 0.0f, -1.0f)); m_Tangents.emplace_back(XMFLOAT3(1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(1.0f, 1.0f)); // 3: 우하
 
-    // ② 뒷면 (Back Face) - Normal: -Z, Tangent: -X, Bitangent: -Y
-    m_Vertices.emplace_back(XMFLOAT3(maxX, maxY, minZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, 0.0f, -1.0f)); m_Tangents.emplace_back(XMFLOAT3(-1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(0.0f, 0.0f));
-    m_Vertices.emplace_back(XMFLOAT3(minX, maxY, minZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, 0.0f, -1.0f)); m_Tangents.emplace_back(XMFLOAT3(-1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(1.0f, 0.0f));
-    m_Vertices.emplace_back(XMFLOAT3(maxX, minY, minZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, 0.0f, -1.0f)); m_Tangents.emplace_back(XMFLOAT3(-1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(0.0f, 1.0f));
-    m_Vertices.emplace_back(XMFLOAT3(minX, minY, minZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, 0.0f, -1.0f)); m_Tangents.emplace_back(XMFLOAT3(-1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(1.0f, 1.0f));
+    m_Vertices.emplace_back(XMFLOAT3(maxX, minY, minZ)); m_Normals.emplace_back(XMFLOAT3(1.0f, 0.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(0.0f, 0.0f, 1.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(0.0f, 1.0f)); // 0: 좌하
+    m_Vertices.emplace_back(XMFLOAT3(maxX, maxY, minZ)); m_Normals.emplace_back(XMFLOAT3(1.0f, 0.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(0.0f, 0.0f, 1.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(0.0f, 0.0f)); // 1: 좌상
+    m_Vertices.emplace_back(XMFLOAT3(maxX, maxY, maxZ)); m_Normals.emplace_back(XMFLOAT3(1.0f, 0.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(0.0f, 0.0f, 1.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(1.0f, 0.0f)); // 2: 우상
+    m_Vertices.emplace_back(XMFLOAT3(maxX, minY, maxZ)); m_Normals.emplace_back(XMFLOAT3(1.0f, 0.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(0.0f, 0.0f, 1.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(1.0f, 1.0f)); // 3: 우하
 
-    // ③ 윗면 (Top Face) - Normal: +Y, Tangent: +X, Bitangent: +Z
-    m_Vertices.emplace_back(XMFLOAT3(minX, maxY, minZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, 1.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, 0.0f, 1.0f)); m_TexCoord0.emplace_back(XMFLOAT2(0.0f, 0.0f));
-    m_Vertices.emplace_back(XMFLOAT3(maxX, maxY, minZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, 1.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, 0.0f, 1.0f)); m_TexCoord0.emplace_back(XMFLOAT2(1.0f, 0.0f));
-    m_Vertices.emplace_back(XMFLOAT3(minX, maxY, maxZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, 1.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, 0.0f, 1.0f)); m_TexCoord0.emplace_back(XMFLOAT2(0.0f, 1.0f));
-    m_Vertices.emplace_back(XMFLOAT3(maxX, maxY, maxZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, 1.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, 0.0f, 1.0f)); m_TexCoord0.emplace_back(XMFLOAT2(1.0f, 1.0f));
+    m_Vertices.emplace_back(XMFLOAT3(maxX, minY, maxZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, 0.0f, 1.0f)); m_Tangents.emplace_back(XMFLOAT3(-1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(0.0f, 1.0f)); // 0: 좌하
+    m_Vertices.emplace_back(XMFLOAT3(maxX, maxY, maxZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, 0.0f, 1.0f)); m_Tangents.emplace_back(XMFLOAT3(-1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(0.0f, 0.0f)); // 1: 좌상
+    m_Vertices.emplace_back(XMFLOAT3(minX, maxY, maxZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, 0.0f, 1.0f)); m_Tangents.emplace_back(XMFLOAT3(-1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(1.0f, 0.0f)); // 2: 우상
+    m_Vertices.emplace_back(XMFLOAT3(minX, minY, maxZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, 0.0f, 1.0f)); m_Tangents.emplace_back(XMFLOAT3(-1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(1.0f, 1.0f)); // 3: 우하
 
-    // ④ 아랫면 (Bottom Face) - Normal: -Y, Tangent: +X, Bitangent: -Z
-    m_Vertices.emplace_back(XMFLOAT3(minX, minY, maxZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, 0.0f, -1.0f)); m_TexCoord0.emplace_back(XMFLOAT2(0.0f, 0.0f));
-    m_Vertices.emplace_back(XMFLOAT3(maxX, minY, maxZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, 0.0f, -1.0f)); m_TexCoord0.emplace_back(XMFLOAT2(1.0f, 0.0f));
-    m_Vertices.emplace_back(XMFLOAT3(minX, minY, minZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, 0.0f, -1.0f)); m_TexCoord0.emplace_back(XMFLOAT2(0.0f, 1.0f));
-    m_Vertices.emplace_back(XMFLOAT3(maxX, minY, minZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, 0.0f, -1.0f)); m_TexCoord0.emplace_back(XMFLOAT2(1.0f, 1.0f));
+    m_Vertices.emplace_back(XMFLOAT3(minX, minY, maxZ)); m_Normals.emplace_back(XMFLOAT3(-1.0f, 0.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(0.0f, 0.0f, -1.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(0.0f, 1.0f)); // 0: 좌하
+    m_Vertices.emplace_back(XMFLOAT3(minX, maxY, maxZ)); m_Normals.emplace_back(XMFLOAT3(-1.0f, 0.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(0.0f, 0.0f, -1.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(0.0f, 0.0f)); // 1: 좌상
+    m_Vertices.emplace_back(XMFLOAT3(minX, maxY, minZ)); m_Normals.emplace_back(XMFLOAT3(-1.0f, 0.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(0.0f, 0.0f, -1.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(1.0f, 0.0f)); // 2: 우상
+    m_Vertices.emplace_back(XMFLOAT3(minX, minY, minZ)); m_Normals.emplace_back(XMFLOAT3(-1.0f, 0.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(0.0f, 0.0f, -1.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(1.0f, 1.0f)); // 3: 우하
 
-    // ⑤ 왼면 (Left Face) - Normal: -X, Tangent: +Z, Bitangent: -Y
-    m_Vertices.emplace_back(XMFLOAT3(minX, maxY, minZ)); m_Normals.emplace_back(XMFLOAT3(-1.0f, 0.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(0.0f, 0.0f, 1.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(0.0f, 0.0f));
-    m_Vertices.emplace_back(XMFLOAT3(minX, maxY, maxZ)); m_Normals.emplace_back(XMFLOAT3(-1.0f, 0.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(0.0f, 0.0f, 1.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(1.0f, 0.0f));
-    m_Vertices.emplace_back(XMFLOAT3(minX, minY, minZ)); m_Normals.emplace_back(XMFLOAT3(-1.0f, 0.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(0.0f, 0.0f, 1.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(0.0f, 1.0f));
-    m_Vertices.emplace_back(XMFLOAT3(minX, minY, maxZ)); m_Normals.emplace_back(XMFLOAT3(-1.0f, 0.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(0.0f, 0.0f, 1.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(1.0f, 1.0f));
+    m_Vertices.emplace_back(XMFLOAT3(minX, maxY, minZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, 1.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, 0.0f, -1.0f)); m_TexCoord0.emplace_back(XMFLOAT2(0.0f, 1.0f)); // 0: 좌하
+    m_Vertices.emplace_back(XMFLOAT3(minX, maxY, maxZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, 1.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, 0.0f, -1.0f)); m_TexCoord0.emplace_back(XMFLOAT2(0.0f, 0.0f)); // 1: 좌상
+    m_Vertices.emplace_back(XMFLOAT3(maxX, maxY, maxZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, 1.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, 0.0f, -1.0f)); m_TexCoord0.emplace_back(XMFLOAT2(1.0f, 0.0f)); // 2: 우상
+    m_Vertices.emplace_back(XMFLOAT3(maxX, maxY, minZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, 1.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, 0.0f, -1.0f)); m_TexCoord0.emplace_back(XMFLOAT2(1.0f, 1.0f)); // 3: 우하
 
-    // ⑥ 오른면 (Right Face) - Normal: +X, Tangent: -Z, Bitangent: -Y
-    m_Vertices.emplace_back(XMFLOAT3(maxX, maxY, maxZ)); m_Normals.emplace_back(XMFLOAT3(1.0f, 0.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(0.0f, 0.0f, -1.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(0.0f, 0.0f));
-    m_Vertices.emplace_back(XMFLOAT3(maxX, maxY, minZ)); m_Normals.emplace_back(XMFLOAT3(1.0f, 0.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(0.0f, 0.0f, -1.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(1.0f, 0.0f));
-    m_Vertices.emplace_back(XMFLOAT3(maxX, minY, maxZ)); m_Normals.emplace_back(XMFLOAT3(1.0f, 0.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(0.0f, 0.0f, -1.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(0.0f, 1.0f));
-    m_Vertices.emplace_back(XMFLOAT3(maxX, minY, minZ)); m_Normals.emplace_back(XMFLOAT3(1.0f, 0.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(0.0f, 0.0f, -1.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_TexCoord0.emplace_back(XMFLOAT2(1.0f, 1.0f));
+    m_Vertices.emplace_back(XMFLOAT3(maxX, minY, minZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(-1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, 0.0f, -1.0f)); m_TexCoord0.emplace_back(XMFLOAT2(0.0f, 1.0f)); // 0: 좌하
+    m_Vertices.emplace_back(XMFLOAT3(maxX, minY, maxZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(-1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, 0.0f, -1.0f)); m_TexCoord0.emplace_back(XMFLOAT2(0.0f, 0.0f)); // 1: 좌상
+    m_Vertices.emplace_back(XMFLOAT3(minX, minY, maxZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(-1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, 0.0f, -1.0f)); m_TexCoord0.emplace_back(XMFLOAT2(1.0f, 0.0f)); // 2: 우상
+    m_Vertices.emplace_back(XMFLOAT3(minX, minY, minZ)); m_Normals.emplace_back(XMFLOAT3(0.0f, -1.0f, 0.0f)); m_Tangents.emplace_back(XMFLOAT3(-1.0f, 0.0f, 0.0f)); m_BiTangents.emplace_back(XMFLOAT3(0.0f, 0.0f, -1.0f)); m_TexCoord0.emplace_back(XMFLOAT2(1.0f, 1.0f)); // 3: 우하
 
 
-    // 시계 방향(Clockwise) 인덱스 조립 (DirectX 11 백페이스 컬링 규격) ---
     for (UINT i = 0; i < 24; i += 4)
     {
         index.emplace_back(i + 0);
         index.emplace_back(i + 1);
-        index.emplace_back(i + 2);
+        index.emplace_back(i + 3);
 
         index.emplace_back(i + 1);
-        index.emplace_back(i + 3);
         index.emplace_back(i + 2);
+        index.emplace_back(i + 3);
     }
 
     m_Colors.emplace_back(XMFLOAT4(1.f, 1.f, 1.f, 1.f));
@@ -143,11 +135,12 @@ JStaticMesh::JStaticMesh(XMFLOAT3 center, float radius, UINT sliceCount, UINT st
     m_BiTangents.emplace_back(0.0f, 0.0f, -1.0f);
     m_TexCoord0.emplace_back(0.0f, 1.0f);
 
+    // 북극
     for (UINT i = 1; i <= sliceCount; ++i)
     {
         index.emplace_back(0);
-        index.emplace_back(i + 1);
         index.emplace_back(i);
+        index.emplace_back(i + 1);
     }
 
     UINT baseIndex = 1;
@@ -157,22 +150,23 @@ JStaticMesh::JStaticMesh(XMFLOAT3 center, float radius, UINT sliceCount, UINT st
         for (UINT j = 0; j < sliceCount; ++j)
         {
             index.emplace_back(baseIndex + i * ringVertexCount + j);
-            index.emplace_back(baseIndex + i * ringVertexCount + j + 1);
             index.emplace_back(baseIndex + (i + 1) * ringVertexCount + j);
+            index.emplace_back(baseIndex + i * ringVertexCount + j + 1);
 
             index.emplace_back(baseIndex + i * ringVertexCount + j + 1);
-            index.emplace_back(baseIndex + (i + 1) * ringVertexCount + j + 1);
             index.emplace_back(baseIndex + (i + 1) * ringVertexCount + j);
+            index.emplace_back(baseIndex + (i + 1) * ringVertexCount + j + 1);
         }
     }
 
+    // 남극
     UINT southPoleIndex = (UINT)m_Vertices.size() - 1;
     baseIndex = southPoleIndex - ringVertexCount;
     for (UINT i = 0; i < sliceCount; ++i)
     {
         index.emplace_back(southPoleIndex);
-        index.emplace_back(baseIndex + i);
         index.emplace_back(baseIndex + i + 1);
+        index.emplace_back(baseIndex + i);
     }
 
     m_Colors.emplace_back(XMFLOAT4(1.f, 1.f, 1.f, 1.f));

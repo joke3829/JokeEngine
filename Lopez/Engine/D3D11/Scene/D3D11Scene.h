@@ -16,7 +16,6 @@ protected:
 
 	ComPtr<ID3D11Buffer>				m_CameraMatricesBuffer[g_NumRenderTarget]{};
 	ComPtr<ID3D11ShaderResourceView>	m_CameraMatricesBufferSRV[g_NumRenderTarget]{};
-	std::vector<XMFLOAT4X4>				m_CameraMatrices{};
 	size_t								m_nAlignCameraMatrices[g_NumRenderTarget]{};
 };
 

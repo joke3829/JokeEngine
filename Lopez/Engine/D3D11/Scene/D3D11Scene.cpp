@@ -52,6 +52,7 @@ void JEngineSceneDX11::UpdateBuffers(UINT currentBufferIndex)
 			.Usage = D3D11_USAGE_DYNAMIC,
 			.BindFlags = D3D11_BIND_SHADER_RESOURCE,
 			.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,
+			.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED,
 			.StructureByteStride = sizeof(XMFLOAT4X4)
 		};
 		ThrowIfFailed(device->CreateBuffer(&desc, nullptr, m_WorldMatricesBuffer[ci].ReleaseAndGetAddressOf()));
@@ -67,12 +68,13 @@ void JEngineSceneDX11::UpdateBuffers(UINT currentBufferIndex)
 		m_nAlignWorldMatrices[ci] = m_WorldMatrices.size();
 	}
 
-	if (!m_CameraMatricesBuffer[ci] || m_nAlignCameraMatrices[ci] != m_CameraMatrices.size()) {
+	if (!m_CameraMatricesBuffer[ci] || m_nAlignCameraMatrices[ci] != m_Cameras.size()) {
 		D3D11_BUFFER_DESC desc{
-			.ByteWidth = static_cast<UINT>(m_CameraMatrices.size()) * sizeof(XMFLOAT4X4),
+			.ByteWidth = static_cast<UINT>(m_Cameras.size()) * sizeof(XMFLOAT4X4),
 			.Usage = D3D11_USAGE_DYNAMIC,
 			.BindFlags = D3D11_BIND_SHADER_RESOURCE,
 			.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,
+			.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED,
 			.StructureByteStride = sizeof(XMFLOAT4X4)
 		};
 		ThrowIfFailed(device->CreateBuffer(&desc, nullptr, m_CameraMatricesBuffer[ci].ReleaseAndGetAddressOf()));
@@ -82,28 +84,45 @@ void JEngineSceneDX11::UpdateBuffers(UINT currentBufferIndex)
 			.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX
 		};
 		srvDesc.BufferEx.FirstElement = 0;
-		srvDesc.BufferEx.NumElements = m_CameraMatrices.size();
+		srvDesc.BufferEx.NumElements = m_Cameras.size();
 		srvDesc.BufferEx.Flags = 0;
 		ThrowIfFailed(device->CreateShaderResourceView(m_CameraMatricesBuffer[ci].Get(), &srvDesc, m_CameraMatricesBufferSRV[ci].ReleaseAndGetAddressOf()));
-		m_nAlignCameraMatrices[ci] = m_CameraMatrices.size();
+		m_nAlignCameraMatrices[ci] = m_Cameras.size();
 
 		m_CameraMatrices.clear();
 		m_CameraMatrices.assign(m_nAlignCameraMatrices[ci], {});
 	}
 
 
-	for (UINT i = 0; i < m_CameraMatrices.size(); ++i) {
-		m_CameraMatrices[i] = m_Cameras[i]->GetViewMatrix();
+	for (UINT i = 0; i < m_Cameras.size(); ++i) {
+		m_CameraMatrices[i] = m_Cameras[i]->GetViewProjMatrix();
 	}
 
 	// 버퍼 업데이트
 	D3D11_MAPPED_SUBRESOURCE mapdata{};
 	ThrowIfFailed(context->Map(m_WorldMatricesBuffer[ci].Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapdata));
-	memcpy(mapdata.pData, m_WorldMatrices.data(), sizeof(XMFLOAT4X4) * m_nAlignWorldMatrices[ci]);
+	// test
+	std::vector<XMFLOAT4X4> tworld{};
+	{
+		for (int i = 0; i < m_WorldMatrices.size(); ++i) {
+			tworld.emplace_back();
+			XMStoreFloat4x4(&tworld[i], XMMatrixTranspose(XMLoadFloat4x4(&m_WorldMatrices[i])));
+		}
+	}
+
+	memcpy(mapdata.pData, tworld.data(), sizeof(XMFLOAT4X4) * m_nAlignWorldMatrices[ci]);
 	context->Unmap(m_WorldMatricesBuffer[ci].Get(), 0);
 
 	ThrowIfFailed(context->Map(m_CameraMatricesBuffer[ci].Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapdata));
-	memcpy(mapdata.pData, m_CameraMatrices.data(), sizeof(XMFLOAT4X4) * m_nAlignCameraMatrices[ci]);
+
+	std::vector<XMFLOAT4X4> tcamera{};
+	{
+		for (int i = 0; i < m_CameraMatrices.size(); ++i) {
+			tcamera.emplace_back();
+			XMStoreFloat4x4(&tcamera[i], XMMatrixTranspose(XMLoadFloat4x4(&m_CameraMatrices[i])));
+		}
+	}
+	memcpy(mapdata.pData, tcamera.data(), sizeof(XMFLOAT4X4) * m_nAlignCameraMatrices[ci]);
 	context->Unmap(m_CameraMatricesBuffer[ci].Get(), 0);
 }
 
@@ -112,7 +131,7 @@ void JEngineSceneDX11::UpdateBuffers(UINT currentBufferIndex)
 
 void JEngineDefaultSceneDX11::SetDXBuffer(UINT currentBufferIndex, UINT parameter, JShaderStage stage)
 {
-	JEngineSceneDX11::SetDXBuffer(currentBufferIndex, parameter, stage);
+	JEngineSceneDX11::SetDXBuffer(currentBufferIndex, 0, stage);
 
 	auto* gFactor = JD3D11GlobalFactor::GetInstance();
 	auto* context = gFactor->GetDeviceContext();

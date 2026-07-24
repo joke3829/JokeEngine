@@ -4,6 +4,7 @@
 #include "JContent/JContentManager.h"
 #include "JRenderer/JEngineRenderer.h"
 #include "D3D11/D3D11GlobalFactor.h"
+#include "Timer.h"
 
 // DirectX Engine
 
@@ -28,6 +29,8 @@ protected:
 
 	std::shared_ptr<JEngineRenderer>	m_Renderer{};
 	std::shared_ptr<JEngineScene>		m_Scene{};
+
+	CTimer								m_Timer{};
 };
 
 

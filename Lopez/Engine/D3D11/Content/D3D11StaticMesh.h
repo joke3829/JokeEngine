@@ -6,7 +6,7 @@ class JStaticMeshDX11 : public JStaticMesh {
 public:
 	JStaticMeshDX11(const char* name = nullptr, bool bloadFromFile = false);
 	JStaticMeshDX11(XMFLOAT3 center = XMFLOAT3(0.f, 0.f, 0.f), XMFLOAT3 extent = XMFLOAT3(5.f, 5.f, 5.f), const char* name = nullptr);
-	JStaticMeshDX11(XMFLOAT3 center = XMFLOAT3(0.f, 0.f, 0.f), float radius = 5.f, UINT sliceCount = 20, UINT stackCount = 20, const char* name = nullptr);
+	JStaticMeshDX11(XMFLOAT3 center = XMFLOAT3(0.f, 0.f, 0.f), float radius = 5.f, UINT sliceCount = 20, UINT stackCount = 20, int t = 0, const char* name = nullptr);
 	JStaticMeshDX11(XMFLOAT3 center = XMFLOAT3(0.f, 0.f, 0.f), float width = 1.f, float height = 1.f, bool bViewport = false, const char* name = nullptr);
 
 	// 11: slot, 12: root parameter, 12는 parameter만 채우면 된다.

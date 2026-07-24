@@ -5,6 +5,7 @@
 JEngineRendererDX11::JEngineRendererDX11(UINT width, UINT height, const char* name)
 	: JEngineRenderer(width, height, name)
 {
+	CreateRTV_DSV(width, height);
 	// Shader 정의
 	{
 		std::shared_ptr<JEngineDefaultShaderDX11> shader = std::make_shared<JEngineDefaultShaderDX11>("DefaultShader");
@@ -78,6 +79,7 @@ void JEngineRendererDX11::CreateRTV_DSV(UINT width, UINT height)
 	D3D11_TEXTURE2D_DESC desc{
 		.Width = width,
 		.Height = height,
+		.MipLevels = 1,
 		.ArraySize = 1,
 		.SampleDesc = {.Count = 1},
 		.Usage = D3D11_USAGE_DEFAULT,

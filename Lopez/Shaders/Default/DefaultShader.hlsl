@@ -1,4 +1,4 @@
-﻿#include "Common.hlsl"
+#include "Common.hlsl"
 
 
 struct DefaultVSInput
@@ -72,6 +72,7 @@ DefaultPSInput DefaultVS(DefaultVSInput input)
 }
 
 float4 DefaultPS(DefaultPSInput input) : SV_Target{
-    return g_Material.Albedo;
+    float3 normalcolor = (input.Normal + 1.f) / 2.f;
+    return float4(normalcolor, 1.f);
 }
 

@@ -9,7 +9,10 @@ ComPtr<ID3DBlob> CompileHLSL(LPCWCHAR pFileName, D3D_SHADER_MACRO* pDefines, LPC
     if (FAILED(hr)) {
         std::wstring fname = pFileName;
         std::string sfname(fname.begin(), fname.end());
-        spdlog::error("{0} Compile Failed - Error: {1}", sfname.c_str(), (const char*)errorBlob->GetBufferPointer());
+        if(errorBlob)
+            spdlog::error("{0} Compile Failed - Error: {1}", sfname.c_str(), (const char*)errorBlob->GetBufferPointer());
+        else
+            spdlog::error("{0} Compile Failed - Error: ???", sfname.c_str());
         assert(0);
     }
 #else

@@ -1,6 +1,7 @@
 ﻿#include "JokeEngine.h"
 #include "D3D11/Content/D3D11ContentManager.h"
 #include "D3D11/Scene/D3D11Scene.h"
+#include "D3D11/Renderer/D3D11Renderer.h"
 
 // =======================================================================
 
@@ -27,6 +28,8 @@ void JokeEngine::Resize(UINT width, UINT height, bool FullScreenState)
 void JokeEngineDX11::Initialize(HWND hWnd, HINSTANCE hInstance)
 {
 	m_GlobalFactor = JD3D11GlobalFactor::GetInstance();
+	auto* config = JEngineDefaultGlobalConfig::GetInstance()->GetConfigFactor();
+
 	JokeEngine::Initialize(hWnd, hInstance);
 
 	m_ContentManager = std::make_shared<JContentManagerDX11>();
@@ -36,6 +39,9 @@ void JokeEngineDX11::Initialize(HWND hWnd, HINSTANCE hInstance)
 	m_Scene = std::make_shared<JEngineDefaultSceneDX11>();
 	m_Scene->SetContentManager(m_ContentManager);
 	m_Scene->BuildDefaultScene();
+
+	m_Renderer = std::make_shared<JEngineRendererDX11>(config->WindowsWidth, config->WindowsHeight);
+	m_Renderer->SetScene(m_Scene);
 }
 
 
@@ -82,15 +88,15 @@ void JokeEngineDX11::Render()
 	auto* gfactor = JEngineDefaultGlobalConfig::GetInstance()->GetConfigFactor();
 	// update section
 	// 
-	// float elapsedTime = Timer -> Tick();
-	// Scene->Update(elapsedTime);   CPU
-	// Renderer->RenderFrame()			GPU(currnet그거) 이 안에서 FrameIndex도 넘어감
+	float elapsedTime = m_Timer.Tick(gfactor->LimitFPS);
+	m_Scene->Update(elapsedTime);       // CPU
+	m_Renderer->RenderFrame();			// GPU(currnet그거) 이 안에서 FrameIndex도 넘어감
 	
 	
 	ComPtr<ID3D11Texture2D> buffer;
 	ThrowIfFailed(m_SwapChain->GetBuffer(0, IID_PPV_ARGS(buffer.GetAddressOf())));
 
-	// Renderer->CopyFrame(buffer);
+	m_Renderer->CopyResult(buffer.Get());
 
 	if (gfactor->VerticalSYNC)
 		ThrowIfFailed(m_SwapChain->Present(1, 0));
