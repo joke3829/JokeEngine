@@ -9,7 +9,7 @@ class JMeshConstant;
 
 class JStaticMeshObject : public JObject {
 public:
-	JStaticMeshObject(std::vector<XMFLOAT4X4>& vWorld, UINT nodeIndex, const char* name = nullptr);
+	JStaticMeshObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name = nullptr);
 	~JStaticMeshObject();
 
 	void Update(float elapsedTime, XMFLOAT4X4* parent = nullptr);

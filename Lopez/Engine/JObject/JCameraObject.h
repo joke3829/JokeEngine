@@ -34,7 +34,7 @@ struct JProjFactor {
 // Active 여부로 멀티 뷰포트 여부 결정
 class JCameraObject : public JObject {
 public:
-	JCameraObject(std::vector<XMFLOAT4X4>& vWorld, UINT nodeIndex, const char* name = nullptr);
+	JCameraObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name = nullptr);
 	virtual ~JCameraObject() {}
 
 public:

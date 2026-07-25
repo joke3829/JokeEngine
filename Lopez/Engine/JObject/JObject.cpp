@@ -1,8 +1,8 @@
 ﻿#include "JObject.h"
 #include "Engine/JShader/JEngineShader.h"
 
-JObject::JObject(std::vector<XMFLOAT4X4>& vWorld, UINT nodeIndex, const char* name)
-	: m_WorldTransform{ vWorld }, m_NodeIndex{ nodeIndex }
+JObject::JObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name)
+	: m_WorldTransform{ vWorld }, m_NodeIndex{ nodeIndex }, m_WorldTransformTP{ vWorldTP }
 {
 	if (name) m_name = name;
 	else m_name = "JObject";
@@ -26,7 +26,9 @@ void JObject::Update(float elapsedTime, XMFLOAT4X4* parent)
 	if (parent) parentMatrix = XMLoadFloat4x4(parent);
 	else parentMatrix = XMMatrixIdentity();
 
-	XMStoreFloat4x4(&m_WorldTransform[m_NodeIndex], XMLoadFloat4x4(&m_LocalTransform) * parentMatrix);
+	XMMATRIX world = XMLoadFloat4x4(&m_LocalTransform) * parentMatrix;
+	XMStoreFloat4x4(&m_WorldTransform[m_NodeIndex], world);
+	XMStoreFloat4x4(&m_WorldTransformTP[m_NodeIndex], XMMatrixTranspose(world));
 
 	for (auto& child : m_LeafObjects) {
 		child->Update(elapsedTime, &m_WorldTransform[m_NodeIndex]);
@@ -44,8 +46,6 @@ void JObject::MakeLocalTransform()
 	XMVECTOR S, R, T;
 	S = XMLoadFloat3(&m_Scale);
 	T = XMLoadFloat3(&m_Position);
-	XMFLOAT4 quat = EulerToQuaternion(m_Rotation);
-	// R = XMLoadFloat4(&quat);
 	R = XMQuaternionRotationRollPitchYaw(
 		XMConvertToRadians(m_Rotation.x), 
 		XMConvertToRadians(m_Rotation.y), 

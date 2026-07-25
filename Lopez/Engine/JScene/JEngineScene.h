@@ -29,7 +29,10 @@ protected:
 	std::vector<std::shared_ptr<JCameraObject>>		m_Cameras{};
 
 	std::vector<XMFLOAT4X4>						m_WorldMatrices{};
+	std::vector<XMFLOAT4X4>						m_WorldMatricesTP{};
+
 	std::vector<XMFLOAT4X4>						m_CameraMatrices{};
+	std::vector<XMFLOAT4X4>						m_CameraMatricesTP{};
 	// 카메라의 번호(m_WorldMatrices에서 어떤게 카메라인지 
 
 	

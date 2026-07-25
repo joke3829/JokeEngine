@@ -15,8 +15,10 @@ void JEngineScene::BuildDefaultScene()
 
 	{	// StaticMesh 추가 예제
 		m_WorldMatrices.emplace_back();
+		m_WorldMatricesTP.emplace_back();
 		std::shared_ptr<JStaticMeshObject> meshobject = std::make_shared<JStaticMeshObject>(
 			m_WorldMatrices,
+			m_WorldMatricesTP,
 			static_cast<UINT>(m_WorldMatrices.size() - 1),
 			"MyBox"
 		);
@@ -31,8 +33,10 @@ void JEngineScene::BuildDefaultScene()
 
 	{	// Camera 추가 예제
 		m_WorldMatrices.emplace_back();
+		m_WorldMatricesTP.emplace_back();
 		std::shared_ptr<JCameraObject> camera = std::make_shared<JCameraObject>(
 			m_WorldMatrices,
+			m_WorldMatricesTP,
 			static_cast<UINT>(m_WorldMatrices.size() - 1),
 			"MyCamera"
 		);

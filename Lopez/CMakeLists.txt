@@ -66,6 +66,8 @@ set(ENGINE_CONTENT
   Engine/JContent/JStaticMesh.cpp
   Engine/JContent/JContentManager.h
   Engine/JContent/JContentManager.cpp
+  Engine/JContent/JTexture.h
+  Engine/JContent/JTexture.cpp
 )
 
 set(ENGINE_RENDERER
@@ -108,6 +110,8 @@ set(D3D11_CONTENT
   Engine/D3D11/Content/D3D11StaticMesh.cpp
   Engine/D3D11/Content/D3D11ContentManager.h
   Engine/D3D11/Content/D3D11ContentManager.cpp
+  Engine/D3D11/Content/D3D11Texture.h
+  Engine/D3D11/Content/D3D11Texture.cpp
 )
 
 
@@ -141,6 +145,17 @@ set(SHADER_FILES
   Shaders/Default/DefaultShader.hlsl
 )
 
+set(TEXTURE_LOADER
+  Package/DirectXTex/d3dx12.h
+  Package/DirectXTex/DDSTextureLoader11.h
+  Package/DirectXTex/DDSTextureLoader11.cpp
+  Package/DirectXTex/DDSTextureLoader12.h
+  Package/DirectXTex/DDSTextureLoader12.cpp
+  Package/DirectXTex/WICTextureLoader11.h
+  Package/DirectXTex/WICTextureLoader11.cpp
+  Package/DirectXTex/WICTextureLoader12.h
+  Package/DirectXTex/WICTextureLoader12.cpp
+)
 
 
 add_executable(${PROJECT_NAME} 
@@ -150,6 +165,7 @@ add_executable(${PROJECT_NAME}
    ${ENGINE_INTEGRATE}
    ${D3D11_INTEGRATE}
    ${SHADER_FILES}
+   ${TEXTURE_LOADER}
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE 
@@ -171,6 +187,9 @@ source_group("Engine\\D3D11\\Renderer" FILES ${D3D11_RENDERER})
 source_group("Engine\\D3D11\\Scene" FILES ${D3D11_SCENE})
 source_group("Engine\\D3D11\\Shader" FILES ${D3D11_SHADER})
 
+
+# TextureLoader 추가
+source_group("TextureLoader" FILES ${TEXTURE_LOADER})
 
 # Shader File 솔루션에 추가 + 빌드에 참여 안함
 source_group("Shaders" FILES ${SHADER_FILES})

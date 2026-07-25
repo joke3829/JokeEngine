@@ -1,8 +1,8 @@
 ﻿#include "JCameraObject.h"
 #include "Engine/JokeEngineConfig.h"
 
-JCameraObject::JCameraObject(std::vector<XMFLOAT4X4>& vWorld, UINT nodeIndex, const char* name)
-	: JObject(vWorld, nodeIndex, name)
+JCameraObject::JCameraObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name)
+	: JObject(vWorld, vWorldTP, nodeIndex, name)
 {
 	auto* o = JEngineDefaultGlobalConfig::GetInstance()->GetConfigFactor();
 	float width = static_cast<float>(o->WindowsWidth);

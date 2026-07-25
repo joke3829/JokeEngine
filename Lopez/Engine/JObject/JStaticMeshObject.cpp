@@ -6,8 +6,8 @@
 
 
 
-JStaticMeshObject::JStaticMeshObject(std::vector<XMFLOAT4X4>& vWorld, UINT nodeIndex, const char* name)
-	: JObject(vWorld, nodeIndex, name)
+JStaticMeshObject::JStaticMeshObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name)
+	: JObject(vWorld, vWorldTP, nodeIndex, name)
 {
 	auto* opt = JEngineDefaultGlobalConfig::GetInstance()->GetConfigFactor();
 	switch (opt->DirectX_Version) {

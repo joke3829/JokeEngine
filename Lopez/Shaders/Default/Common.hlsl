@@ -17,3 +17,9 @@ StructuredBuffer<float4x4> g_Cameras : register(t1);
 
 
 // Texture 
+
+#ifdef D3D12_TEXTURE_REGISTER
+Texture2D g_Texture[] : register(t2, space1);
+#else
+Texture2D g_Texture : register(t2);
+#endif

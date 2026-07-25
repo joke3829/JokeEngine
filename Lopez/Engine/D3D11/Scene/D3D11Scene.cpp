@@ -91,38 +91,25 @@ void JEngineSceneDX11::UpdateBuffers(UINT currentBufferIndex)
 
 		m_CameraMatrices.clear();
 		m_CameraMatrices.assign(m_nAlignCameraMatrices[ci], {});
+
+		m_CameraMatricesTP.clear();
+		m_CameraMatricesTP.assign(m_nAlignCameraMatrices[ci], {});
 	}
 
 
 	for (UINT i = 0; i < m_Cameras.size(); ++i) {
 		m_CameraMatrices[i] = m_Cameras[i]->GetViewProjMatrix();
+		XMStoreFloat4x4(&m_CameraMatricesTP[i], XMMatrixTranspose(XMLoadFloat4x4(&m_CameraMatrices[i])));
 	}
 
 	// 버퍼 업데이트
 	D3D11_MAPPED_SUBRESOURCE mapdata{};
 	ThrowIfFailed(context->Map(m_WorldMatricesBuffer[ci].Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapdata));
-	// test
-	std::vector<XMFLOAT4X4> tworld{};
-	{
-		for (int i = 0; i < m_WorldMatrices.size(); ++i) {
-			tworld.emplace_back();
-			XMStoreFloat4x4(&tworld[i], XMMatrixTranspose(XMLoadFloat4x4(&m_WorldMatrices[i])));
-		}
-	}
-
-	memcpy(mapdata.pData, tworld.data(), sizeof(XMFLOAT4X4) * m_nAlignWorldMatrices[ci]);
+	memcpy(mapdata.pData, m_WorldMatricesTP.data(), sizeof(XMFLOAT4X4) * m_nAlignWorldMatrices[ci]);
 	context->Unmap(m_WorldMatricesBuffer[ci].Get(), 0);
 
 	ThrowIfFailed(context->Map(m_CameraMatricesBuffer[ci].Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapdata));
-
-	std::vector<XMFLOAT4X4> tcamera{};
-	{
-		for (int i = 0; i < m_CameraMatrices.size(); ++i) {
-			tcamera.emplace_back();
-			XMStoreFloat4x4(&tcamera[i], XMMatrixTranspose(XMLoadFloat4x4(&m_CameraMatrices[i])));
-		}
-	}
-	memcpy(mapdata.pData, tcamera.data(), sizeof(XMFLOAT4X4) * m_nAlignCameraMatrices[ci]);
+	memcpy(mapdata.pData, m_CameraMatricesTP.data(), sizeof(XMFLOAT4X4) * m_nAlignCameraMatrices[ci]);
 	context->Unmap(m_CameraMatricesBuffer[ci].Get(), 0);
 }
 

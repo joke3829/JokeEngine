@@ -5,7 +5,7 @@ class JEngineShader;
 
 class JObject : public JCommon {
 public:
-	JObject(std::vector<XMFLOAT4X4>& vWorld, UINT nodeIndex, const char* name = nullptr);
+	JObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name = nullptr);
 	virtual ~JObject() {}
 
 	void Attach(std::shared_ptr<JObject> leaf) { m_LeafObjects.emplace_back(leaf); }
@@ -48,6 +48,7 @@ protected:
 
 	XMFLOAT4X4									m_LocalTransform{};
 	std::vector<XMFLOAT4X4>&					m_WorldTransform;				// 이것에[m_NodeIndex]가 m_WorldTransform
+	std::vector<XMFLOAT4X4>&					m_WorldTransformTP;				// Transpose WorldMatrix
 	UINT										m_NodeIndex{};
 	
 	std::string									m_ShaderName{};	// 이 오브젝트를 렌더링 할 때 사용할 Shader(매핑 할 때 사용)
