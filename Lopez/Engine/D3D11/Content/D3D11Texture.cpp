@@ -10,7 +10,7 @@ JTextureDX11::JTextureDX11(const char* name)
 JTextureDX11::JTextureDX11(const wchar_t* filepath, const char* name)
 	: JTexture(filepath, name)
 {
-
+	LoadTextureFromFile(filepath);
 }
 
 void JTextureDX11::LoadTextureFromFile(const wchar_t* filepath)

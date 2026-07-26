@@ -33,7 +33,9 @@ struct DefaultMaterial
     float4 Specular;
     float4 Ambient;
     float4 Emissive;
+    int AlbedoTexIndex; // dx11: 0 or 1(true false)   dx12: -1 ~ g_TextureIndex
 };
+
 
 cbuffer cbDefaultMaterial : register(b2)
 {
@@ -52,6 +54,7 @@ cbuffer cbSceneConstant : register(b1)
     SceneConstant g_SceneConstant;
 }
 
+sampler g_Sampler : register(s0);
 
 DefaultPSInput DefaultVS(DefaultVSInput input)
 {
@@ -72,7 +75,18 @@ DefaultPSInput DefaultVS(DefaultVSInput input)
 }
 
 float4 DefaultPS(DefaultPSInput input) : SV_Target{
-    float3 normalcolor = (input.Normal + 1.f) / 2.f;
-    return float4(normalcolor, 1.f);
+    float4 finalColor;
+#ifdef D3D12_TEXTURE_REGISTER
+    return float4(1.f, 1.f, 0.f, 1.f);
+#endif
+    if (g_Material.AlbedoTexIndex)
+    {
+        finalColor = g_Material.Albedo * g_Texture[0].Sample(g_Sampler, input.TexCoord0);
+    }
+    else
+    {
+        finalColor = g_Material.Albedo;
+    }
+    return float4(finalColor);
 }
 

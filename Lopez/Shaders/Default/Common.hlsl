@@ -21,5 +21,5 @@ StructuredBuffer<float4x4> g_Cameras : register(t1);
 #ifdef D3D12_TEXTURE_REGISTER
 Texture2D g_Texture[] : register(t2, space1);
 #else
-Texture2D g_Texture : register(t2);
+Texture2D g_Texture[20] : register(t2);     // 최대 20개의 텍스쳐 t2 ~ t21
 #endif

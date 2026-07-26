@@ -195,4 +195,6 @@ source_group("TextureLoader" FILES ${TEXTURE_LOADER})
 source_group("Shaders" FILES ${SHADER_FILES})
 set_source_files_properties(${SHADER_FILES} PROPERTIES VS_TOOL_OVERRIDE "None")
 
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/Shaders ${CMAKE_BINARY_DIR}/Shaders)
+# 파일 경로 솔루션 f5시 CMakeLists.txt위치를 보게
+set_target_properties(${PROJECT_NAME} PROPERTIES
+  VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")

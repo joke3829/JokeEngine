@@ -58,6 +58,7 @@ void JEngineShaderDX11::SetSamplers(UINT parameter, JShaderStage stage)
 void JEngineShaderDX11::RenderObjects(UINT currentFrameIndex, void** rtv, UINT numRTV, void* dsv)
 {
 	JEngineShaderDX11::SetShader();
+	JEngineShaderDX11::SetSamplers(0, JS_PS);
 
 	auto* context = JD3D11GlobalFactor::GetInstance()->GetDeviceContext();
 	ID3D11RenderTargetView** drtv = reinterpret_cast<ID3D11RenderTargetView**>(rtv);
@@ -128,4 +129,21 @@ JEngineDefaultShaderDX11::JEngineDefaultShaderDX11(const char* name)
 	//	desc.FrontCounterClockwise = FALSE;
 	//	device->CreateRasterizerState(&desc, m_RasterizerState.GetAddressOf());
 	//}
+	
+	// Sampler
+	{
+		D3D11_SAMPLER_DESC desc{};
+		desc.Filter = D3D11_FILTER_ANISOTROPIC;
+		desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		desc.MaxAnisotropy = 8;
+		desc.MinLOD = 0;
+		desc.MaxLOD = D3D11_FLOAT32_MAX;
+
+		ComPtr<ID3D11SamplerState> sampler{};
+		ThrowIfFailed(device->CreateSamplerState(&desc, sampler.ReleaseAndGetAddressOf()));
+		m_SamplerStates.emplace_back(sampler);
+		m_Samplers.emplace_back(sampler.Get());
+	}
 }

@@ -7,6 +7,7 @@ JTexture::JTexture(const char* name)
 }
 
 JTexture::JTexture(const wchar_t* filepath, const char* name)
+	: JContent(name)
 {
 	if (name) {
 		SetName(name);
@@ -14,7 +15,6 @@ JTexture::JTexture(const wchar_t* filepath, const char* name)
 	else {
 		m_name = std::filesystem::path(filepath).string();
 	}
-	LoadTextureFromFile(filepath);
 }
 
 
