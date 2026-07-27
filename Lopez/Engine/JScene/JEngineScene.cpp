@@ -26,7 +26,7 @@ void JEngineScene::BuildDefaultScene()
 		meshobject->SetShaderName("DefaultShader");
 		meshobject->SetStaticMesh(contents["DefaultCube"]);
 
-		meshobject->SetRotation(45.f, 45.f, 45.f);
+		meshobject->SetRotation(45.f, 65.f, 45.f);
 
 		m_Objects.emplace_back(meshobject);
 	}

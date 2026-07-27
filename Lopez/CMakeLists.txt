@@ -46,6 +46,8 @@ set(ENGINE
   Engine/JMeshConstant.cpp
   Engine/Timer.h
   Engine/Timer.cpp
+  Engine/JInputAndUpdateThread.h
+  Engine/JInputAndUpdateThread.cpp
 )
 
 set(ENGINE_OBJECT
@@ -55,6 +57,8 @@ set(ENGINE_OBJECT
   Engine/JObject/JCameraObject.cpp
   Engine/JObject/JStaticMeshObject.h
   Engine/JObject/JStaticMeshObject.cpp
+  Engine/JObject/JPlayerObject.h
+  Engine/JObject/JPlayerObject.cpp
 )
 
 set(ENGINE_CONTENT

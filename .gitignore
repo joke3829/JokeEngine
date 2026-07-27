@@ -1,6 +1,5 @@
 .vs/
 build/
-Package/
 
 *.aps
 *JEngine_Config.json

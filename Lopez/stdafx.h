@@ -23,6 +23,8 @@
 #include <memory>
 #include <fstream>
 #include <unordered_map>
+#include <thread>
+#include <chrono>
 
 #include <d3d11_4.h>
 #include <d3d12.h>
