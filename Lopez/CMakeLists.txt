@@ -46,8 +46,8 @@ set(ENGINE
   Engine/JMeshConstant.cpp
   Engine/Timer.h
   Engine/Timer.cpp
-  Engine/JInputAndUpdateThread.h
-  Engine/JInputAndUpdateThread.cpp
+  Engine/JInputThread.h
+  Engine/JInputThread.cpp
 )
 
 set(ENGINE_OBJECT
