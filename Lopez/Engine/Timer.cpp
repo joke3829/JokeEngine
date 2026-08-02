@@ -1,27 +1,20 @@
 ﻿#include "Timer.h"
 
-
 CTimer::CTimer()
 {
-	if (!QueryPerformanceFrequency(&m_Frequency)) {
-		MessageBoxA(0, "This Hardware not supports 'QueryPerformance...'", "Fatal Error", MB_OK);
-		PostQuitMessage(0);
-		return;
-	}
-
-	QueryPerformanceCounter(&m_StartTime);
+	m_StartTime = std::chrono::steady_clock::now();
 }
 
 float CTimer::Tick(float fps)
 {
-	QueryPerformanceCounter(&m_EndTime);
+	m_EndTime = std::chrono::steady_clock::now();
 
-	float elapsedTime = static_cast<float>(m_EndTime.QuadPart - m_StartTime.QuadPart) * 1.0f / m_Frequency.QuadPart;
+	float elapsedTime = std::chrono::duration<float>(m_EndTime - m_StartTime).count();
 
 	if (fps != 0.f) {
 		while (elapsedTime < 1.f / fps) {
-			QueryPerformanceCounter(&m_EndTime);
-			elapsedTime = static_cast<float>(m_EndTime.QuadPart - m_StartTime.QuadPart) * 1.0f / m_Frequency.QuadPart;
+			m_EndTime = std::chrono::steady_clock::now();
+			elapsedTime = std::chrono::duration<float>(m_EndTime - m_StartTime).count();
 		}
 	}
 	m_StartTime = m_EndTime;

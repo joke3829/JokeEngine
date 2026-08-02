@@ -8,6 +8,8 @@
 void JokeEngine::Initialize(HWND hWnd, HINSTANCE hInstance)
 {
 	m_hWnd = hWnd; m_hInstance = hInstance;
+	m_InputThread = std::make_shared<JInputThread>(m_hWnd);
+	m_InputThread->InputThreadStart();
 
 	CreateSwapChain();
 }
@@ -21,6 +23,13 @@ void JokeEngine::Resize(UINT width, UINT height, bool FullScreenState)
 	// swapchain 사이즈 변경
 
 
+}
+
+
+// 단순히 Scene에게 전달만
+void JokeEngine::MouseMessageReceiver(JMouseState& state)
+{
+	m_Scene->ProcessMouseMessage(state);
 }
 
 // =======================================================================
@@ -38,10 +47,14 @@ void JokeEngineDX11::Initialize(HWND hWnd, HINSTANCE hInstance)
 
 	m_Scene = std::make_shared<JEngineDefaultSceneDX11>();
 	m_Scene->SetContentManager(m_ContentManager);
+	m_Scene->SetInputThread(m_InputThread);
 	m_Scene->BuildDefaultScene();
 
 	m_Renderer = std::make_shared<JEngineRendererDX11>(config->WindowsWidth, config->WindowsHeight);
 	m_Renderer->SetScene(m_Scene);
+
+	// 키입력 시작
+	m_InputThread->SetInputCheckState(true);
 }
 
 
@@ -89,6 +102,7 @@ void JokeEngineDX11::Render()
 	// update section
 	// 
 	float elapsedTime = m_Timer.Tick(gfactor->LimitFPS);
+
 	m_Scene->Update(elapsedTime);       // CPU
 	m_Renderer->RenderFrame();			// GPU(currnet그거) 이 안에서 FrameIndex도 넘어감
 	

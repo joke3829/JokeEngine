@@ -4,6 +4,7 @@
 #include "JContent/JContentManager.h"
 #include "JRenderer/JEngineRenderer.h"
 #include "D3D11/D3D11GlobalFactor.h"
+#include "JInputThread.h"
 #include "Timer.h"
 
 // DirectX Engine
@@ -13,6 +14,8 @@ public:
 	virtual void Initialize(HWND hWnd, HINSTANCE hInstance);
 	virtual void Resize(UINT width, UINT height, bool FullScreenState);
 	
+	virtual void MouseMessageReceiver(JMouseState& state);
+
 	virtual void Render() {};
 protected:
 	virtual void CreateSwapChain() {}
@@ -29,6 +32,8 @@ protected:
 
 	std::shared_ptr<JEngineRenderer>	m_Renderer{};
 	std::shared_ptr<JEngineScene>		m_Scene{};
+	
+	std::shared_ptr<JInputThread>		m_InputThread{};
 
 	CTimer								m_Timer{};
 };

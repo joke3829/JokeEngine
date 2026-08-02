@@ -100,3 +100,11 @@ enum JShaderStage : unsigned char {
 
 // 렌더 타겟 수 - DX12의 경우 fence를 2개를 이용해 렌더링 시간 손해 없---
 constexpr UINT									g_NumRenderTarget = 2;
+
+
+// 공용 구조체 =================================================================================
+
+struct JMouseState {
+	UINT message{};			// WM_Message
+	POINT cursor{};			// 현재 마우스 위치	// client 내 좌표(window 좌상단 0, 0)
+};
