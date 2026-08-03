@@ -86,9 +86,11 @@ void JInputThread::InputQueueLoop()
 				JKeyState state{};
 				if (GetForegroundWindow() == m_hWnd) {
 					for (int i = 0; i < 256; ++i) {
-						if (GetAsyncKeyState(i) & 0x8000) {
-							state.KeyState[i] = true;
-						}
+						// 0x0000 = 이전에 누른적 없고 현재도 안눌린 상태	(누른적 없음)
+						// 0x8000 = 이전에 누른적 없고 현재 눌린 상태		(지금 눌림)
+						// 0x8001 = 이전에 눌렀고 현재도 눌려있는 상태		(계속 눌림)
+						// 0x0001 = 이전에 눌렀고 현재 안눌린 상태			(지금 뗌)
+						state.KeyState[i] = GetAsyncKeyState(i);
 					}
 					GetCursorPos(&state.CursorPos);
 					ScreenToClient(m_hWnd, &state.CursorPos);

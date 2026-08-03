@@ -6,7 +6,7 @@
 
 // 지금 눌린게 확인되면 elapsedTime동안 누르고 있었다고 판단
 struct JKeyState {
-	bool KeyState[256]{};
+	SHORT KeyState[256]{};
 	POINT CursorPos{};		// 이 포즈는 client screen space pos
 	int deltaX{};
 	int deltaY{};

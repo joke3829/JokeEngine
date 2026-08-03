@@ -59,6 +59,8 @@ set(ENGINE_OBJECT
   Engine/JObject/JStaticMeshObject.cpp
   Engine/JObject/JPlayerObject.h
   Engine/JObject/JPlayerObject.cpp
+  Engine/JObject/JSpriteAnimationObject.h
+  Engine/JObject/JSpriteAnimationObject.cpp
 )
 
 set(ENGINE_CONTENT
@@ -72,6 +74,8 @@ set(ENGINE_CONTENT
   Engine/JContent/JContentManager.cpp
   Engine/JContent/JTexture.h
   Engine/JContent/JTexture.cpp
+  Engine/JContent/JSpriteAnimationSet.h
+  Engine/JContent/JSpriteAnimationSet.cpp
 )
 
 set(ENGINE_RENDERER
@@ -116,6 +120,8 @@ set(D3D11_CONTENT
   Engine/D3D11/Content/D3D11ContentManager.cpp
   Engine/D3D11/Content/D3D11Texture.h
   Engine/D3D11/Content/D3D11Texture.cpp
+  Engine/D3D11/Content/D3D11SpriteAnimationSet.h
+  Engine/D3D11/Content/D3D11SpriteAnimationSet.cpp
 )
 
 
