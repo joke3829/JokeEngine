@@ -11,7 +11,7 @@ JEngineRendererDX11::JEngineRendererDX11(UINT width, UINT height, const char* na
 		std::shared_ptr<JEngineDefaultShaderDX11> shader = std::make_shared<JEngineDefaultShaderDX11>("DefaultShader");
 		auto[iter, inserted] = m_PSOMap.try_emplace(shader->GetName(), shader);
 #if defined(_DEBUG) || defined(DEBUG)
-		if (not inserted)  ShowInsertedFailed(shader->GetName());
+		if (not inserted)  ShowInsertedFailed(shader->GetName(), "Renderer");
 #endif
 	}
 }

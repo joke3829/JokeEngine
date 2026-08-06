@@ -3,7 +3,7 @@
 #include "D3D11Texture.h"
 
 JMaterialDX11::JMaterialDX11(const char* name)
-	: JMaterial(name)
+	: JDMaterial(name)
 {
 	auto* gFactor = JD3D11GlobalFactor::GetInstance();
 	auto* device = gFactor->GetDevice();

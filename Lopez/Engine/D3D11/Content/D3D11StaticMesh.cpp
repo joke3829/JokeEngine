@@ -15,15 +15,15 @@ JStaticMeshDX11::JStaticMeshDX11(XMFLOAT3 center, XMFLOAT3 extent, const char* n
 	BuffersReady();
 }
 
-JStaticMeshDX11::JStaticMeshDX11(XMFLOAT3 center, float radius, UINT sliceCount, UINT stackCount, int t, const char* name)
-	: JStaticMesh(center, radius, sliceCount, stackCount, name)
+JStaticMeshDX11::JStaticMeshDX11(XMFLOAT3 center, float radius, UINT sliceCount, UINT stackCount, int sorry, const char* name)
+	: JStaticMesh(center, radius, sliceCount, stackCount, sorry, name)
 {
 	m_d3dTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	BuffersReady();
 }
 
-JStaticMeshDX11::JStaticMeshDX11(XMFLOAT3 center, float width, float height, bool bViewport, const char* name)
-	: JStaticMesh(center, width, height, bViewport, name)
+JStaticMeshDX11::JStaticMeshDX11(XMFLOAT3 center, float width, float height, JSMPlane quad, const char* name)
+	: JStaticMesh(center, width, height, quad, name)
 {
 	m_d3dTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	BuffersReady();

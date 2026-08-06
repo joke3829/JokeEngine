@@ -8,6 +8,7 @@
 
 #include "targetver.h"
 #define WIN32_LEAN_AND_MEAN             // 거의 사용되지 않는 내용을 Windows 헤더에서 제외합니다.
+#define NOMINMAX
 // Windows 헤더 파일
 #include <windows.h>
 // C 런타임 헤더 파일입니다.
@@ -52,7 +53,7 @@ using Microsoft::WRL::ComPtr;
 #include "Package/spdlog/spdlog.h"
 #endif
 #include "Package/nlohmann/json.hpp"
-
+#include "Package/fkYAML/node.hpp"
 
 
 // 공용 함수 선언부===============================================================================
@@ -80,9 +81,9 @@ inline UINT Align(UINT size, UINT multiple)
 
 
 #if defined(_DEBUG) || defined(DEBUG)
-inline void ShowInsertedFailed(const std::string& name)
+inline void ShowInsertedFailed(const std::string& name, const char* sector)
 {
-	spdlog::warn("{0} (이)가 이미 ContentManager에 있어 추가에 실패했습니다.", name.c_str());
+	spdlog::warn("{0} (이)가 이미 {1}에 있어 추가에 실패했습니다.", name.c_str(), sector);
 }
 #endif
 

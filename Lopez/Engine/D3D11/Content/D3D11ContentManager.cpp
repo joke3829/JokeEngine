@@ -11,7 +11,7 @@ void JContentManagerDX11::ReadyDefaultContent()
 		//std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>(XMFLOAT3(0.f, 0.f, 0.f), 2.5f, 20, 20, 1, "DefaultCube");
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(mesh->GetName(), mesh);
 #if defined(_DEBUG) || defined(DEBUG)
-		if(not inserted) ShowInsertedFailed(mesh->GetName());
+		if(not inserted) ShowInsertedFailed(mesh->GetName(), "ContentManager");
 #endif
 	}
 
@@ -21,14 +21,14 @@ void JContentManagerDX11::ReadyDefaultContent()
 		texture->MakeNullTexture();
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(texture->GetName(), texture);
 #if defined(_DEBUG) || defined(DEBUG)
-		if (not inserted) ShowInsertedFailed(texture->GetName());
+		if (not inserted) ShowInsertedFailed(texture->GetName(), "ContentManager");
 #endif
 	}
 	{
 		std::shared_ptr<JTextureDX11> texture = std::make_shared<JTextureDX11>(L"Resource/test.dds", "TestTexture");
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(texture->GetName(), texture);
 #if defined(_DEBUG) || defined(DEBUG)
-		if (not inserted) ShowInsertedFailed(texture->GetName());
+		if (not inserted) ShowInsertedFailed(texture->GetName(), "ContentManager");
 #endif
 	}
 
@@ -41,7 +41,7 @@ void JContentManagerDX11::ReadyDefaultContent()
 
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(material->GetName(), material);
 #if defined(_DEBUG) || defined(DEBUG)
-		if (not inserted) ShowInsertedFailed(material->GetName());
+		if (not inserted) ShowInsertedFailed(material->GetName(), "ContentManager");
 #endif
 	}
 

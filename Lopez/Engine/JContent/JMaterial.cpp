@@ -5,3 +5,8 @@ JMaterial::JMaterial(const char* name)
 {
 
 }
+
+JDMaterial::JDMaterial(const char* name)
+	: JMaterial(name)
+{
+}

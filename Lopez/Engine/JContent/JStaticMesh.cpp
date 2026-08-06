@@ -74,7 +74,7 @@ JStaticMesh::JStaticMesh(XMFLOAT3 center, XMFLOAT3 extent, const char* name)
 }
 
 // 구(Sphere) 생성자, 
-JStaticMesh::JStaticMesh(XMFLOAT3 center, float radius, UINT sliceCount, UINT stackCount, const char* name)
+JStaticMesh::JStaticMesh(XMFLOAT3 center, float radius, UINT sliceCount, UINT stackCount, int sorry, const char* name)
     : JContent(name)
 {
     UINT numVertices = 2 + (stackCount - 1) * (sliceCount + 1);
@@ -174,7 +174,7 @@ JStaticMesh::JStaticMesh(XMFLOAT3 center, float radius, UINT sliceCount, UINT st
 }
 
 // 평면 생성, 
-JStaticMesh::JStaticMesh(XMFLOAT3 center, float width, float height, bool bViewport, const char* name)
+JStaticMesh::JStaticMesh(XMFLOAT3 center, float width, float height, JSMPlane quad, const char* name)
     : JContent(name)
 {
     m_Vertices.reserve(4);
@@ -188,10 +188,23 @@ JStaticMesh::JStaticMesh(XMFLOAT3 center, float width, float height, bool bViewp
     float halfW = width * 0.5f;
     float halfH = height * 0.5f;
 
-    if (bViewport) {
-        center.x += halfW;
-        center.y -= halfH;
+    if (quad == quad1) {
+        center.x = halfW;
+        center.y = halfH;
     }
+    else if (quad == quad2) {
+        center.x = -halfW;
+        center.y = halfH;
+    }
+    else if (quad == quad3) {
+        center.x = -halfW;
+        center.y = -halfH;
+    }
+    else if (quad == quad4) {
+        center.x = halfW;
+        center.y = -halfH;
+    }
+
 
     m_Vertices.emplace_back(center.x - halfW, center.y + halfH, center.z);
     m_Normals.emplace_back(0.0f, 0.0f, -1.0f);
