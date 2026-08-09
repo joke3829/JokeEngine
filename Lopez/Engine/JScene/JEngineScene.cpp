@@ -3,6 +3,7 @@
 #include "Engine/JObject/JCameraObject.h"
 #include "Engine/JObject/JStaticMeshObject.h"
 #include "Engine/JObject/JPlayerObject.h"
+#include "Engine/JObject/JSpriteAnimationObject.h"
 
 
 void JEngineScene::Update(float elapsedTime)
@@ -58,6 +59,25 @@ void JEngineScene::BuildDefaultScene()
 		meshobject->SetRotation(45.f, 65.f, 45.f);
 
 		m_Objects.emplace_back(meshobject);
+	}
+
+
+	{// sprite object
+		m_WorldMatrices.emplace_back();
+		m_WorldMatricesTP.emplace_back();
+		std::shared_ptr<JSpriteAnimationObject> spriteobject = std::make_shared<JSpriteAnimationObject>(
+			m_WorldMatrices,
+			m_WorldMatricesTP,
+			static_cast<UINT>(m_WorldMatrices.size() - 1),
+			"MyTestSprite"
+		);
+		spriteobject->SetStaticMesh(contents["DefaultPlane"]);
+		spriteobject->SetSpriteSet(contents["TestSprite"]);
+		spriteobject->AddMaterial(contents["DefaultSpriteMaterial"]);
+		spriteobject->SetShaderName("DefaultSpriteShader");
+
+		spriteobject->SetScale(85.f, 85.f, 1.f);
+		m_Objects.emplace_back(spriteobject);
 	}
 
 	// player + camera

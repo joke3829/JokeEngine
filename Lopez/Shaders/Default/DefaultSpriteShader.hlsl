@@ -4,7 +4,6 @@
 // b0, b2
 // t0, t1, t2~
 
-
 struct SceneConstant
 {
     uint camera;
@@ -15,9 +14,14 @@ cbuffer cbSceneConstant : register(b1)
     SceneConstant g_SceneConstant;
 }
 
+cbuffer cbSpriteConstant : register(b3)
+{
+    float4x4 g_uvMatrix;
+}
+
 sampler g_Sampler : register(s0);
 
-DefaultPSInput DefaultVS(DefaultVSInput input)
+DefaultPSInput SpriteVS(DefaultVSInput input)
 {
     DefaultPSInput output;
     uint nodeindex = g_MeshConstant.nodeIndex;
@@ -29,13 +33,13 @@ DefaultPSInput DefaultVS(DefaultVSInput input)
     output.Normal = mul(input.Normal, (float3x3) g_WorldMatrices[nodeindex]);
     output.Tangent = mul(input.Tangent, (float3x3) g_WorldMatrices[nodeindex]);
     output.BiTangent = mul(input.BiTangent, (float3x3) g_WorldMatrices[nodeindex]);
-    output.TexCoord0 = input.TexCoord0;
+    output.TexCoord0 = mul(float4(input.TexCoord0, 0.f, 1.f), g_uvMatrix).xy;
     output.TexCoord1 = input.TexCoord1;
     
     return output;
 }
 
-float4 DefaultPS(DefaultPSInput input) : SV_Target
+float4 SpritePS(DefaultPSInput input) : SV_Target
 {
     float4 finalColor;
 #ifdef D3D12_TEXTURE_REGISTER
@@ -49,7 +53,8 @@ float4 DefaultPS(DefaultPSInput input) : SV_Target
     {
         finalColor = g_Material.Albedo;
     }
+    if(finalColor.a <= 0.1f)
+        discard;
     return float4(finalColor);
-
 }
 

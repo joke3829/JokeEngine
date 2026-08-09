@@ -188,43 +188,45 @@ JStaticMesh::JStaticMesh(XMFLOAT3 center, float width, float height, JSMPlane qu
     float halfW = width * 0.5f;
     float halfH = height * 0.5f;
 
+    XMFLOAT3 mcenter = center;
+
     if (quad == quad1) {
-        center.x = halfW;
-        center.y = halfH;
+        mcenter.x += halfW;
+        mcenter.y += halfH;
     }
     else if (quad == quad2) {
-        center.x = -halfW;
-        center.y = halfH;
+        mcenter.x -= halfW;
+        mcenter.y += halfH;
     }
     else if (quad == quad3) {
-        center.x = -halfW;
-        center.y = -halfH;
+        mcenter.x -= halfW;
+        mcenter.y -= halfH;
     }
     else if (quad == quad4) {
-        center.x = halfW;
-        center.y = -halfH;
+        mcenter.x += halfW;
+        mcenter.y -= halfH;
     }
 
 
-    m_Vertices.emplace_back(center.x - halfW, center.y + halfH, center.z);
-    m_Normals.emplace_back(0.0f, 0.0f, -1.0f);
-    m_Tangents.emplace_back(1.0f, 0.0f, 0.0f);
-    m_BiTangents.emplace_back(0.0f, -1.0f, 0.0f);
-    m_TexCoord0.emplace_back(0.0f, 0.0f);
-
-    m_Vertices.emplace_back(center.x + halfW, center.y + halfH, center.z);
-    m_Normals.emplace_back(0.0f, 0.0f, -1.0f);
-    m_Tangents.emplace_back(1.0f, 0.0f, 0.0f);
-    m_BiTangents.emplace_back(0.0f, -1.0f, 0.0f);
-    m_TexCoord0.emplace_back(1.0f, 0.0f);
-
-    m_Vertices.emplace_back(center.x - halfW, center.y - halfH, center.z);
+    m_Vertices.emplace_back(mcenter.x - halfW, mcenter.y - halfH, mcenter.z);
     m_Normals.emplace_back(0.0f, 0.0f, -1.0f);
     m_Tangents.emplace_back(1.0f, 0.0f, 0.0f);
     m_BiTangents.emplace_back(0.0f, -1.0f, 0.0f);
     m_TexCoord0.emplace_back(0.0f, 1.0f);
 
-    m_Vertices.emplace_back(center.x + halfW, center.y - halfH, center.z);
+    m_Vertices.emplace_back(mcenter.x - halfW, mcenter.y + halfH, mcenter.z);
+    m_Normals.emplace_back(0.0f, 0.0f, -1.0f);
+    m_Tangents.emplace_back(1.0f, 0.0f, 0.0f);
+    m_BiTangents.emplace_back(0.0f, -1.0f, 0.0f);
+    m_TexCoord0.emplace_back(0.0f, 0.0f);
+
+    m_Vertices.emplace_back(mcenter.x + halfW, mcenter.y + halfH, mcenter.z);
+    m_Normals.emplace_back(0.0f, 0.0f, -1.0f);
+    m_Tangents.emplace_back(1.0f, 0.0f, 0.0f);
+    m_BiTangents.emplace_back(0.0f, -1.0f, 0.0f);
+    m_TexCoord0.emplace_back(1.0f, 0.0f);
+
+    m_Vertices.emplace_back(mcenter.x + halfW, mcenter.y - halfH, mcenter.z);
     m_Normals.emplace_back(0.0f, 0.0f, -1.0f);
     m_Tangents.emplace_back(1.0f, 0.0f, 0.0f);
     m_BiTangents.emplace_back(0.0f, -1.0f, 0.0f);
@@ -232,11 +234,11 @@ JStaticMesh::JStaticMesh(XMFLOAT3 center, float width, float height, JSMPlane qu
 
     index.emplace_back(0);
     index.emplace_back(1);
-    index.emplace_back(2);
+    index.emplace_back(3);
 
     index.emplace_back(1);
-    index.emplace_back(3);
     index.emplace_back(2);
+    index.emplace_back(3);
 
     m_Colors.emplace_back(XMFLOAT4(1.f, 1.f, 1.f, 1.f));
     m_TexCoord1.emplace_back(XMFLOAT2());

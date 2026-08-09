@@ -20,17 +20,19 @@ void JPlayerObject::UpdateInput(JKeyState& input)
 	XMFLOAT3 rightd{ m_LocalTransform._11, m_LocalTransform._12, m_LocalTransform._13 };
 	XMVECTOR look = XMVector3Normalize(XMLoadFloat3(&lookd));
 	XMVECTOR right = XMVector3Normalize(XMLoadFloat3(&rightd));
+
+	float mspeed = 20.f;
 	if (input.KeyState['W'] & 0x8000) {
-		XMStoreFloat3(&m_Position,  XMLoadFloat3(&m_Position) + (look * 5.f * elapsed));
+		XMStoreFloat3(&m_Position,  XMLoadFloat3(&m_Position) + (look * mspeed * elapsed));
 	}
 	if (input.KeyState['S'] & 0x8000) {
-		XMStoreFloat3(&m_Position, XMLoadFloat3(&m_Position) + (-1 * look * 5.f * elapsed));
+		XMStoreFloat3(&m_Position, XMLoadFloat3(&m_Position) + (-1 * look * mspeed * elapsed));
 	}
 
 	if (input.KeyState['A'] & 0x8000) {
-		XMStoreFloat3(&m_Position, XMLoadFloat3(&m_Position) + (-1 * right * 5.f * elapsed));
+		XMStoreFloat3(&m_Position, XMLoadFloat3(&m_Position) + (-1 * right * mspeed * elapsed));
 	}
 	if (input.KeyState['D'] & 0x8000) {
-		XMStoreFloat3(&m_Position, XMLoadFloat3(&m_Position) + (right * 5.f * elapsed));
+		XMStoreFloat3(&m_Position, XMLoadFloat3(&m_Position) + (right * mspeed * elapsed));
 	}
 }

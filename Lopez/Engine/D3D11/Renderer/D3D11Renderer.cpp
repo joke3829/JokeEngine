@@ -14,6 +14,13 @@ JEngineRendererDX11::JEngineRendererDX11(UINT width, UINT height, const char* na
 		if (not inserted)  ShowInsertedFailed(shader->GetName(), "Renderer");
 #endif
 	}
+	{
+		std::shared_ptr<JEngineDefaultSpriteShaderDX11> shader = std::make_shared<JEngineDefaultSpriteShaderDX11>();
+		auto [iter, inserted] = m_PSOMap.try_emplace(shader->GetName(), shader);
+#if defined(_DEBUG) || defined(DEBUG)
+		if (not inserted)  ShowInsertedFailed(shader->GetName(), "Renderer");
+#endif
+	}
 }
 
 void JEngineRendererDX11::ResizeTarget(UINT width, UINT height)
@@ -29,7 +36,7 @@ void JEngineRendererDX11::RenderFrame()
 
 	auto* context = JD3D11GlobalFactor::GetInstance()->GetDeviceContext();
 
-	float clearcolor[] = { 0.f, 0.f, 0.f, 1.f };
+	float clearcolor[] = { 0.f, 1.f, 0.f, 1.f };
 	context->ClearRenderTargetView(m_RenderTargetView[m_CurrentFrameIndex].Get(), clearcolor);
 	context->ClearDepthStencilView(m_DepthStencilView[m_CurrentFrameIndex].Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
 
@@ -40,6 +47,7 @@ void JEngineRendererDX11::RenderFrame()
 	// PSO
 	void* rtv[] = { m_RenderTargetView[m_CurrentFrameIndex].Get() };
 	m_PSOMap["DefaultShader"]->RenderObjects(m_CurrentFrameIndex, rtv, 1, m_DepthStencilView[m_CurrentFrameIndex].Get());
+	m_PSOMap["DefaultSpriteShader"]->RenderObjects(m_CurrentFrameIndex, rtv, 1, m_DepthStencilView[m_CurrentFrameIndex].Get());
 }
 
 void JEngineRendererDX11::CopyResult(void* outBuffer)

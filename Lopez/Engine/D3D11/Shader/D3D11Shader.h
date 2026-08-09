@@ -46,3 +46,10 @@ class JEngineDefaultShaderDX11 : public JEngineShaderDX11 {
 public:
 	JEngineDefaultShaderDX11(const char* name = "DefaultShader");
 };
+
+
+
+class JEngineDefaultSpriteShaderDX11 : public JEngineShaderDX11 {
+public:
+	JEngineDefaultSpriteShaderDX11(const char* name = "DefaultSpriteShader");
+};

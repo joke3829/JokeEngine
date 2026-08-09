@@ -10,11 +10,11 @@ class JMeshConstant;
 class JStaticMeshObject : public JObject {
 public:
 	JStaticMeshObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name = nullptr);
-	~JStaticMeshObject();
+	virtual ~JStaticMeshObject();
 
-	void Update(float elapsedTime, XMFLOAT4X4* parent = nullptr);
+	virtual void Update(float elapsedTime, XMFLOAT4X4* parent = nullptr);
 
-	void Render(UINT currentFrameIndex);
+	virtual void Render(UINT currentFrameIndex);
 
 public:
 	void AddMaterial(std::shared_ptr<JContent> material, int index = -1);

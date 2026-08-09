@@ -20,9 +20,6 @@ void JEngineShaderDX11::SetShader()
 void JEngineShaderDX11::SetSamplers(UINT parameter, JShaderStage stage)
 {
 	if (0 == m_Samplers.size()) {
-#if defined(_DEBUG) || defined(DEBUG)
-		spdlog::error("{0} Shader에서 잘못된 SetSamplaers를 호출했습니다. - Samplers.size() == 0", m_name.c_str());
-#endif
 		return;
 	}
 	auto* context = JD3D11GlobalFactor::GetInstance()->GetDeviceContext();
@@ -57,6 +54,9 @@ void JEngineShaderDX11::SetSamplers(UINT parameter, JShaderStage stage)
 
 void JEngineShaderDX11::RenderObjects(UINT currentFrameIndex, void** rtv, UINT numRTV, void* dsv)
 {
+	if (empty())
+		return;
+
 	JEngineShaderDX11::SetShader();
 	JEngineShaderDX11::SetSamplers(0, JS_PS);
 
@@ -90,8 +90,8 @@ void JEngineShaderDX11::CreateInputLayout(bool skinning)
 			{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 2, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 			{"TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 3, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 			{"BITANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 4, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"TEXCOORD", 0, DXGI_FORMAT_R32G32B32_FLOAT, 5, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"TEXCOORD", 1, DXGI_FORMAT_R32G32B32_FLOAT, 6, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
+			{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 5, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{"TEXCOORD", 1, DXGI_FORMAT_R32G32_FLOAT, 6, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
 		};
 		ThrowIfFailed(device->CreateInputLayout(desc, std::size(desc), vs->GetBufferPointer(), vs->GetBufferSize(), m_InputLayout.ReleaseAndGetAddressOf()));
 	}
@@ -137,6 +137,63 @@ JEngineDefaultShaderDX11::JEngineDefaultShaderDX11(const char* name)
 		desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 		desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 		desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		desc.MaxAnisotropy = 8;
+		desc.MinLOD = 0;
+		desc.MaxLOD = D3D11_FLOAT32_MAX;
+
+		ComPtr<ID3D11SamplerState> sampler{};
+		ThrowIfFailed(device->CreateSamplerState(&desc, sampler.ReleaseAndGetAddressOf()));
+		m_SamplerStates.emplace_back(sampler);
+		m_Samplers.emplace_back(sampler.Get());
+	}
+}
+
+JEngineDefaultSpriteShaderDX11::JEngineDefaultSpriteShaderDX11(const char* name)
+	: JEngineShaderDX11(name)
+{
+	auto* device = JD3D11GlobalFactor::GetInstance()->GetDevice();
+	// InputLayout
+	CreateInputLayout(false);
+
+	// VS
+	{
+		ComPtr<ID3DBlob> vs{};
+		vs = CompileHLSL(L"Shaders/Default/DefaultSpriteShader.hlsl", nullptr, "SpriteVS", "vs_5_0");
+
+		ThrowIfFailed(device->CreateVertexShader(vs->GetBufferPointer(), vs->GetBufferSize(), nullptr, m_VS.ReleaseAndGetAddressOf()));
+	}
+
+	// PS
+	{
+		ComPtr<ID3DBlob> ps{};
+		ps = CompileHLSL(L"Shaders/Default/DefaultSpriteShader.hlsl", nullptr, "SpritePS", "ps_5_0");
+
+		ThrowIfFailed(device->CreatePixelShader(ps->GetBufferPointer(), ps->GetBufferSize(), nullptr, m_PS.ReleaseAndGetAddressOf()));
+	}
+
+	// BlendState
+	{
+		D3D11_BLEND_DESC desc{};
+		auto& rt = desc.RenderTarget[0];
+		rt.BlendEnable = true;
+		rt.SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		rt.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+		rt.BlendOp = D3D11_BLEND_OP_ADD;
+
+		rt.SrcBlendAlpha = D3D11_BLEND_ONE;
+		rt.DestBlendAlpha = D3D11_BLEND_ZERO;
+		rt.BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		rt.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		ThrowIfFailed(device->CreateBlendState(&desc, m_BlendState.ReleaseAndGetAddressOf()));
+	}
+
+	// Sampler
+	{
+		D3D11_SAMPLER_DESC desc{};
+		desc.Filter = D3D11_FILTER_ANISOTROPIC;
+		desc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+		desc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+		desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 		desc.MaxAnisotropy = 8;
 		desc.MinLOD = 0;
 		desc.MaxLOD = D3D11_FLOAT32_MAX;

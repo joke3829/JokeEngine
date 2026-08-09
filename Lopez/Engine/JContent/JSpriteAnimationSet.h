@@ -3,8 +3,8 @@
 #include "JContent.h"
 #include "JMaterial.h"
 
-// 이놈은 반드시 텍스쳐를 가진 마테리얼 set 필요
-// Material이 Sprite이미지
+
+// Material은 Object가 가질 것
 
 
 
@@ -20,16 +20,15 @@ struct JSAnimData {
 	float col;				// 열
 };
 
+// keyframe에 대한 정보만 가진다.
 class JSpriteAnimationSet : public JContent {
 public:
-	virtual void AddMaterial(std::shared_ptr<JContent>& material) {}
+	JSpriteAnimationSet(const char* name = nullptr);
 
-
-
-	// 이름과 시간 주면 JSAnimData 받기
-	const JSAnimData& GetKeyFrameData(const char* animName, float& time); // time은 player가 관리 하되 현재 애니메이션의 시간을 초과하면 time을 초과한 시간을 제거하고 돌려줌
+	const JSAnimData& GetKeyFrameData(std::string& animName, float& time); // time은 player가 관리 하되 현재 애니메이션의 시간을 초과하면 time을 초과한 시간을 제거하고 돌려줌
 
 	void LoadAnimationFactorFromYaml(const char* filepath);
 protected:
-	std::unordered_map < std::string, std::vector<JSAnimData>> m_KeyFrame{};	// 반드시 0번째라도 채워두자
+	std::unordered_map<std::string, std::vector<JSAnimData>>	m_KeyFrame{};	// 반드시 0번째라도 채워두자
+	std::unordered_map<std::string, float>						m_PlayTime{};	// 애니메이션 별 엔드타임
 };

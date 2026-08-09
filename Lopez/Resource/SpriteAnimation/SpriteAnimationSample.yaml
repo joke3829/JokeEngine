@@ -2,6 +2,7 @@
 # Track별 형식
 # - TrackName: "Ryoshu_Idle"
 #    MaterialIndex: 0
+#    PlayTime: 3.0
 #    T_Width: 1024   # 전체 Texture width
 #    T_Height: 256   # 전체 Texture height
 #    S_Width: 256    # Sprite하나의 Width
@@ -10,31 +11,34 @@
 #      - { Time: 0.0, Row: 0, Col: 0 }
 #      - { Time: 1.5, Row: 0, Col: 1 }
 #      - { Time: 2.0, Row: 0, Col: 2 }
+#    마지막 키 프레임은 반드시 처음것, 혹은 의미 없는 것을 넣어주기
 # ============================================
 
 # 애니메이션의 목록
 Animations:
   - TrackName: "Idle"
     MaterialIndex: 0
-    T_Width: 1024   # 전체 Texture width
-    T_Height: 512   # 전체 Texture height
-    S_Width: 256    # Sprite하나의 Width
-    S_Height: 256   # Sprite하나의 Height
+    PlayTime: 2.0   # 이 애니메이션의 재생 시간
+    T_Width: 340   # 전체 Texture width
+    T_Height: 85   # 전체 Texture height
+    S_Width: 85    # Sprite하나의 Width
+    S_Height: 85   # Sprite하나의 Height
     Keyframes:
       - { Time: 0.0, Row: 0, Col: 0 }
-      - { Time: 1.5, Row: 0, Col: 1 }
-      - { Time: 2.0, Row: 0, Col: 2 }
-      - { Time: 2.5, Row: 0, Col: 3 }
+      - { Time: 0.5, Row: 0, Col: 1 }
+      - { Time: 1.0, Row: 0, Col: 2 }
+      - { Time: 1.5, Row: 0, Col: 3 }
   
   - TrackName: "Walk"
     MaterialIndex: 0
-    T_Width: 1024   # 전체 Texture width
-    T_Height: 512   # 전체 Texture height
-    S_Width: 256    # Sprite하나의 Width
-    S_Height: 256   # Sprite하나의 Height
+    PlayTime: 0.8
+    T_Width: 340   # 전체 Texture width
+    T_Height: 85   # 전체 Texture height
+    S_Width: 85    # Sprite하나의 Width
+    S_Height: 85   # Sprite하나의 Height
     Keyframes:
-      - { Time: 0.0, Row: 1, Col: 0 }
-      - { Time: 1.5, Row: 1, Col: 1 }
-      - { Time: 2.0, Row: 1, Col: 2 }
-      - { Time: 2.5, Row: 1, Col: 3 }
+      - { Time: 0.0, Row: 0, Col: 0 }
+      - { Time: 0.2, Row: 0, Col: 1 }
+      - { Time: 0.4, Row: 0, Col: 2 }
+      - { Time: 0.6, Row: 0, Col: 3 }
     

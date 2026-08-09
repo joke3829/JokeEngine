@@ -18,6 +18,7 @@ public:
 	virtual void SetPSOName(const char* name) {}
 	virtual void SetSamplers(UINT parameter, JShaderStage stage = JS_NONE) {}
 
+	bool empty() { return m_Objects.empty(); }
 
 	virtual void RenderObjects() {}
 	// 외부의 버퍼를 자신의 RenderTarget으로 이용

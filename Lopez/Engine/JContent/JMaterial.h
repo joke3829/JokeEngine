@@ -1,4 +1,5 @@
-﻿#include "JContent.h"
+﻿#pragma once
+#include "JContent.h"
 
 
 struct cbSimpleMaterial {

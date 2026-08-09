@@ -48,6 +48,8 @@ set(ENGINE
   Engine/Timer.cpp
   Engine/JInputThread.h
   Engine/JInputThread.cpp
+  Engine/JSpriteMeshConstant.h
+  Engine/JSpriteMeshConstant.cpp
 )
 
 set(ENGINE_OBJECT
@@ -109,6 +111,8 @@ set(D3D11
   Engine/D3D11/D3D11GlobalFactor.cpp
   Engine/D3D11/D3D11MeshConstant.h
   Engine/D3D11/D3D11MeshConstant.cpp
+  Engine/D3D11/D3D11SpriteMeshConstant.h
+  Engine/D3D11/D3D11SpriteMeshConstant.cpp
 )
 
 set(D3D11_CONTENT
@@ -120,8 +124,6 @@ set(D3D11_CONTENT
   Engine/D3D11/Content/D3D11ContentManager.cpp
   Engine/D3D11/Content/D3D11Texture.h
   Engine/D3D11/Content/D3D11Texture.cpp
-  Engine/D3D11/Content/D3D11SpriteAnimationSet.h
-  Engine/D3D11/Content/D3D11SpriteAnimationSet.cpp
 )
 
 
@@ -153,6 +155,7 @@ set(D3D11_INTEGRATE
 set(SHADER_FILES
   Shaders/Default/Common.hlsl
   Shaders/Default/DefaultShader.hlsl
+  Shaders/Default/DefaultSpriteShader.hlsl
 )
 
 set(TEXTURE_LOADER

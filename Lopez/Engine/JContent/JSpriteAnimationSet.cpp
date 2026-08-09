@@ -1,10 +1,39 @@
 #include "JSpriteAnimationSet.h"
 
 
-const JSAnimData& JSpriteAnimationSet::GetKeyFrameData(const char* animName, float& time)
+JSpriteAnimationSet::JSpriteAnimationSet(const char* name)
+	: JContent(name)
 {
-	JSAnimData test;
-	return test;
+}
+
+const JSAnimData& JSpriteAnimationSet::GetKeyFrameData(std::string& animName, float& time)
+{
+	if (!m_KeyFrame.contains(animName)) {
+		if (!m_KeyFrame.empty()) {
+			auto s = m_KeyFrame.begin();
+			animName = s->first;
+		}
+		else {
+#if defined(_DEBUG) || defined(DEBUG)
+			spdlog::error("{0} m_KeyFrame이 비어있습니다.", m_name.c_str());
+#endif
+			JSAnimData data{};
+			return data;
+		}
+	}
+
+	auto& s = m_KeyFrame[animName];
+	float playtime = m_PlayTime[animName];
+	while (time > playtime)
+		time -= playtime;
+
+	auto it = std::upper_bound(s.begin(), s.end(), time, [](float value, JSAnimData& frame) {
+		return value < frame.keyframeTime;
+		});
+
+	// time이 [0]보다 작았을 경우 상정 안함, 문제 있을 시 변경
+	--it;
+	return *it;
 }
 
 void JSpriteAnimationSet::LoadAnimationFactorFromYaml(const char* filepath)
@@ -23,6 +52,7 @@ void JSpriteAnimationSet::LoadAnimationFactorFromYaml(const char* filepath)
 		for (auto& tracks : node["Animations"]) {
 			std::string trackName = tracks["TrackName"].get_value<std::string>();
 			UINT materialIndex = tracks["MaterialIndex"].get_value<unsigned int>();
+			float playtime = tracks["PlayTime"].get_value<float>();
 			float ImageWidth = tracks["T_Width"].get_value<float>();
 			float ImageHeight = tracks["T_Height"].get_value<float>();
 			float perWidth = tracks["S_Width"].get_value<float>();
@@ -47,6 +77,7 @@ void JSpriteAnimationSet::LoadAnimationFactorFromYaml(const char* filepath)
 #if defined(_DEBUG) || defined(DEBUG)
 			if (not inserted) ShowInsertedFailed(trackName, "m_KeyFrame");
 #endif
+			m_PlayTime.try_emplace(trackName, playtime);
 		}
 	}
 	catch (fkyaml::exception& e) {
