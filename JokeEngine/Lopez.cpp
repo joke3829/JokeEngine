@@ -1,5 +1,7 @@
-﻿// Lopez.cpp : 애플리케이션에 대한 진입점을 정의합니다.
-//
+﻿// Windows Program Template - 제작할 게임에 맞게 윈도우 설정만 하면 된다.
+
+// Lopez.cpp : 애플리케이션에 대한 진입점을 정의합니다.
+
 
 #include "stdafx.h"
 #include "Lopez.h"
@@ -30,7 +32,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     // TODO: 여기에 코드를 입력합니다.
 
+
 #if defined(_DEBUG) || defined(DEBUG)
+    // 콘솔창 호출
     if (AllocConsole()) {
         FILE* fpDummy;
         freopen_s(&fpDummy, "CONOUT$", "w", stdout);
@@ -173,21 +177,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
     case WM_DESTROY:
         PostQuitMessage(0);
-        break;
-    case WM_LBUTTONDOWN:
-    case WM_LBUTTONUP:
-    case WM_RBUTTONDOWN:
-    case WM_RBUTTONUP:
-    case WM_MOUSEMOVE:
-    {
-        //if (GetForegroundWindow() == hWnd) {
-        //    JMouseState state{};
-        //    state.message = message;
-        //    GetCursorPos(&state.cursor);
-        //    ScreenToClient(hWnd, &state.cursor);
-        //    g_Engine->MouseMessageReceiver(state);
-        //}
-    }
         break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);

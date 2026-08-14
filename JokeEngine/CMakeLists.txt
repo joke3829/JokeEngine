@@ -151,6 +151,7 @@ set(D3D11_INTEGRATE
 )
 
 
+# Shader 관련 Set ===================================================
 
 set(SHADER_FILES
   Shaders/Default/Common.hlsl
@@ -169,6 +170,12 @@ set(TEXTURE_LOADER
   Package/DirectXTex/WICTextureLoader12.h
   Package/DirectXTex/WICTextureLoader12.cpp
 )
+
+
+
+# 제작할 게임에 맞는 파일 추가 ===========================================================
+
+# ========================================================================================
 
 
 add_executable(${PROJECT_NAME} 

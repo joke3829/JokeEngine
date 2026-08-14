@@ -35,4 +35,10 @@ void JPlayerObject::UpdateInput(JKeyState& input)
 	if (input.KeyState['D'] & 0x8000) {
 		XMStoreFloat3(&m_Position, XMLoadFloat3(&m_Position) + (right * mspeed * elapsed));
 	}
+	if (input.KeyState['Q'] & 0x8000) {
+		XMStoreFloat3(&m_Position, XMLoadFloat3(&m_Position) + (XMVectorSet(0.f, -1.f, 0.f, 0.f) * mspeed * elapsed));
+	}
+	if (input.KeyState['E'] & 0x8000) {
+		XMStoreFloat3(&m_Position, XMLoadFloat3(&m_Position) + (XMVectorSet(0.f, 1.f, 0.f, 0.f) * mspeed * elapsed));
+	}
 }

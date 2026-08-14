@@ -34,8 +34,6 @@ void JEngineScene::ProcessMouseMessage(JMouseState& state)
 		lc = false;
 		break;
 	}
-
-		spdlog::info("{:d}, {:d}", state.cursor.x, state.cursor.y);
 	
 }
 

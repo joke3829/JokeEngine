@@ -36,7 +36,7 @@ void JEngineRendererDX11::RenderFrame()
 
 	auto* context = JD3D11GlobalFactor::GetInstance()->GetDeviceContext();
 
-	float clearcolor[] = { 0.f, 1.f, 0.f, 1.f };
+	float clearcolor[] = { 0.f, 0.f, 0.f, 1.f };
 	context->ClearRenderTargetView(m_RenderTargetView[m_CurrentFrameIndex].Get(), clearcolor);
 	context->ClearDepthStencilView(m_DepthStencilView[m_CurrentFrameIndex].Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
 
