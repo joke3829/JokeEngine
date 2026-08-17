@@ -15,7 +15,7 @@ public:
 
 	// 상수버퍼 값 최신화(Map)
 	virtual void Update(float elapsedTime) {};
-	virtual void UpdateFromData(const JSAnimData& data, bool mirror = false) {}
+	virtual void UpdateFromData(const JSAnimData& data, bool mirror = false);
 	virtual void UpdateBuffer(UINT currentFrameIndex) {}
 	virtual void SetDXBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage) {};
 

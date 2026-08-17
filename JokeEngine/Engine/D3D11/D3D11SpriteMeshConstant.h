@@ -9,7 +9,6 @@ public:
 	JSpriteMeshConstantDX11();
 
 	void Update(float elapsedTime) {}
-	void UpdateFromData(const JSAnimData& data, bool mirror = false);
 	void UpdateBuffer(UINT currentFrameIndex);
 	void SetDXBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage);
 

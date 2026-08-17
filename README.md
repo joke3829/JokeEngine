@@ -1,5 +1,5 @@
 # JokeEngine
-DX11을 사용한 게임엔진 제작, Unreal의 ContentBrowser와 Actor, Component를 레퍼런싱하여 구조를 제작
+DX11을 사용한 게임엔진 제작, Unreal의 ContentBrowser와 U(---)Component를 레퍼런싱하여 구조를 제작
 
 ---
 ### 빌드
