@@ -1,6 +1,8 @@
 # JokeEngine
 DX11을 사용한 게임엔진 제작, Unreal의 ContentBrowser와 U(---)Component를 레퍼런싱하여 구조를 제작
 
+![JSpriteAnimationObject](image/2026-08-14%2021-42-20.gif)
+
 ---
 ### 빌드
 이 프로젝트를 빌드하기 위해선 CMAKE 3.24 이상의 버젼이 필요하다.
