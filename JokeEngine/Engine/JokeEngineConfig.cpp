@@ -55,6 +55,7 @@ void JEngineDefaultGlobalConfig::OptionSaveAndFileGenerate()
 	outJson["Windows"]["Resolution"]["Height"] = m_ConfigFactor->WindowsHeight;
 
 	outJson["FPS"] = m_ConfigFactor->LimitFPS;			// 30, 60, 120, 144, 240, 999(Unlimit)
+	outJson["V_SYNC"] = m_ConfigFactor->VerticalSYNC;
 
 	outFile << outJson;
 #if defined(_DEBUG) || defined(DEBUG)
