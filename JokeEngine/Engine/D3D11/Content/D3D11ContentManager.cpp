@@ -53,7 +53,7 @@ void JContentManagerDX11::ReadyDefaultContent()
 	{
 		std::shared_ptr<JMaterialDX11> material = std::make_shared<JMaterialDX11>("DefaultMaterial");
 		material->SetTextureNull(m_ContentLookupTable["NullTexture"]);
-		material->SetTexture(m_ContentLookupTable["TestTexture"], TextureOrder::Albedo);
+		//material->SetTexture(m_ContentLookupTable["TestTexture"], TextureOrder::Albedo);
 
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(material->GetName(), material);
 #if defined(_DEBUG) || defined(DEBUG)

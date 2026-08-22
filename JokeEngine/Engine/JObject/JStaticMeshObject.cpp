@@ -38,6 +38,20 @@ void JStaticMeshObject::Update(float elapsedTime, XMFLOAT4X4* parent)
 	for (auto& p : m_Materials)
 		p->Update(elapsedTime);
 
+	static float time = 0;
+	static bool left = false;
+	time += elapsedTime;
+	if (time > 0.1f) {
+		time -= 0.1f;
+		left = !left;
+	}
+	if (left) {
+		m_Position.x -= (300.f * elapsedTime);
+	}
+	else {
+		m_Position.x += (300.f * elapsedTime);
+	}
+
 	JObject::Update(elapsedTime, parent);
 }
 
