@@ -41,9 +41,7 @@ set(ENGINE
   Engine/JokeEngineConfig.h
   Engine/JokeEngineConfig.cpp
   Engine/JCommon.h
-  Engine/JCommon.cpp
   Engine/JMeshConstant.h
-  Engine/JMeshConstant.cpp
   Engine/Timer.h
   Engine/Timer.cpp
   Engine/JInputThread.h

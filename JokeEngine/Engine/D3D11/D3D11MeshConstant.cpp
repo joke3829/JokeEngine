@@ -15,14 +15,14 @@ JMeshConstantDX11::JMeshConstantDX11(CB_Mesh cb)
 
 void JMeshConstantDX11::UpdateBuffer(UINT currentFrameIndex)
 {
-	if (m_Dirty[currentFrameIndex]) {
-		auto* context = JD3D11GlobalFactor::GetInstance()->GetDeviceContext();
-		D3D11_MAPPED_SUBRESOURCE mapped{};
-		context->Map(m_CBBuffer[currentFrameIndex].Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
-		memcpy(mapped.pData, &m_CBMesh, sizeof(CB_Mesh));
-		context->Unmap(m_CBBuffer[currentFrameIndex].Get(), 0);
-		m_Dirty[currentFrameIndex] = false;
-	}
+	if (m_CBMesh == m_CurrentSetCB[currentFrameIndex]) return;
+
+	auto* context = JD3D11GlobalFactor::GetInstance()->GetDeviceContext();
+	D3D11_MAPPED_SUBRESOURCE mapped{};
+	context->Map(m_CBBuffer[currentFrameIndex].Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+	memcpy(mapped.pData, &m_CBMesh, sizeof(CB_Mesh));
+	context->Unmap(m_CBBuffer[currentFrameIndex].Get(), 0);
+	m_CurrentSetCB[currentFrameIndex] = m_CBMesh;
 }
 
 void JMeshConstantDX11::SetDXBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage)
@@ -68,6 +68,5 @@ void JMeshConstantDX11::BufferReady()
 	};
 	for (int i = 0; i < g_NumRenderTarget; ++i) {
 		ThrowIfFailed(device->CreateBuffer(&desc, nullptr, m_CBBuffer[i].ReleaseAndGetAddressOf()));
-		m_Dirty[i] = true;
 	}
 }

@@ -11,11 +11,17 @@ JSpriteMeshConstantDX11::JSpriteMeshConstantDX11()
 
 void JSpriteMeshConstantDX11::UpdateBuffer(UINT currentFrameIndex)
 {
+	// Set된 값과 같으면 Map 하지 않음
+	if (m_CBSprite == m_CurrentSetCB[currentFrameIndex])
+		return;
+
 	auto* context = JD3D11GlobalFactor::GetInstance()->GetDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mapped{};
 	context->Map(m_CBBuffer[currentFrameIndex].Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
 	memcpy(mapped.pData, &m_CBSprite, sizeof(CB_Sprite));
 	context->Unmap(m_CBBuffer[currentFrameIndex].Get(), 0);
+
+	m_CurrentSetCB[currentFrameIndex] = m_CBSprite;
 }
 
 void JSpriteMeshConstantDX11::SetDXBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage)

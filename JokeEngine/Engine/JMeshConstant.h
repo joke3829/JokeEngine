@@ -10,8 +10,12 @@
 
 
 struct CB_Mesh {
+	bool operator==(const CB_Mesh& other) const {
+		if (nodeIndex != other.nodeIndex) return false;
+		return !static_cast<bool>(memcmp(BoneLookupTable, other.BoneLookupTable, sizeof(BoneLookupTable)));
+	}
 	UINT nodeIndex{};
-	UINT bSkinning{};		// hlsl은 bool도 4byte로 본다. 
+	UINT bSkinning{};		// hlsl은 bool도 4byte로 본다. 이건 아마 바뀔일이 없겠지?
 	XMFLOAT2 padding{};
 	UINT BoneLookupTable[256]{};	// 일단은 
 };
@@ -22,13 +26,12 @@ public:
 	JMeshConstant() {};
 	JMeshConstant(CB_Mesh cb) : m_CBMesh{ cb } {};
 
-	// 바꾸면 Dirty를 업데이트 하는 그런거 있으면 좋음
 
 	// 상수버퍼 값 최신화(Map)
 	virtual void Update(float elapsedTime) {};
 	virtual void UpdateBuffer(UINT currentFrameIndex) {}
-	virtual void SetDXBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage) {};
+	virtual void SetDXBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage = JS_NONE) {};
 
-	CB_Mesh m_CBMesh{};		// public으로 그냥 뽑아 쓰자
-	bool	m_Dirty[g_NumRenderTarget]{};		// 항상 업데이트하지마라
+	CB_Mesh m_CBMesh{};									// public으로 그냥 뽑아 쓰자
+	CB_Mesh m_CurrentSetCB[g_NumRenderTarget]{};		// 현재 GPU에 Set된 값
 };
