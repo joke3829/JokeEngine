@@ -2,8 +2,8 @@
 #include "Engine/JokeEngineConfig.h"
 #include "Engine/JContent/JMaterial.h"
 #include "Engine/JContent/JStaticMesh.h"
-#include "Engine/D3D11/D3D11MeshConstant.h"
-#include "Engine/D3D11/D3D11SpriteMeshConstant.h"
+#include "Engine/D3D11/GResource/D3D11MeshConstant.h"
+#include "Engine/D3D11/GResource/D3D11SpriteMeshConstant.h"
 #include "Engine/JContent/JSpriteAnimationSet.h"
 
 JSpriteAnimationObject::JSpriteAnimationObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name)

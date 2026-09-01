@@ -1,30 +1,31 @@
-#include "D3D11SpriteMeshConstant.h"
-#include "Engine/JContent/JSpriteAnimationSet.h"
-#include "D3D11GlobalFactor.h"
+﻿#include "D3D11MeshConstant.h"
+#include "Engine/D3D11/D3D11GlobalFactor.h"
 
-JSpriteMeshConstantDX11::JSpriteMeshConstantDX11()
-	: JSpriteMeshConstant()
+JMeshConstantDX11::JMeshConstantDX11()
+	: JMeshConstant()
 {
 	BufferReady();
 }
 
-
-void JSpriteMeshConstantDX11::UpdateBuffer(UINT currentFrameIndex)
+JMeshConstantDX11::JMeshConstantDX11(CB_Mesh cb)
+	: JMeshConstant(cb)
 {
-	// Set된 값과 같으면 Map 하지 않음
-	if (m_CBSprite == m_CurrentSetCB[currentFrameIndex])
-		return;
+	BufferReady();
+}
+
+void JMeshConstantDX11::UpdateBuffer(UINT currentFrameIndex)
+{
+	if (m_CBMesh == m_CurrentSetCB[currentFrameIndex]) return;
 
 	auto* context = JD3D11GlobalFactor::GetInstance()->GetDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mapped{};
 	context->Map(m_CBBuffer[currentFrameIndex].Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
-	memcpy(mapped.pData, &m_CBSprite, sizeof(CB_Sprite));
+	memcpy(mapped.pData, &m_CBMesh, sizeof(CB_Mesh));
 	context->Unmap(m_CBBuffer[currentFrameIndex].Get(), 0);
-
-	m_CurrentSetCB[currentFrameIndex] = m_CBSprite;
+	m_CurrentSetCB[currentFrameIndex] = m_CBMesh;
 }
 
-void JSpriteMeshConstantDX11::SetDXBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage)
+void JMeshConstantDX11::SetDXBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage)
 {
 	auto* context = JD3D11GlobalFactor::GetInstance()->GetDeviceContext();
 
@@ -55,12 +56,12 @@ void JSpriteMeshConstantDX11::SetDXBuffer(UINT currentFrameIndex, UINT parameter
 	}
 }
 
-void JSpriteMeshConstantDX11::BufferReady()
+void JMeshConstantDX11::BufferReady()
 {
 	auto* device = JD3D11GlobalFactor::GetInstance()->GetDevice();
 
 	D3D11_BUFFER_DESC desc{
-		.ByteWidth = Align(sizeof(CB_Sprite), 16),
+		.ByteWidth = Align(sizeof(CB_Mesh), 16),
 		.Usage = D3D11_USAGE_DYNAMIC,
 		.BindFlags = D3D11_BIND_CONSTANT_BUFFER,
 		.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,

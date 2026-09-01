@@ -4,6 +4,7 @@
 #include "JContent/JContentManager.h"
 #include "JRenderer/JEngineRenderer.h"
 #include "D3D11/D3D11GlobalFactor.h"
+#include "D2D/JD2DTextEngine.h"
 #include "JInputThread.h"
 #include "Timer.h"
 

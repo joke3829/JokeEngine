@@ -1,11 +1,12 @@
-﻿#pragma once
+#pragma once
 
-#include "Engine/JMeshConstant.h"
+#include "Engine/GResource/JSpriteMeshConstant.h"
 
-class JMeshConstantDX11 : public JMeshConstant {
+struct JSAnimData;
+
+class JSpriteMeshConstantDX11 : public JSpriteMeshConstant {
 public:
-	JMeshConstantDX11();
-	JMeshConstantDX11(CB_Mesh cb);
+	JSpriteMeshConstantDX11();
 
 	void Update(float elapsedTime) {}
 	void UpdateBuffer(UINT currentFrameIndex);

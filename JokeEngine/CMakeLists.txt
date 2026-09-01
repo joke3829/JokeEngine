@@ -41,13 +41,16 @@ set(ENGINE
   Engine/JokeEngineConfig.h
   Engine/JokeEngineConfig.cpp
   Engine/JCommon.h
-  Engine/JMeshConstant.h
   Engine/Timer.h
   Engine/Timer.cpp
   Engine/JInputThread.h
   Engine/JInputThread.cpp
-  Engine/JSpriteMeshConstant.h
-  Engine/JSpriteMeshConstant.cpp
+)
+
+set(ENGINE_GRESOURCE
+  Engine/GResource/JMeshConstant.h
+  Engine/GResource/JSpriteMeshConstant.h
+  Engine/GResource/JSpriteMeshConstant.cpp
 )
 
 set(ENGINE_OBJECT
@@ -61,6 +64,8 @@ set(ENGINE_OBJECT
   Engine/JObject/JPlayerObject.cpp
   Engine/JObject/JSpriteAnimationObject.h
   Engine/JObject/JSpriteAnimationObject.cpp
+  Engine/JObject/JTextObject.h
+  Engine/JObject/JTextObject.cpp
 )
 
 set(ENGINE_CONTENT
@@ -95,6 +100,7 @@ set(ENGINE_SHADER
 
 set(ENGINE_INTEGRATE
   ${ENGINE}
+  ${ENGINE_GRESOURCE}
   ${ENGINE_OBJECT}
   ${ENGINE_CONTENT}
   ${ENGINE_RENDERER}
@@ -102,15 +108,29 @@ set(ENGINE_INTEGRATE
   ${ENGINE_SHADER}
 )
 
+# D2D 관련 Set ===================================================
+
+set(D2D
+  Engine/D2D/JD2DTextEngine.h
+  Engine/D2D/JD2DTextEngine.cpp
+)
+
+set(D2D_INTEGRATE
+  ${D2D}
+)
+
 # D3D11 관련 Set =================================================
 
 set(D3D11
   Engine/D3D11/D3D11GlobalFactor.h
   Engine/D3D11/D3D11GlobalFactor.cpp
-  Engine/D3D11/D3D11MeshConstant.h
-  Engine/D3D11/D3D11MeshConstant.cpp
-  Engine/D3D11/D3D11SpriteMeshConstant.h
-  Engine/D3D11/D3D11SpriteMeshConstant.cpp
+)
+
+set(D3D11_GRESOURCE
+  Engine/D3D11/GResource/D3D11MeshConstant.h
+  Engine/D3D11/GResource/D3D11MeshConstant.cpp
+  Engine/D3D11/GResource/D3D11SpriteMeshConstant.h
+  Engine/D3D11/GResource/D3D11SpriteMeshConstant.cpp
 )
 
 set(D3D11_CONTENT
@@ -142,6 +162,7 @@ set(D3D11_SHADER
 
 set(D3D11_INTEGRATE
   ${D3D11}
+  ${D3D11_GRESOURCE}
   ${D3D11_CONTENT}
   ${D3D11_RENDERER}
   ${D3D11_SCENE}
@@ -181,6 +202,7 @@ add_executable(${PROJECT_NAME}
    ${COMMON_HEADER} 
    ${COMMON_SOURCE} 
    ${ENGINE_INTEGRATE}
+   ${D2D_INTEGRATE}
    ${D3D11_INTEGRATE}
    ${SHADER_FILES}
    ${TEXTURE_LOADER}
@@ -193,13 +215,17 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 
 
 source_group("Engine" FILES ${ENGINE})
+source_group("Engine\\GResource" FILES ${ENGINE_GRESOURCE})
 source_group("Engine\\JObject" FILES ${ENGINE_OBJECT})
 source_group("Engine\\JContent" FILES ${ENGINE_CONTENT})
 source_group("Engine\\JRenderer" FILES ${ENGINE_RENDERER})
 source_group("Engine\\JScene" FILES ${ENGINE_SCENE})
 source_group("Engine\\JShader" FILES ${ENGINE_SHADER})
 
+source_group("Engine\\D2D" FILES ${D2D})
+
 source_group("Engine\\D3D11" FILES ${D3D11})
+source_group("Engine\\D3D11\\GResource" FILES ${D3D11_GRESOURCE})
 source_group("Engine\\D3D11\\Content" FILES ${D3D11_CONTENT})
 source_group("Engine\\D3D11\\Renderer" FILES ${D3D11_RENDERER})
 source_group("Engine\\D3D11\\Scene" FILES ${D3D11_SCENE})

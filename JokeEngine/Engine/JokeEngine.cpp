@@ -8,6 +8,9 @@
 void JokeEngine::Initialize(HWND hWnd, HINSTANCE hInstance)
 {
 	m_hWnd = hWnd; m_hInstance = hInstance;
+
+	auto* p = JD2DTextEngine::GetInstance();
+
 	m_InputThread = std::make_shared<JInputThread>(m_hWnd);
 	m_InputThread->InputThreadStart();
 
