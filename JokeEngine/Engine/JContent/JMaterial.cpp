@@ -1,4 +1,4 @@
-﻿#include "JMaterial.h"
+#include "JMaterial.h"
 
 JMaterial::JMaterial(const char* name)
 	: JContent(name)

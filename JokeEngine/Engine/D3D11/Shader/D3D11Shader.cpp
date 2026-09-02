@@ -1,4 +1,4 @@
-﻿#include "D3D11Shader.h"
+#include "D3D11Shader.h"
 #include "Engine/D3D11/D3D11GlobalFactor.h"
 
 void JEngineShaderDX11::SetShader()

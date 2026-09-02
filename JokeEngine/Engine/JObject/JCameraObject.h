@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "JObject.h"
 
 // DX11, 12에 구애받지 않는 viewport(11이랑 12랑 구조 똑같음, ScissorRect도 필요하면 추가를 고려하자)

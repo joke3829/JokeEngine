@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Engine/JContent/JMaterial.h"
 
@@ -15,7 +15,7 @@ public:
 
 	void Update(float elapsedTime) {}
 	void UpdateBuffer(UINT currentFrameIndex);
-	void SetDXBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage = JS_NONE);
+	void SetGPUBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage = JS_NONE);
 	
 	void SetTextureNull(std::shared_ptr<JContent>& nulltexture);
 	void SetTexture(std::shared_ptr<JContent>& texture, TextureOrder order);

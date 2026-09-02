@@ -1,4 +1,4 @@
-﻿#include "JContentManager.h"
+#include "JContentManager.h"
 
 void JContentManager::AddContent(std::shared_ptr<JContent> content) 
 {

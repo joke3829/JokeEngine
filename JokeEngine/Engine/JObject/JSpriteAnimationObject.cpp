@@ -56,13 +56,13 @@ void JSpriteAnimationObject::Render(UINT currentFrameIndex)
 	if (!m_StaticMesh)
 		return;
 	m_MeshCB->UpdateBuffer(currentFrameIndex);
-	m_MeshCB->SetDXBuffer(currentFrameIndex, 0, JS_VS);
+	m_MeshCB->SetGPUBuffer(currentFrameIndex, 0, JS_VS);
 
 	m_SpriteMeshCB->UpdateBuffer(currentFrameIndex);
-	m_SpriteMeshCB->SetDXBuffer(currentFrameIndex, 3, JS_VS);
+	m_SpriteMeshCB->SetGPUBuffer(currentFrameIndex, 3, JS_VS);
 
 	m_Materials[m_CurrentAnimation.second]->UpdateBuffer(currentFrameIndex);
-	m_Materials[m_CurrentAnimation.second]->SetDXBuffer(currentFrameIndex, 2, JS_PS);
+	m_Materials[m_CurrentAnimation.second]->SetGPUBuffer(currentFrameIndex, 2, JS_PS);
 	m_StaticMesh->Render();
 }
 

@@ -1,4 +1,4 @@
-﻿#include "JEngineShader.h"
+#include "JEngineShader.h"
 
 ComPtr<ID3DBlob> CompileHLSL(LPCWCHAR pFileName, D3D_SHADER_MACRO* pDefines, LPCSTR pEntryPoint, LPCSTR pTarget)
 {

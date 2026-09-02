@@ -21,7 +21,7 @@ public:
 	virtual void Update(float elapsedTime) {};
 	virtual void UpdateFromData(const JSAnimData& data, bool mirror = false);
 	virtual void UpdateBuffer(UINT currentFrameIndex) {}
-	virtual void SetDXBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage = JS_NONE) {};
+	virtual void SetGPUBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage = JS_NONE) {};
 
 	CB_Sprite m_CBSprite{};		// public으로 그냥 뽑아 쓰자
 	CB_Sprite m_CurrentSetCB[g_NumRenderTarget]{};	// 현재 GPU에 Set된 값

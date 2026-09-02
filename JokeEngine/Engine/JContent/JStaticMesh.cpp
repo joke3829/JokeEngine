@@ -1,4 +1,4 @@
-﻿
+
 #include "JStaticMesh.h"
 
 JStaticMesh::JStaticMesh(const char* name, bool bloadFromFile)

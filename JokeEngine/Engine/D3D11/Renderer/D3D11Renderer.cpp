@@ -1,4 +1,4 @@
-﻿#include "D3D11Renderer.h"
+#include "D3D11Renderer.h"
 #include "Engine/D3D11/D3D11GlobalFactor.h"
 #include "Engine/D3D11/Shader/D3D11Shader.h"
 
@@ -42,7 +42,7 @@ void JEngineRendererDX11::RenderFrame()
 
 	// Scene Set
 	m_Scene->UpdateBuffers(m_CurrentFrameIndex);
-	m_Scene->SetDXBuffer(m_CurrentFrameIndex, 1, JS_VS);
+	m_Scene->SetGPUBuffer(m_CurrentFrameIndex, 1, JS_VS);
 
 	// PSO
 	void* rtv[] = { m_RenderTargetView[m_CurrentFrameIndex].Get() };

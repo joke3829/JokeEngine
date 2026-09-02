@@ -1,4 +1,4 @@
-﻿#include "D3D11GlobalFactor.h"
+#include "D3D11GlobalFactor.h"
 
 JD3D11GlobalFactor* JD3D11GlobalFactor::m_Instance = nullptr;
 

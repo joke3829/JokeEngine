@@ -1,8 +1,8 @@
-﻿#include "JStaticMeshObject.h"
+#include "JStaticMeshObject.h"
 #include "Engine/JokeEngineConfig.h"
 #include "Engine/JContent/JMaterial.h"
 #include "Engine/JContent/JStaticMesh.h"
-#include "Engine/D3D11/D3D11MeshConstant.h"
+#include "Engine/D3D11/GResource/D3D11MeshConstant.h"
 
 
 
@@ -46,13 +46,13 @@ void JStaticMeshObject::Render(UINT currentFrameIndex)
 	if (!m_StaticMesh)
 		return;
 	m_MeshCB->UpdateBuffer(currentFrameIndex);
-	m_MeshCB->SetDXBuffer(currentFrameIndex, 0, JS_VS);
+	m_MeshCB->SetGPUBuffer(currentFrameIndex, 0, JS_VS);
 
 	auto& indices = m_StaticMesh->GetIndices();
 
 	for (size_t i = 0; i < indices.size(); ++i) {
 		m_Materials[i]->UpdateBuffer(currentFrameIndex);
-		m_Materials[i]->SetDXBuffer(currentFrameIndex, 2, JS_PS);
+		m_Materials[i]->SetGPUBuffer(currentFrameIndex, 2, JS_PS);
 		m_StaticMesh->Render(i);
 	}
 

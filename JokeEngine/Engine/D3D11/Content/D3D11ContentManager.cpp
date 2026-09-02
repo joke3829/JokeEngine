@@ -1,4 +1,4 @@
-﻿#include "D3D11ContentManager.h"
+#include "D3D11ContentManager.h"
 #include "D3D11Material.h"
 #include "D3D11StaticMesh.h"
 #include "D3D11Texture.h"

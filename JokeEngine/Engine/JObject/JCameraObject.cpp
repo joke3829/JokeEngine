@@ -1,4 +1,4 @@
-﻿#include "JCameraObject.h"
+#include "JCameraObject.h"
 #include "Engine/JokeEngineConfig.h"
 
 JCameraObject::JCameraObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name)

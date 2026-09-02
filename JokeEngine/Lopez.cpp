@@ -1,4 +1,4 @@
-﻿// Windows Program Template - 제작할 게임에 맞게 윈도우 설정만 하면 된다.
+// Windows Program Template - 제작할 게임에 맞게 윈도우 설정만 하면 된다.
 
 // Lopez.cpp : 애플리케이션에 대한 진입점을 정의합니다.
 

@@ -1,8 +1,8 @@
-﻿#include "D3D11Scene.h"
+#include "D3D11Scene.h"
 #include "Engine/D3D11/D3D11GlobalFactor.h"
 #include "Engine/JObject/JCameraObject.h"
 
-void JEngineSceneDX11::SetDXBuffer(UINT currentBufferIndex, UINT parameter, JShaderStage stage)
+void JEngineSceneDX11::SetGPUBuffer(UINT currentBufferIndex, UINT parameter, JShaderStage stage)
 {
 	auto* gFactor = JD3D11GlobalFactor::GetInstance();
 	auto* context = gFactor->GetDeviceContext();
@@ -33,7 +33,7 @@ void JEngineSceneDX11::SetDXBuffer(UINT currentBufferIndex, UINT parameter, JSha
 		break;
 	default:
 #if defined(_DEBUG) || defined(DEBUG)
-		spdlog::error("[DX11] {0}에서 잘못된 SetDXBuffer를 호출했습니다.", m_name.c_str());
+		spdlog::error("[DX11] {0}에서 잘못된 SetGPUBuffer를 호출했습니다.", m_name.c_str());
 #endif
 		assert(0);
 	}
@@ -116,9 +116,9 @@ void JEngineSceneDX11::UpdateBuffers(UINT currentBufferIndex)
 // ============================================================
 
 
-void JEngineDefaultSceneDX11::SetDXBuffer(UINT currentBufferIndex, UINT parameter, JShaderStage stage)
+void JEngineDefaultSceneDX11::SetGPUBuffer(UINT currentBufferIndex, UINT parameter, JShaderStage stage)
 {
-	JEngineSceneDX11::SetDXBuffer(currentBufferIndex, 0, stage);
+	JEngineSceneDX11::SetGPUBuffer(currentBufferIndex, 0, stage);
 
 	auto* gFactor = JD3D11GlobalFactor::GetInstance();
 	auto* context = gFactor->GetDeviceContext();
@@ -144,7 +144,7 @@ void JEngineDefaultSceneDX11::SetDXBuffer(UINT currentBufferIndex, UINT paramete
 		break;
 	default:
 #if defined(_DEBUG) || defined(DEBUG)
-		spdlog::error("[DX11] {0}에서 잘못된 SetDXBuffer를 호출했습니다.", m_name.c_str());
+		spdlog::error("[DX11] {0}에서 잘못된 SetGPUBuffer를 호출했습니다.", m_name.c_str());
 #endif
 		assert(0);
 	}

@@ -1,4 +1,4 @@
-﻿#include "JContent.h"
+#include "JContent.h"
 
 size_t g_numNoNameContent{};
 

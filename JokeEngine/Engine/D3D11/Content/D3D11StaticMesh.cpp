@@ -1,4 +1,4 @@
-﻿#include "D3D11StaticMesh.h"
+#include "D3D11StaticMesh.h"
 #include "../D3D11GlobalFactor.h"
 
 

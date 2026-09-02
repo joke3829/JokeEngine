@@ -1,4 +1,4 @@
-﻿#include "JEngineRenderer.h"
+#include "JEngineRenderer.h"
 
 
 

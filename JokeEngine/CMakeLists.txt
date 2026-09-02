@@ -51,6 +51,8 @@ set(ENGINE_GRESOURCE
   Engine/GResource/JMeshConstant.h
   Engine/GResource/JSpriteMeshConstant.h
   Engine/GResource/JSpriteMeshConstant.cpp
+  Engine/GResource/JTextResource.h
+  Engine/GResource/JTextResource.cpp
 )
 
 set(ENGINE_OBJECT
@@ -113,6 +115,8 @@ set(ENGINE_INTEGRATE
 set(D2D
   Engine/D2D/JD2DTextEngine.h
   Engine/D2D/JD2DTextEngine.cpp
+  Engine/D2D/DWriteTextResource.h
+  Engine/D2D/DWriteTextResource.cpp
 )
 
 set(D2D_INTEGRATE
@@ -131,6 +135,8 @@ set(D3D11_GRESOURCE
   Engine/D3D11/GResource/D3D11MeshConstant.cpp
   Engine/D3D11/GResource/D3D11SpriteMeshConstant.h
   Engine/D3D11/GResource/D3D11SpriteMeshConstant.cpp
+  Engine/D3D11/GResource/D3D11TextResource.h
+  Engine/D3D11/GResource/D3D11TextResource.cpp
 )
 
 set(D3D11_CONTENT

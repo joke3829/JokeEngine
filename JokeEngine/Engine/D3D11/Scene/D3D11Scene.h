@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Engine/JScene/JEngineScene.h"
 
@@ -6,7 +6,7 @@
 
 class JEngineSceneDX11 : public JEngineScene {
 public:
-	virtual void SetDXBuffer(UINT currentBufferIndex, UINT parameter, JShaderStage stage);
+	virtual void SetGPUBuffer(UINT currentBufferIndex, UINT parameter, JShaderStage stage);
 	virtual void UpdateBuffers(UINT currentBufferIndex);
 
 protected:
@@ -26,7 +26,7 @@ protected:
 
 class JEngineDefaultSceneDX11 : public JEngineSceneDX11 {
 public:
-	void SetDXBuffer(UINT currentBufferIndex, UINT parameter, JShaderStage stage);
+	void SetGPUBuffer(UINT currentBufferIndex, UINT parameter, JShaderStage stage);
 	void UpdateBuffers(UINT currentBufferIndex);
 protected:
 	struct DefaultSceneConstant {

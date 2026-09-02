@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 // MeshConstant.h ===========================================================
 // 
 // MeshObject(Static, Skeletal)가 가져야 하는 상수버퍼를 정의
@@ -30,7 +30,7 @@ public:
 	// 상수버퍼 값 최신화(Map)
 	virtual void Update(float elapsedTime) {};
 	virtual void UpdateBuffer(UINT currentFrameIndex) {}
-	virtual void SetDXBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage = JS_NONE) {};
+	virtual void SetGPUBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage = JS_NONE) {};
 
 	CB_Mesh m_CBMesh{};									// public으로 그냥 뽑아 쓰자
 	CB_Mesh m_CurrentSetCB[g_NumRenderTarget]{};		// 현재 GPU에 Set된 값

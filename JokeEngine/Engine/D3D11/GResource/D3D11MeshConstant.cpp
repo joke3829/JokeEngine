@@ -1,4 +1,4 @@
-﻿#include "D3D11MeshConstant.h"
+#include "D3D11MeshConstant.h"
 #include "Engine/D3D11/D3D11GlobalFactor.h"
 
 JMeshConstantDX11::JMeshConstantDX11()
@@ -25,7 +25,7 @@ void JMeshConstantDX11::UpdateBuffer(UINT currentFrameIndex)
 	m_CurrentSetCB[currentFrameIndex] = m_CBMesh;
 }
 
-void JMeshConstantDX11::SetDXBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage)
+void JMeshConstantDX11::SetGPUBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage)
 {
 	auto* context = JD3D11GlobalFactor::GetInstance()->GetDeviceContext();
 
@@ -50,7 +50,7 @@ void JMeshConstantDX11::SetDXBuffer(UINT currentFrameIndex, UINT parameter, JSha
 		break;
 	default:
 #if defined(_DEBUG) || defined(DEBUG)
-		spdlog::error("[DX11] MeshConstant 에서 잘못된 SetDXBuffer를 호출했습니다.");
+		spdlog::error("[DX11] MeshConstant 에서 잘못된 SetGPUBuffer를 호출했습니다.");
 #endif
 		assert(0);
 	}

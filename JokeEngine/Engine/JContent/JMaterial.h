@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "JContent.h"
 
 
@@ -23,7 +23,7 @@ public:
 
 	virtual void Update(float elapsedTime) {}
 	virtual void UpdateBuffer(UINT currentFrameIndex) {}
-	virtual void SetDXBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage = JS_NONE) {}
+	virtual void SetGPUBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage = JS_NONE) {}
 
 	virtual void SetTextureNull(std::shared_ptr<JContent>& nulltexture) {}
 	virtual void SetTexture(std::shared_ptr<JContent>& texture, TextureOrder order) {}

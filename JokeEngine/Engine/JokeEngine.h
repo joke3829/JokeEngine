@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "JokeEngineConfig.h"
 #include "JContent/JContentManager.h"

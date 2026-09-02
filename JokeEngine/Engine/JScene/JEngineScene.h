@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Engine/JObject/JObject.h"
 #include "Engine/JInputThread.h"
 
@@ -9,7 +9,7 @@ class JPlayerObject;
 
 class JEngineScene : public JCommon {
 public:
-	virtual void SetDXBuffer(UINT currentBufferIndex, UINT parameter, JShaderStage stage) {}
+	virtual void SetGPUBuffer(UINT currentBufferIndex, UINT parameter, JShaderStage stage) {}
 
 	void Update(float elapsedTime);
 	virtual void UpdateBuffers(UINT currentBufferIndex) {}

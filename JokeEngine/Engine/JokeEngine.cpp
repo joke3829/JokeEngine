@@ -1,4 +1,4 @@
-﻿#include "JokeEngine.h"
+#include "JokeEngine.h"
 #include "D3D11/Content/D3D11ContentManager.h"
 #include "D3D11/Scene/D3D11Scene.h"
 #include "D3D11/Renderer/D3D11Renderer.h"

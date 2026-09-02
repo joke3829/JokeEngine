@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Engine/JContent/JStaticMesh.h"
 
 
@@ -10,7 +10,7 @@ public:
 	JStaticMeshDX11(XMFLOAT3 center = XMFLOAT3(0.f, 0.f, 0.f), float width = 1.f, float height = 1.f, JSMPlane quad = quad_no, const char* name = nullptr);
 
 	// 11: slot, 12: root parameter, 12는 parameter만 채우면 된다.
-	void SetDXBuffer(UINT parameter, JShaderStage stage = JS_NONE) {}
+	void SetGPUBuffer(UINT parameter, JShaderStage stage = JS_NONE) {}
 
 	void Render();
 	void Render(void* command) {}

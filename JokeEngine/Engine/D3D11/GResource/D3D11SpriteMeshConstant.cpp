@@ -24,7 +24,7 @@ void JSpriteMeshConstantDX11::UpdateBuffer(UINT currentFrameIndex)
 	m_CurrentSetCB[currentFrameIndex] = m_CBSprite;
 }
 
-void JSpriteMeshConstantDX11::SetDXBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage)
+void JSpriteMeshConstantDX11::SetGPUBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage)
 {
 	auto* context = JD3D11GlobalFactor::GetInstance()->GetDeviceContext();
 
@@ -49,7 +49,7 @@ void JSpriteMeshConstantDX11::SetDXBuffer(UINT currentFrameIndex, UINT parameter
 		break;
 	default:
 #if defined(_DEBUG) || defined(DEBUG)
-		spdlog::error("[DX11] MeshConstant 에서 잘못된 SetDXBuffer를 호출했습니다.");
+		spdlog::error("[DX11] MeshConstant 에서 잘못된 SetGPUBuffer를 호출했습니다.");
 #endif
 		assert(0);
 	}

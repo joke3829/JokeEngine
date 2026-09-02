@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Engine/JCommon.h"
 
@@ -9,7 +9,7 @@ public:
 	JContent(const char* name = nullptr);
 
 	// 11: slot, 12: root parameter, 12는 parameter만 채우면 된다.
-	virtual void SetDXBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage = JS_NONE) {}
+	virtual void SetGPUBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage = JS_NONE) {}
 
 	virtual void Update(float elapsedTime) {}
 	virtual void UpdateBuffer(UINT currentFrameIndex) {}

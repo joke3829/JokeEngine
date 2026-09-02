@@ -1,4 +1,4 @@
-﻿#include "D3D11Material.h"
+#include "D3D11Material.h"
 #include "../D3D11GlobalFactor.h"
 #include "D3D11Texture.h"
 
@@ -48,7 +48,7 @@ void JMaterialDX11::UpdateBuffer(UINT currentFrameIndex)
 }
 
 // 이거도 확장할 수 있을 것 이대로는 하나만 넣을 수 있음
-void JMaterialDX11::SetDXBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage)
+void JMaterialDX11::SetGPUBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage)
 {
 	auto* gFactor = JD3D11GlobalFactor::GetInstance();
 	auto* context = gFactor->GetDeviceContext();
@@ -86,7 +86,7 @@ void JMaterialDX11::SetDXBuffer(UINT currentFrameIndex, UINT parameter, JShaderS
 		break;
 	default:
 #if defined(_DEBUG) || defined(DEBUG)
-		spdlog::error("[DX11] {0}에서 잘못된 SetDXBuffer를 호출했습니다.", m_name.c_str());
+		spdlog::error("[DX11] {0}에서 잘못된 SetGPUBuffer를 호출했습니다.", m_name.c_str());
 #endif
 		assert(0);
 	}

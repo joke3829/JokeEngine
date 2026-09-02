@@ -1,4 +1,4 @@
-﻿#include "JObject.h"
+#include "JObject.h"
 #include "Engine/JShader/JEngineShader.h"
 
 JObject::JObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name)

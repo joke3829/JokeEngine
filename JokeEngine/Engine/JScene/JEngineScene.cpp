@@ -1,4 +1,4 @@
-﻿#include "JEngineScene.h"
+#include "JEngineScene.h"
 #include "Engine/JContent/JContentManager.h"
 #include "Engine/JObject/JCameraObject.h"
 #include "Engine/JObject/JStaticMeshObject.h"

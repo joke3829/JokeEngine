@@ -1,4 +1,4 @@
-﻿#include "JokeEngineConfig.h"
+#include "JokeEngineConfig.h"
 
 JEngineDefaultGlobalConfig* JEngineDefaultGlobalConfig::m_Instance = nullptr;
 

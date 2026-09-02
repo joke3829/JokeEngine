@@ -9,6 +9,7 @@ public:
 	void AddRTForD3D11Texture2D(const std::string& name, ID3D11Texture2D* texture2d);
 	void AddRTForD3D12Resource() {}
 
+	// 브러시 만들어주는 거 필요.
 
 
 protected:

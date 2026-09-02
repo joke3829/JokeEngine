@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Engine/GResource/JMeshConstant.h"
 
@@ -9,7 +9,7 @@ public:
 
 	void Update(float elapsedTime) {}
 	void UpdateBuffer(UINT currentFrameIndex);
-	void SetDXBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage);
+	void SetGPUBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage);
 
 protected:
 	void BufferReady();
