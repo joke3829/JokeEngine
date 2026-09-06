@@ -36,6 +36,32 @@ void JD2DTextEngine::AddRTForD3D11Texture2D(const std::string& name, ID3D11Textu
 #endif
 }
 
+ComPtr<ID2D1SolidColorBrush> JD2DTextEngine::CreateSolidColorBrush(std::string& name, XMFLOAT4 color)
+{
+	ComPtr<ID2D1SolidColorBrush> brush;
+	if (!m_RTTable.contains(name)) {
+#if defined(DEBUG) || defined(_DEBUG)
+		spdlog::error("{0} 의 이름을 가진 RT가 없습니다. D2DTextEngine", name);
+#endif 
+		return brush;
+	}
+	ThrowIfFailed(m_RTTable[name]->CreateSolidColorBrush(D2D1::ColorF(color.x, color.y, color.z, color.w), brush.ReleaseAndGetAddressOf()));
+	return brush;
+}
+
+ComPtr<ID2D1SolidColorBrush> JD2DTextEngine::CreateSolidColorBrush(std::string& name, D2D1::ColorF color)
+{
+	ComPtr<ID2D1SolidColorBrush> brush;
+	if (!m_RTTable.contains(name)) {
+#if defined(DEBUG) || defined(_DEBUG)
+		spdlog::error("{0} 의 이름을 가진 RT가 없습니다. D2DTextEngine", name);
+#endif 
+		return brush;
+	}
+	ThrowIfFailed(m_RTTable[name]->CreateSolidColorBrush(color, brush.ReleaseAndGetAddressOf()));
+	return brush;
+}
+
 JD2DTextEngine::JD2DTextEngine()
 {
 	ThrowIfFailed(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, IID_PPV_ARGS(m_D2DFactory.ReleaseAndGetAddressOf())));
