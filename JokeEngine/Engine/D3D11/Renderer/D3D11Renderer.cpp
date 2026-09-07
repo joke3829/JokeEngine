@@ -93,7 +93,7 @@ void JEngineRendererDX11::CreateRTV_DSV(UINT width, UINT height)
 		.Usage = D3D11_USAGE_DEFAULT,
 	};
 
-	for (UINT i = 0; i < g_NumRenderTarget; ++i) {
+	for (UINT i = 0; i < kNumRenderTarget; ++i) {
 		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		desc.BindFlags = D3D11_BIND_RENDER_TARGET;
 		ThrowIfFailed(device->CreateTexture2D(&desc, nullptr, m_RenderTarget[i].ReleaseAndGetAddressOf()));

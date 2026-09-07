@@ -76,7 +76,7 @@ void JokeEngineDX11::CreateSwapChain()
 	.Format = DXGI_FORMAT_R8G8B8A8_UNORM,
 	.SampleDesc = {.Count = 1},
 	.BufferUsage = DXGI_USAGE_BACK_BUFFER | DXGI_USAGE_RENDER_TARGET_OUTPUT,
-	.BufferCount = g_NumRenderTarget,
+	.BufferCount = kNumRenderTarget,
 	.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD,
 	.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING | DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH
 	};

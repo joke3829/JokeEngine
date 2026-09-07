@@ -20,7 +20,7 @@ public:
 	void SetTextureNull(std::shared_ptr<JContent>& nulltexture);
 	void SetTexture(std::shared_ptr<JContent>& texture, TextureOrder order);
 private:
-	ComPtr<ID3D11Buffer>						m_MaterialConstantBuffer[g_NumRenderTarget]{};
+	ComPtr<ID3D11Buffer>						m_MaterialConstantBuffer[kNumRenderTarget]{};
 
 	std::vector<std::shared_ptr<JTextureDX11>>	m_Textures{};
 };

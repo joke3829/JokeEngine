@@ -33,5 +33,5 @@ public:
 	virtual void SetGPUBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage = JS_NONE) {};
 
 	CB_Mesh m_CBMesh{};									// public으로 그냥 뽑아 쓰자
-	CB_Mesh m_CurrentSetCB[g_NumRenderTarget]{};		// 현재 GPU에 Set된 값
+	CB_Mesh m_CurrentSetCB[kNumRenderTarget]{};		// 현재 GPU에 Set된 값
 };

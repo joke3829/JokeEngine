@@ -22,9 +22,9 @@ protected:
 protected:
 	
 	// Main RenderTarget, DepthStencil
-	ComPtr<ID3D11Texture2D>			m_RenderTarget[g_NumRenderTarget]{};
-	ComPtr<ID3D11RenderTargetView>	m_RenderTargetView[g_NumRenderTarget]{};
+	ComPtr<ID3D11Texture2D>			m_RenderTarget[kNumRenderTarget]{};
+	ComPtr<ID3D11RenderTargetView>	m_RenderTargetView[kNumRenderTarget]{};
 
-	ComPtr<ID3D11Texture2D>			m_DepthStencil[g_NumRenderTarget]{};
-	ComPtr<ID3D11DepthStencilView>	m_DepthStencilView[g_NumRenderTarget]{};
+	ComPtr<ID3D11Texture2D>			m_DepthStencil[kNumRenderTarget]{};
+	ComPtr<ID3D11DepthStencilView>	m_DepthStencilView[kNumRenderTarget]{};
 };

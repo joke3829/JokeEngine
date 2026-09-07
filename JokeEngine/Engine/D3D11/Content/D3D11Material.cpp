@@ -17,7 +17,7 @@ JMaterialDX11::JMaterialDX11(const char* name)
 	.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,
 	};
 	
-	for(UINT i = 0 ; i < g_NumRenderTarget; ++i)
+	for(UINT i = 0 ; i < kNumRenderTarget; ++i)
 		ThrowIfFailed(device->CreateBuffer(&desc, nullptr, m_MaterialConstantBuffer[i].GetAddressOf()));
 
 	m_Textures.assign(TextureOrder::Count, nullptr);

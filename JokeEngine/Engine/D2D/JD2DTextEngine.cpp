@@ -36,6 +36,19 @@ void JD2DTextEngine::AddRTForD3D11Texture2D(const std::string& name, ID3D11Textu
 #endif
 }
 
+void JD2DTextEngine::CreateTextFormat(ComPtr<IDWriteTextFormat3>& format)
+{
+	DWRITE_FONT_AXIS_VALUE d[2];
+	m_DWriteFactory->CreateTextFormat(L"바탕", nullptr, d, 2, 12, L"ko-kr", format.ReleaseAndGetAddressOf());
+	// IDWriteInMemoryFontFileLoader 이용해서 fontcollection 만드는거 고안하기
+}
+
+void JD2DTextEngine::CreateTextLayout(ComPtr<IDWriteTextLayout>& layout)
+{
+	ComPtr<IDWriteTextFormat3> test{};
+	m_DWriteFactory->CreateTextLayout(L"테스트", 3, test.Get(), 10, 10, layout.ReleaseAndGetAddressOf());
+}
+
 ComPtr<ID2D1SolidColorBrush> JD2DTextEngine::CreateSolidColorBrush(std::string& name, XMFLOAT4 color)
 {
 	ComPtr<ID2D1SolidColorBrush> brush;

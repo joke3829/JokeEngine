@@ -5,8 +5,11 @@
 class JTextResource {
 public:
 
-	virtual void CreateSolidBrush() {}
+	virtual void Update(float elapsedTime) {};
+	virtual void UpdateBuffer(UINT currentFrameIndex) {}
+	virtual void SetGPUBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage = JS_NONE) {};
 
+	virtual void CreateSolidBrush() {}
 	virtual void SetTextColor() {}
 
 	void SetName(const char* name) { m_name = name; }
@@ -14,6 +17,4 @@ public:
 	
 protected:
 	std::string m_name{};
-
-	float m_FontSize{};
 };

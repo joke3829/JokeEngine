@@ -65,7 +65,7 @@ void JSpriteMeshConstantDX11::BufferReady()
 		.BindFlags = D3D11_BIND_CONSTANT_BUFFER,
 		.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,
 	};
-	for (int i = 0; i < g_NumRenderTarget; ++i) {
+	for (int i = 0; i < kNumRenderTarget; ++i) {
 		ThrowIfFailed(device->CreateBuffer(&desc, nullptr, m_CBBuffer[i].ReleaseAndGetAddressOf()));
 	}
 }

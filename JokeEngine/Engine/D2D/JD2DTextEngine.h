@@ -9,7 +9,9 @@ public:
 	void AddRTForD3D11Texture2D(const std::string& name, ID3D11Texture2D* texture2d);
 	void AddRTForD3D12Resource() {}
 
-	// 브러시 만들어주는 거 필요.
+	void CreateTextFormat(ComPtr<IDWriteTextFormat3>& format);
+	void CreateTextLayout(ComPtr<IDWriteTextLayout>& layout);
+
 	ComPtr<ID2D1SolidColorBrush> CreateSolidColorBrush(std::string& name, XMFLOAT4 color = XMFLOAT4(1.f, 1.f, 1.f, 1.f));
 	ComPtr<ID2D1SolidColorBrush> CreateSolidColorBrush(std::string& name, D2D1::ColorF color = D2D1::ColorF::White);
 

@@ -15,5 +15,5 @@ void JEngineRenderer::ResizeTarget(UINT width, UINT height)
 
 void JEngineRenderer::AdvanceBufferIndex()
 {
-	m_CurrentFrameIndex = (m_CurrentFrameIndex + 1) % g_NumRenderTarget;
+	m_CurrentFrameIndex = (m_CurrentFrameIndex + 1) % kNumRenderTarget;
 }

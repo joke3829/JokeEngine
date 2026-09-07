@@ -13,17 +13,20 @@ enum JText_Alignment : unsigned char {
 	Count
 };
 
-class JTextObject {
+class JTextObject : public JObject {
 public:
 	JTextObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name = nullptr);
 
-	void SetText(wchar_t* text) { m_Text = text; }
+	void SetText(wchar_t* text) { m_Text = text; MakeDirtyFlag(); }
+
+	void MakeDirtyFlag();
 protected:
 
 	XMFLOAT3 m_TextScale{};
 	XMFLOAT3 m_MeshScale{};
 
 	std::wstring m_Text{};
+	float m_FontSize{};
 
 	// 둘 중 하나가 center면 둘다 center
 	JText_Alignment m_HorizonAlignment = JText_Alignment::Left;	
@@ -32,4 +35,5 @@ protected:
 	// staticMesh 5개(plane 방향별 5개를 미리 세팅 해 놓고 alignment에 따라 바꿔 사용)
 	std::vector<std::shared_ptr<JStaticMesh>> m_PlaneMeshes{};
 
+	bool m_Dirty[kNumRenderTarget]{};
 };

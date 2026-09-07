@@ -10,13 +10,13 @@ public:
 	virtual void UpdateBuffers(UINT currentBufferIndex);
 
 protected:
-	ComPtr<ID3D11Buffer>				m_WorldMatricesBuffer[g_NumRenderTarget]{};
-	ComPtr<ID3D11ShaderResourceView>	m_WorldMatricesBufferSRV[g_NumRenderTarget]{};
-	size_t								m_nAlignWorldMatrices[g_NumRenderTarget]{};
+	ComPtr<ID3D11Buffer>				m_WorldMatricesBuffer[kNumRenderTarget]{};
+	ComPtr<ID3D11ShaderResourceView>	m_WorldMatricesBufferSRV[kNumRenderTarget]{};
+	size_t								m_nAlignWorldMatrices[kNumRenderTarget]{};
 
-	ComPtr<ID3D11Buffer>				m_CameraMatricesBuffer[g_NumRenderTarget]{};
-	ComPtr<ID3D11ShaderResourceView>	m_CameraMatricesBufferSRV[g_NumRenderTarget]{};
-	size_t								m_nAlignCameraMatrices[g_NumRenderTarget]{};
+	ComPtr<ID3D11Buffer>				m_CameraMatricesBuffer[kNumRenderTarget]{};
+	ComPtr<ID3D11ShaderResourceView>	m_CameraMatricesBufferSRV[kNumRenderTarget]{};
+	size_t								m_nAlignCameraMatrices[kNumRenderTarget]{};
 };
 
 // =============================================================================
@@ -33,5 +33,5 @@ protected:
 		UINT mainCameraIndex = 0;
 	} m_SceneConstant;
 
-	ComPtr<ID3D11Buffer>				m_SceneConstantBuffer[g_NumRenderTarget]{};
+	ComPtr<ID3D11Buffer>				m_SceneConstantBuffer[kNumRenderTarget]{};
 };

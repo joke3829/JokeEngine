@@ -14,5 +14,5 @@ public:
 protected:
 	void BufferReady();
 
-	ComPtr<ID3D11Buffer>		m_CBBuffer[g_NumRenderTarget]{};
+	ComPtr<ID3D11Buffer>		m_CBBuffer[kNumRenderTarget]{};
 };
