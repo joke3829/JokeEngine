@@ -17,7 +17,36 @@ void JContentManagerDX11::ReadyDefaultContent()
 	}
 
 	{	// DefaultPlane
-		std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>(XMFLOAT3(0.f, 0.f, 0.f), 1.f, 1.f, JSMPlane::quad1, "DefaultPlane");
+		//quad1
+		std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>(XMFLOAT3(0.f, 0.f, 0.f), 1.f, 1.f, JSMPlane::quad1, "DefaultPlaneq1");
+		auto [iter, inserted] = m_ContentLookupTable.try_emplace(mesh->GetName(), mesh);
+#if defined(_DEBUG) || defined(DEBUG)
+		if (not inserted) ShowInsertedFailed(mesh->GetName(), "ContentManager");
+#endif
+	}
+	{
+		std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>(XMFLOAT3(0.f, 0.f, 0.f), 1.f, 1.f, JSMPlane::quad2, "DefaultPlaneq2");
+		auto [iter, inserted] = m_ContentLookupTable.try_emplace(mesh->GetName(), mesh);
+#if defined(_DEBUG) || defined(DEBUG)
+		if (not inserted) ShowInsertedFailed(mesh->GetName(), "ContentManager");
+#endif
+	}
+	{
+		std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>(XMFLOAT3(0.f, 0.f, 0.f), 1.f, 1.f, JSMPlane::quad3, "DefaultPlane3");
+		auto [iter, inserted] = m_ContentLookupTable.try_emplace(mesh->GetName(), mesh);
+#if defined(_DEBUG) || defined(DEBUG)
+		if (not inserted) ShowInsertedFailed(mesh->GetName(), "ContentManager");
+#endif
+	}
+	{
+		std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>(XMFLOAT3(0.f, 0.f, 0.f), 1.f, 1.f, JSMPlane::quad4, "DefaultPlane4");
+		auto [iter, inserted] = m_ContentLookupTable.try_emplace(mesh->GetName(), mesh);
+#if defined(_DEBUG) || defined(DEBUG)
+		if (not inserted) ShowInsertedFailed(mesh->GetName(), "ContentManager");
+#endif
+	}
+	{
+		std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>(XMFLOAT3(0.f, 0.f, 0.f), 1.f, 1.f, JSMPlane::quad_no, "DefaultPlane");
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(mesh->GetName(), mesh);
 #if defined(_DEBUG) || defined(DEBUG)
 		if (not inserted) ShowInsertedFailed(mesh->GetName(), "ContentManager");

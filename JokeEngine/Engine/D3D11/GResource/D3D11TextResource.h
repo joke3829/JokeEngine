@@ -14,6 +14,7 @@ public:
 protected:
 	void ReadyDX11Resource();
 
+	std::string m_ResourceNames[kNumRenderTarget]{};
 
 	struct cbUV {
 		XMFLOAT4X4 uvMatrix{};

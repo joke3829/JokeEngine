@@ -4,6 +4,7 @@
 #include "Engine/JObject/JStaticMeshObject.h"
 #include "Engine/JObject/JPlayerObject.h"
 #include "Engine/JObject/JSpriteAnimationObject.h"
+#include "Engine/JObject/JTextObject.h"
 
 
 void JEngineScene::Update(float elapsedTime)
@@ -69,7 +70,7 @@ void JEngineScene::BuildDefaultScene()
 			static_cast<UINT>(m_WorldMatrices.size() - 1),
 			"MyTestSprite"
 		);
-		spriteobject->SetStaticMesh(contents["DefaultPlane"]);
+		spriteobject->SetStaticMesh(contents["DefaultPlaneq1"]);
 		spriteobject->SetSpriteSet(contents["TestSprite"]);
 		spriteobject->AddMaterial(contents["DefaultSpriteMaterial"]);
 		spriteobject->SetShaderName("DefaultSpriteShader");
@@ -108,24 +109,16 @@ void JEngineScene::BuildDefaultScene()
 		m_Objects.emplace_back(player);
 	}
 
-	//{	// Camera 추가 예제
-	//	m_WorldMatrices.emplace_back();
-	//	m_WorldMatricesTP.emplace_back();
-	//	std::shared_ptr<JCameraObject> camera = std::make_shared<JCameraObject>(
-	//		m_WorldMatrices,
-	//		m_WorldMatricesTP,
-	//		static_cast<UINT>(m_WorldMatrices.size() - 1),
-	//		"MyCamera"
-	//	);
-
-	//	//camera->SetRotation(45.f, 45.f, 0.f);
-	//	//camera->SetPosition(-30.f, 30.f, -30.f);
-	//	//camera->SetRotation(45.f, 0.f, 0.f);
-	//	camera->SetPosition(0.f, 0.f, -15.f);
-	//	m_Cameras.emplace_back(camera);
-
-	//	m_Objects.emplace_back(camera);
-	//}
+	{
+		m_WorldMatrices.emplace_back();
+		m_WorldMatricesTP.emplace_back();
+		std::shared_ptr<JTextObject> text = std::make_shared<JTextObject>(
+			m_WorldMatrices,
+			m_WorldMatricesTP,
+			static_cast<UINT>(m_WorldMatrices.size() - 1),
+			"TextObject"
+		);
+	}
 
 
 #if defined(_DEBUG) || defined(DEBUG)
