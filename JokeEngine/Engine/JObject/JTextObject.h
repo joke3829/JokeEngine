@@ -28,17 +28,22 @@ public:
 
 public:
 	void SetText(wchar_t* text) { m_Text = text; MakeDirtyFlag(); }
+	void SetFontSize(float size);
+	void SetFontCollectionName(const char* collectionname) { m_FontCollectionName = collectionname; }
+	void SetFontWeight(float weight);
+	void SetFontWidth(float width);
+
 
 	void MakeDirtyFlag();
-
 
 
 protected:
 
 
-	std::wstring m_Text{};
-	float m_FontSize{};
+	std::wstring m_Text;
+	std::wstring m_FontName;
 	std::string m_FontCollectionName{};
+	float m_FontSize;
 	float m_FontWeight{ 400.f };		// 폰트 두께 (1~1000, 기본값 400)
 	float m_FontWidth{ 100.f };			// 폰트 너비(간격, > 0, 기본값 100)
 
@@ -56,5 +61,6 @@ protected:
 	// staticMesh 5개(plane 방향별 5개를 미리 세팅 해 놓고 alignment에 따라 바꿔 사용)
 	std::vector<std::shared_ptr<JStaticMesh>> m_PlaneMeshes{};
 
-	bool m_Dirty[kNumRenderTarget]{};
+	bool m_GPUDirty[kNumRenderTarget]{};
+	bool m_CPUDirty{};
 };

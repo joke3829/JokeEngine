@@ -9,7 +9,7 @@ public:
 	JTextResourceDX11(const char* name);
 
 	void Update(float elapsedTime);
-	void UpdateBuffer(UINT currentFrameIndex);
+	void UpdateBuffer(UINT currentFrameIndex);	// 이때 TextRendering
 	void SetGPUBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage = JS_NONE);
 protected:
 	void ReadyDX11Resource();

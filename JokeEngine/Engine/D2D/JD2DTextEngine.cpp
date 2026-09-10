@@ -36,18 +36,25 @@ void JD2DTextEngine::AddRTForD3D11Texture2D(const std::string& name, ID3D11Textu
 #endif
 }
 
-void JD2DTextEngine::CreateTextFormat(ComPtr<IDWriteTextFormat3>& format)
+void JD2DTextEngine::CreateTextFormat(ComPtr<IDWriteTextFormat3>& format, std::wstring& fontname, std::string& fontcollection, float fontsize, float fontweight, float fontwidth)
 {
-	DWRITE_FONT_AXIS_VALUE d[2];
-	m_DWriteFactory->CreateTextFormat(L"바탕", nullptr, d, 2, 12, L"ko-kr", format.ReleaseAndGetAddressOf());
-	// IDWriteInMemoryFontFileLoader 이용해서 fontcollection 만드는거 고안하기
+	DWRITE_FONT_AXIS_VALUE avalue[2] = 
+	{ 
+		{.axisTag = DWRITE_FONT_AXIS_TAG_WEIGHT, .value = fontweight}, 
+		{.axisTag = DWRITE_FONT_AXIS_TAG_WIDTH, .value = fontwidth}
+	};
+	IDWriteFontCollection* fcol = nullptr;
+	// table에서 찾아서 없으면 nullptr
+	// if(map.contain(fontcollection))
+
+	ThrowIfFailed(m_DWriteFactory->CreateTextFormat(fontname.c_str(), fcol, avalue, std::size(avalue), fontsize, L"ko-KR", format.ReleaseAndGetAddressOf()));
 }
 
-void JD2DTextEngine::CreateTextLayout(ComPtr<IDWriteTextLayout>& layout)
+void JD2DTextEngine::CreateTextLayout(ComPtr<IDWriteTextLayout>& layout, ComPtr<IDWriteTextFormat3>& format, std::wstring& text, float maxwidth, float maxheight)
 {
-	ComPtr<IDWriteTextFormat3> test{};
-	m_DWriteFactory->CreateTextLayout(L"테스트", 3, test.Get(), 10, 10, layout.ReleaseAndGetAddressOf());
+	ThrowIfFailed(m_DWriteFactory->CreateTextLayout(text.c_str(), text.size(), format.Get(), maxwidth, maxheight, layout.ReleaseAndGetAddressOf()));
 }
+
 
 ComPtr<ID2D1SolidColorBrush> JD2DTextEngine::CreateSolidColorBrush(std::string& name, XMFLOAT4 color)
 {

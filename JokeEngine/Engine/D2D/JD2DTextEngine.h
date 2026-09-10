@@ -9,8 +9,8 @@ public:
 	void AddRTForD3D11Texture2D(const std::string& name, ID3D11Texture2D* texture2d);
 	void AddRTForD3D12Resource() {}
 
-	void CreateTextFormat(ComPtr<IDWriteTextFormat3>& format);
-	void CreateTextLayout(ComPtr<IDWriteTextLayout>& layout);
+	void CreateTextFormat(ComPtr<IDWriteTextFormat3>& format, std::wstring& fontname, std::string& fontcollection, float fontsize, float fontweight, float fontwidth);
+	void CreateTextLayout(ComPtr<IDWriteTextLayout>& layout, ComPtr<IDWriteTextFormat3>& format, std::wstring& text, float maxwidth, float maxheight);
 
 	ComPtr<ID2D1SolidColorBrush> CreateSolidColorBrush(std::string& name, XMFLOAT4 color = XMFLOAT4(1.f, 1.f, 1.f, 1.f));
 	ComPtr<ID2D1SolidColorBrush> CreateSolidColorBrush(std::string& name, D2D1::ColorF color = D2D1::ColorF::White);
