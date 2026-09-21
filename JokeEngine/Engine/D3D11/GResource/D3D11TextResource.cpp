@@ -1,7 +1,6 @@
 #include "D3D11TextResource.h"
 #include "Engine/D3D11/D3D11GlobalFactor.h"
 
-constexpr UINT kTextTexture2DSize = 256;
 
 JTextResourceDX11::JTextResourceDX11(const char* name)
 {
@@ -16,6 +15,7 @@ void JTextResourceDX11::Update(float elapsedTime)
 
 void JTextResourceDX11::UpdateBuffer(UINT currentFrameIndex)
 {
+	JTextResourceD2D::UpdateBuffer(currentFrameIndex);
 }
 
 void JTextResourceDX11::SetGPUBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage)

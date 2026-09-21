@@ -2,6 +2,14 @@
 
 #include "stdafx.h"
 
+struct JTextMetrics {
+	JTextMetrics(float left, float top, float width, float height) : Left{ left }, Top{ top }, Width{ width }, Height{ height } {}
+	float Left{};
+	float Top{};
+	float Width{};
+	float Height{};
+};
+
 class JTextResource {
 public:
 
@@ -17,6 +25,8 @@ public:
 	virtual void SetTextColor() {}
 
 	void SetName(const char* name) { m_name = name; }
+	virtual JTextMetrics GetMetrics() = 0;
+
 	const std::string& GetName() { return m_name; }
 	
 protected:

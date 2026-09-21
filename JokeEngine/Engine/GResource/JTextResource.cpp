@@ -1,0 +1,1 @@
+#include "JTextResource.h"

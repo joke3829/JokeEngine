@@ -1,6 +1,12 @@
 #include "DWriteTextResource.h"
 
 
+void JTextResourceD2D::UpdateBuffer(UINT currentFrameIndex)
+{
+	// target 이름을 알고 있기에 여기에 호출
+
+}
+
 void JTextResourceD2D::CreateDWriteTextFomat(std::wstring& fontname, std::string& fontcollection, float fontsize, float fontweight, float fontwidth)
 {
 	JD2DTextEngine::GetInstance()->CreateTextFormat(m_TextFormat, fontname, fontcollection, fontsize, fontweight, fontwidth);
@@ -21,4 +27,11 @@ void JTextResourceD2D::CreateSolidColorBrush(std::string& name, D2D1::ColorF col
 {
 	auto* e = JD2DTextEngine::GetInstance();
 	m_Brush = e->CreateSolidColorBrush(name, color);
+}
+
+JTextMetrics JTextResourceD2D::GetMetrics()
+{
+	DWRITE_TEXT_METRICS met{};
+	m_TextLayout->GetMetrics(&met);
+	return JTextMetrics(met.left, met.top, met.width, met.height);
 }

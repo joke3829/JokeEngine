@@ -30,13 +30,22 @@ void JTextObject::Update(float elapsedTime, XMFLOAT4X4* parent)
 {
 	// 여기서 CPUDirty -> IDWrite, Brush 등 최신화
 	m_TextResource->Update(elapsedTime);
+	if (m_CPUDirty) {
+		m_TextResource->CreateDWriteTextFomat(m_FontName, m_FontCollectionName, m_FontSize, m_FontWeight, m_FontWidth);
+		float maxsize = static_cast<float>(kTextTexture2DSize);
+		m_TextResource->CreateDWriteTextLayout(m_Text, maxsize, maxsize);
+		m_CPUDirty = false;
+	}
 }
 
 void JTextObject::Render(UINT currentFrameIndex)
 {
 	// updatebuffer = 렌더타겟에 텍스트 쓰기
-
-
+	if (m_GPUDirty[currentFrameIndex]) {
+		// 이거 조금 고민해보기 (updateBuffer라는 이름이 texture 업데이트만 하면 되는가?
+		m_TextResource->UpdateBuffer(currentFrameIndex);
+		m_GPUDirty[currentFrameIndex] = false;
+	}
 	// setGPUBuffer = SRV로 올리기
 
 	// render 

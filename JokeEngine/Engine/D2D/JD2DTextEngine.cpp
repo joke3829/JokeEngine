@@ -36,6 +36,15 @@ void JD2DTextEngine::AddRTForD3D11Texture2D(const std::string& name, ID3D11Textu
 #endif
 }
 
+void JD2DTextEngine::RenderText(std::string& name, IDWriteTextLayout* layout)
+{
+	if (!m_RTTable.contains(name))
+		return;
+	ComPtr<ID2D1RenderTarget>& rt = m_RTTable[name];
+	rt->BeginDraw();
+	rt->EndDraw();
+}
+
 void JD2DTextEngine::CreateTextFormat(ComPtr<IDWriteTextFormat3>& format, std::wstring& fontname, std::string& fontcollection, float fontsize, float fontweight, float fontwidth)
 {
 	DWRITE_FONT_AXIS_VALUE avalue[2] = 

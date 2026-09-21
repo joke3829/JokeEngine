@@ -118,6 +118,8 @@ void JEngineScene::BuildDefaultScene()
 			static_cast<UINT>(m_WorldMatrices.size() - 1),
 			"TextObject"
 		);
+
+		m_Objects.emplace_back(text);
 	}
 
 
