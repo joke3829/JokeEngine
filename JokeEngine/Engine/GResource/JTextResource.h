@@ -3,7 +3,8 @@
 #include "stdafx.h"
 
 struct JTextMetrics {
-	JTextMetrics(float left, float top, float width, float height) : Left{ left }, Top{ top }, Width{ width }, Height{ height } {}
+	JTextMetrics() = default;
+	JTextMetrics(float left, float top, float width, float height) : Left(left), Top(top), Width(width), Height(height) {}
 	float Left{};
 	float Top{};
 	float Width{};
@@ -26,6 +27,7 @@ public:
 
 	void SetName(const char* name) { m_name = name; }
 	virtual JTextMetrics GetMetrics() = 0;
+	virtual JTextMetrics GetMetricsWithUVMatrixUpdate() = 0;
 
 	const std::string& GetName() { return m_name; }
 	

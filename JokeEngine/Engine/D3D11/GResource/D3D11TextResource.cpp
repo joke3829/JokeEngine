@@ -22,6 +22,27 @@ void JTextResourceDX11::SetGPUBuffer(UINT currentFrameIndex, UINT parameter, JSh
 {
 }
 
+JTextMetrics JTextResourceDX11::GetMetricsWithUVMatrixUpdate()
+{
+	JTextMetrics metric = JTextResourceD2D::GetMetrics();
+
+	float rtSize = static_cast<float>(kTextTexture2DSize);
+	float uSize = metric.Width / rtSize;
+	float vSize = metric.Height / rtSize;
+	float offsetU = metric.Left / rtSize;
+	float offsetV = metric.Top / rtSize;
+
+	XMFLOAT4X4 uvmat{};
+	uvmat._11 = uSize;
+	uvmat._22 = vSize;
+	uvmat._33 = 1;
+	uvmat._44 = 1;
+	uvmat._14 = offsetU;
+	uvmat._24 = offsetV;
+
+	return metric;
+}
+
 void JTextResourceDX11::ReadyDX11Resource()
 {
 	auto* device = JD3D11GlobalFactor::GetInstance()->GetDevice();

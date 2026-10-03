@@ -1,9 +1,10 @@
 #pragma once
 
 #include "JObject.h"
+#include "Engine/D3D11/GResource/D3D11TextResource.h"
+
 
 class JStaticMesh;
-class JTextResource;
 
 enum JText_Alignment : unsigned char {
 	Left,
@@ -51,15 +52,20 @@ protected:
 	// 둘 중 하나가 center면 둘다 center
 	JText_Alignment m_HorizonAlignment = JText_Alignment::Left;	
 	JText_Alignment m_VerticalAlignment = JText_Alignment::Top;
+	// Left Top -> 4quad
+	// Right Bottom -> 2quad
 
 protected:
-	std::unique_ptr<JTextResource> m_TextResource;
+	std::unique_ptr<JTextResource>	m_TextResource;
+	JTextMetrics					m_TextMetrics;
 
-	XMFLOAT3 m_TextScale{};
-	XMFLOAT3 m_MeshScale{};
+	XMFLOAT3						m_TextScale{};
+	XMFLOAT3						m_MeshScale{};
 
 	// staticMesh 5개(plane 방향별 5개를 미리 세팅 해 놓고 alignment에 따라 바꿔 사용)
+	// 0: center, 1: 1quad, 2: 2quad, 3: 3quad, 4: 4quad
 	std::vector<std::shared_ptr<JStaticMesh>> m_PlaneMeshes{};
+	BYTE m_RenderPlaneIndex{};
 
 	bool m_GPUDirty[kNumRenderTarget]{};
 	bool m_CPUDirty{};

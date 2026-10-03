@@ -10,6 +10,8 @@ public:
 	void Update(float elapsedTime);
 	void UpdateBuffer(UINT currentFrameIndex);	// 이때 TextRendering
 	void SetGPUBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage = JS_NONE);
+
+	JTextMetrics GetMetricsWithUVMatrixUpdate();
 protected:
 	void ReadyDX11Resource();
 
