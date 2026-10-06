@@ -3,8 +3,8 @@
 
 void JTextResourceD2D::UpdateBuffer(UINT currentFrameIndex)
 {
-	// target 이름을 알고 있기에 여기에 호출
-
+	auto* p = JD2DTextEngine::GetInstance();
+	p->RenderText(m_ResourceNames[currentFrameIndex], m_TextLayout.Get(), m_Brush[currentFrameIndex].Get());
 }
 
 void JTextResourceD2D::CreateDWriteTextFomat(std::wstring& fontname, std::string& fontcollection, float fontsize, float fontweight, float fontwidth)
@@ -17,16 +17,18 @@ void JTextResourceD2D::CreateDWriteTextLayout(std::wstring& text, float maxwidth
 	JD2DTextEngine::GetInstance()->CreateTextLayout(m_TextLayout, m_TextFormat, text, maxwidth, maxheight);
 }
 
-void JTextResourceD2D::CreateSolidColorBrush(std::string& name, XMFLOAT4 color)
+void JTextResourceD2D::CreateSolidColorBrush(XMFLOAT4 color)
 {
 	auto* e = JD2DTextEngine::GetInstance();
-	m_Brush =  e->CreateSolidColorBrush(name, color);
+	for(int i = 0 ; i < kNumRenderTarget; ++i)
+		m_Brush[i] = e->CreateSolidColorBrush(m_ResourceNames[i], color);
 }
 
-void JTextResourceD2D::CreateSolidColorBrush(std::string& name, D2D1::ColorF color)
+void JTextResourceD2D::CreateSolidColorBrush(D2D1::ColorF color)
 {
 	auto* e = JD2DTextEngine::GetInstance();
-	m_Brush = e->CreateSolidColorBrush(name, color);
+	for (int i = 0; i < kNumRenderTarget; ++i)
+		m_Brush[i] = e->CreateSolidColorBrush(m_ResourceNames[i], color);
 }
 
 JTextMetrics JTextResourceD2D::GetMetrics()

@@ -1,19 +1,23 @@
 #include "JTextObject.h"
+#include "Engine/D3D11/GResource/D3D11MeshConstant.h"
 #include "Engine/JokeEngineConfig.h"
 
-constexpr float kTextScale = 3.0f;
+constexpr float kTextScale = 1.0f;
 
 JTextObject::JTextObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name)
 	: JObject(vWorld, vWorldTP, nodeIndex, name)
 {
-	m_Text = L"Text";
-	m_FontName = L"바탕";
+	m_Text = L"엄준식";
+	m_FontName = L"던파 연단된 칼날";
 	m_FontSize = 12.f;
 
 
 	auto* opt = JEngineDefaultGlobalConfig::GetInstance()->GetConfigFactor();
 	switch (opt->DirectX_Version) {
 	case 11:
+		m_MeshCB = std::make_unique<JMeshConstantDX11>();
+		m_MeshCB->m_CBMesh.bSkinning = false;
+		m_MeshCB->m_CBMesh.nodeIndex = nodeIndex;
 		m_TextResource = std::make_unique<JTextResourceDX11>(name);
 		break;
 	case 12:
@@ -23,6 +27,8 @@ JTextObject::JTextObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4
 		break;
 	}
 
+	// temp
+	m_TextResource->CreateSolidColorBrush(XMFLOAT4(1.f, 1.f, 1.f, 1.f));
 	MakeDirtyFlag();
 }
 
@@ -88,8 +94,54 @@ void JTextObject::Render(UINT currentFrameIndex)
 		m_GPUDirty[currentFrameIndex] = false;
 	}
 	// setGPUBuffer = SRV로 올리기
-
+	m_TextResource->SetGPUBuffer(currentFrameIndex, 2, JS_PS);
 	// render 
+
+	m_MeshCB->UpdateBuffer(currentFrameIndex);
+	m_MeshCB->SetGPUBuffer(currentFrameIndex, 0, JS_VS);
+
+	m_PlaneMeshes[m_RenderPlaneIndex]->Render((UINT)0);
+}
+
+void JTextObject::ReadyPlanes(std::unordered_map<std::string, std::shared_ptr<JContent>>& contents)
+{
+	bool bError{};
+	{
+		std::shared_ptr<JStaticMesh> mesh = std::dynamic_pointer_cast<JStaticMesh>(contents["DefaultPlane"]);
+		if (mesh)
+			m_PlaneMeshes.emplace_back(mesh);
+		else bError = true;
+	}
+	{
+		std::shared_ptr<JStaticMesh> mesh = std::dynamic_pointer_cast<JStaticMesh>(contents["DefaultPlaneq1"]);
+		if (mesh)
+			m_PlaneMeshes.emplace_back(mesh);
+		else bError = true;
+	}
+	{
+		std::shared_ptr<JStaticMesh> mesh = std::dynamic_pointer_cast<JStaticMesh>(contents["DefaultPlaneq2"]);
+		if (mesh)
+			m_PlaneMeshes.emplace_back(mesh);
+		else bError = true;
+	}
+	{
+		std::shared_ptr<JStaticMesh> mesh = std::dynamic_pointer_cast<JStaticMesh>(contents["DefaultPlaneq3"]);
+		if (mesh)
+			m_PlaneMeshes.emplace_back(mesh);
+		else bError = true;
+	}
+	{
+		std::shared_ptr<JStaticMesh> mesh = std::dynamic_pointer_cast<JStaticMesh>(contents["DefaultPlaneq4"]);
+		if (mesh)
+			m_PlaneMeshes.emplace_back(mesh);
+		else bError = true;
+	}
+
+#if defined(_DEBUG) || defined(DEBUG)
+	if (bError) {
+		spdlog::warn("JTextObject::ReadyPlanes에서 Plane초기화를 실패했습니다.(contextmanager에 JStaticMesh가 없음)");
+	}
+#endif
 }
 
 void JTextObject::SetFontSize(float size)

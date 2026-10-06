@@ -9,7 +9,7 @@ public:
 	void AddRTForD3D11Texture2D(const std::string& name, ID3D11Texture2D* texture2d);
 	void AddRTForD3D12Resource() {}
 
-	void RenderText(std::string& name, IDWriteTextLayout* layout);
+	void RenderText(std::string& name, IDWriteTextLayout* layout, ID2D1Brush* brush);
 
 	void CreateTextFormat(ComPtr<IDWriteTextFormat3>& format, std::wstring& fontname, std::string& fontcollection, float fontsize, float fontweight, float fontwidth);
 	void CreateTextLayout(ComPtr<IDWriteTextLayout>& layout, ComPtr<IDWriteTextFormat3>& format, std::wstring& text, float maxwidth, float maxheight);

@@ -1,27 +1,21 @@
-#include "Common.hlsl"
+// ==========================================
+// TextureMappingShader.hlsl
+// 
+// 2DTextureMapping 관련 shadercode 부
+// ==========================================
+#include "DefaultMaterialShader.hlsl"
 
 
 // b0, b2
 // t0, t1, t2~
 
-struct SceneConstant
-{
-    uint camera;
-};
-
-cbuffer cbSceneConstant : register(b1)
-{
-    SceneConstant g_SceneConstant;
-}
 
 cbuffer cbSpriteConstant : register(b3)
 {
     float4x4 g_uvMatrix;
 }
 
-sampler g_Sampler : register(s0);
-
-DefaultPSInput SpriteVS(DefaultVSInput input)
+DefaultPSInput UVTransformVS(DefaultVSInput input)
 {
     DefaultPSInput output;
     uint nodeindex = g_MeshConstant.nodeIndex;
@@ -39,21 +33,17 @@ DefaultPSInput SpriteVS(DefaultVSInput input)
     return output;
 }
 
-float4 SpritePS(DefaultPSInput input) : SV_Target
+
+float4 AlbedoTextureMappingPS(DefaultPSInput input) : SV_Target
 {
     float4 finalColor;
 #ifdef D3D12_TEXTURE_REGISTER
     return float4(1.f, 1.f, 0.f, 1.f);
 #endif
-    if (g_Material.AlbedoTexIndex)
-    {
-        finalColor = g_Material.Albedo * g_Texture[0].Sample(g_Sampler, input.TexCoord0);
-    }
-    else
-    {
-        finalColor = g_Material.Albedo;
-    }
-    if(finalColor.a <= 0.1f)
+
+    finalColor = g_Material.Albedo * g_Texture[0].Sample(g_Sampler, input.TexCoord0);
+
+    if (finalColor.a <= 0.1f)
         discard;
     return float4(finalColor);
 }

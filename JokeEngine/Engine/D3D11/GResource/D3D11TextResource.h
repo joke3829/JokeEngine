@@ -8,14 +8,12 @@ public:
 	JTextResourceDX11(const char* name);
 
 	void Update(float elapsedTime);
-	void UpdateBuffer(UINT currentFrameIndex);	// 이때 TextRendering
+	void UpdateBuffer(UINT currentFrameIndex);
 	void SetGPUBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage = JS_NONE);
 
 	JTextMetrics GetMetricsWithUVMatrixUpdate();
 protected:
 	void ReadyDX11Resource();
-
-	std::string m_ResourceNames[kNumRenderTarget]{};
 
 	struct cbUV {
 		XMFLOAT4X4 uvMatrix{};

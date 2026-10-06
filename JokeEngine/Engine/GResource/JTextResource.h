@@ -21,8 +21,8 @@ public:
 	virtual void CreateDWriteTextFomat(std::wstring& fontname, std::string& fontcollection, float fontsize, float fontweight, float fontwidth) {}
 	virtual void CreateDWriteTextLayout(std::wstring& text, float maxwidth, float maxheight) {}
 
-	virtual void CreateSolidBrush(std::string& name, XMFLOAT4 color = XMFLOAT4(1.f, 1.f, 1.f, 1.f)) {}
-	virtual void CreateSolidColorBrush(std::string& name, D2D1::ColorF color = D2D1::ColorF::White) {}
+	virtual void CreateSolidColorBrush(XMFLOAT4 color = XMFLOAT4(1.f, 1.f, 1.f, 1.f)) {}
+	virtual void CreateSolidColorBrush(D2D1::ColorF color = D2D1::ColorF::White) {}
 	virtual void SetTextColor() {}
 
 	void SetName(const char* name) { m_name = name; }

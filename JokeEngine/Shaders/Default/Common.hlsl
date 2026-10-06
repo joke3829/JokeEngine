@@ -1,3 +1,6 @@
+// Common.hlsl
+// 공유를 자주하는 Default 요소들 정의
+
 
 struct MeshConstant
 {

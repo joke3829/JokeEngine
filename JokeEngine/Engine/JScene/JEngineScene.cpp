@@ -55,7 +55,8 @@ void JEngineScene::BuildDefaultScene()
 		meshobject->SetShaderName("DefaultShader");
 		meshobject->SetStaticMesh(contents["DefaultCube"]);
 
-		meshobject->SetRotation(45.f, 65.f, 45.f);
+		meshobject->SetScale(0.1, 0.1, 0.1);
+		//meshobject->SetRotation(45.f, 65.f, 45.f);
 
 		m_Objects.emplace_back(meshobject);
 	}
@@ -73,7 +74,7 @@ void JEngineScene::BuildDefaultScene()
 		spriteobject->SetStaticMesh(contents["DefaultPlaneq1"]);
 		spriteobject->SetSpriteSet(contents["TestSprite"]);
 		spriteobject->AddMaterial(contents["DefaultSpriteMaterial"]);
-		spriteobject->SetShaderName("DefaultSpriteShader");
+		spriteobject->SetShaderName("UVTransformShader");
 
 		spriteobject->SetScale(85.f, 85.f, 1.f);
 		m_Objects.emplace_back(spriteobject);
@@ -118,6 +119,8 @@ void JEngineScene::BuildDefaultScene()
 			static_cast<UINT>(m_WorldMatrices.size() - 1),
 			"TextObject"
 		);
+		text->ReadyPlanes(contents);
+		text->SetShaderName("UVTransformShader");
 
 		m_Objects.emplace_back(text);
 	}

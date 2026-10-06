@@ -5,6 +5,7 @@ project(Lopez)
 
 if(MSVC)
 	add_compile_options(/utf-8)
+	add_compile_definitions(UNICODE _UNICODE)
 endif()
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Available build configurations" FORCE)
@@ -180,8 +181,8 @@ set(D3D11_INTEGRATE
 
 set(SHADER_FILES
   Shaders/Default/Common.hlsl
-  Shaders/Default/DefaultShader.hlsl
-  Shaders/Default/DefaultSpriteShader.hlsl
+  Shaders/Default/DefaultMaterialShader.hlsl
+  Shaders/Default/UVTransformShader.hlsl
 )
 
 set(TEXTURE_LOADER

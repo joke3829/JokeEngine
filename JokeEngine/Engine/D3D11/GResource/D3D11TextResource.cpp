@@ -5,6 +5,7 @@
 JTextResourceDX11::JTextResourceDX11(const char* name)
 {
 	m_name = name;
+
 	ReadyDX11Resource();
 }
 
@@ -16,10 +17,45 @@ void JTextResourceDX11::Update(float elapsedTime)
 void JTextResourceDX11::UpdateBuffer(UINT currentFrameIndex)
 {
 	JTextResourceD2D::UpdateBuffer(currentFrameIndex);
+	// cb 업데이트
+
+	D3D11_MAPPED_SUBRESOURCE data{};
+	auto* context = JD3D11GlobalFactor::GetInstance()->GetDeviceContext();
+	context->Map(m_cbUVTransform[currentFrameIndex].Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &data);
+	memcpy(data.pData, &m_uvTransform, sizeof(XMFLOAT4X4));
+	context->Unmap(m_cbUVTransform[currentFrameIndex].Get(), 0);
 }
 
+// 일단은 그냥 srv 하나면 넣기 parameter는 srv (t)
 void JTextResourceDX11::SetGPUBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage)
 {
+	auto* context =JD3D11GlobalFactor::GetInstance()->GetDeviceContext();
+	context->VSSetConstantBuffers(3, 1, m_cbUVTransform[currentFrameIndex].GetAddressOf());
+	switch (stage) {
+	case JS_VS:
+		context->VSSetShaderResources(parameter, 1, m_TextureRTSRV[currentFrameIndex].GetAddressOf());
+		break;
+	case JS_PS:
+		context->PSSetShaderResources(parameter, 1, m_TextureRTSRV[currentFrameIndex].GetAddressOf());
+		break;
+	case JS_GS:
+		context->GSSetShaderResources(parameter, 1, m_TextureRTSRV[currentFrameIndex].GetAddressOf());
+		break;
+	case JS_HS:
+		context->HSSetShaderResources(parameter, 1, m_TextureRTSRV[currentFrameIndex].GetAddressOf());
+		break;
+	case JS_DS:
+		context->DSSetShaderResources(parameter, 1, m_TextureRTSRV[currentFrameIndex].GetAddressOf());
+		break;
+	case JS_CS:
+		context->CSSetShaderResources(parameter, 1, m_TextureRTSRV[currentFrameIndex].GetAddressOf());
+		break;
+	default:
+#if defined(_DEBUG) || defined(DEBUG)
+		spdlog::error("[DX11] {0}에서 잘못된 SetGPUBuffer를 호출했습니다.", m_name.c_str());
+#endif
+		assert(0);
+	}
 }
 
 JTextMetrics JTextResourceDX11::GetMetricsWithUVMatrixUpdate()
@@ -39,6 +75,8 @@ JTextMetrics JTextResourceDX11::GetMetricsWithUVMatrixUpdate()
 	uvmat._44 = 1;
 	uvmat._14 = offsetU;
 	uvmat._24 = offsetV;
+
+	m_uvTransform.uvMatrix = uvmat;
 
 	return metric;
 }

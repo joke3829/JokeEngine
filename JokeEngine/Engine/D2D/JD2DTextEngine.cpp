@@ -36,12 +36,15 @@ void JD2DTextEngine::AddRTForD3D11Texture2D(const std::string& name, ID3D11Textu
 #endif
 }
 
-void JD2DTextEngine::RenderText(std::string& name, IDWriteTextLayout* layout)
+void JD2DTextEngine::RenderText(std::string& name, IDWriteTextLayout* layout, ID2D1Brush* brush)
 {
 	if (!m_RTTable.contains(name))
 		return;
 	ComPtr<ID2D1RenderTarget>& rt = m_RTTable[name];
 	rt->BeginDraw();
+	rt->Clear(D2D1::ColorF(0.f, 0.f, 0.f, 0.f));
+	D2D1_POINT_2F origin{};
+	rt->DrawTextLayout(origin, layout, brush);
 	rt->EndDraw();
 }
 
@@ -70,7 +73,7 @@ ComPtr<ID2D1SolidColorBrush> JD2DTextEngine::CreateSolidColorBrush(std::string& 
 	ComPtr<ID2D1SolidColorBrush> brush;
 	if (!m_RTTable.contains(name)) {
 #if defined(DEBUG) || defined(_DEBUG)
-		spdlog::error("{0} 의 이름을 가진 RT가 없습니다. D2DTextEngine", name);
+		spdlog::error("{0} 의 이름을 가진 RT가 없습니다. D2DTextEngine", name.c_str());
 #endif 
 		return brush;
 	}
@@ -83,7 +86,7 @@ ComPtr<ID2D1SolidColorBrush> JD2DTextEngine::CreateSolidColorBrush(std::string& 
 	ComPtr<ID2D1SolidColorBrush> brush;
 	if (!m_RTTable.contains(name)) {
 #if defined(DEBUG) || defined(_DEBUG)
-		spdlog::error("{0} 의 이름을 가진 RT가 없습니다. D2DTextEngine", name);
+		spdlog::error("{0} 의 이름을 가진 RT가 없습니다. D2DTextEngine", name.c_str());
 #endif 
 		return brush;
 	}

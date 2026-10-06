@@ -63,14 +63,24 @@ using Microsoft::WRL::ComPtr;
 
 // 공용 함수 선언부===============================================================================
 
+inline std::string WideToUtf8(const wchar_t* ws)
+{
+	if (!ws) return {};
+	int len = WideCharToMultiByte(CP_UTF8, 0, ws, -1, nullptr, 0, nullptr, nullptr);
+	if (len <= 0) return {};
+	std::string s(len - 1, '\0');  // -1: 널 종료 문자 제외
+	WideCharToMultiByte(CP_UTF8, 0, ws, -1, s.data(), len, nullptr, nullptr);
+	return s;
+}
+
 inline void ThrowIfFailed(HRESULT hr)
 {
 	if (FAILED(hr)) {
 #if defined(_DEBUG) || defined(DEBUG)
 		_com_error err(hr);
-		LPCSTR errMsg = err.ErrorMessage();
+		std::string ss = WideToUtf8(err.ErrorMessage());
 		spdlog::critical("[FATAL ERROR] DirectX API Failed, HRESULT: 0x{0:X} | Message: {1}",
-			static_cast<unsigned int>(hr), errMsg);
+			static_cast<unsigned int>(hr), ss.c_str());
 #endif
 		assert(0);
 	}

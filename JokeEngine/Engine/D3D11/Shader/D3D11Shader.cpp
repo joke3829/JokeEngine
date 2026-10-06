@@ -82,7 +82,7 @@ void JEngineShaderDX11::CreateInputLayout(bool skinning)
 		
 	}
 	else {
-		vs = CompileHLSL(L"Shaders/Default/DefaultShader.hlsl", nullptr, "DefaultVS", "vs_5_0");
+		vs = CompileHLSL(L"Shaders/Default/DefaultMaterialShader.hlsl", nullptr, "DefaultVS", "vs_5_0");
 
 		D3D11_INPUT_ELEMENT_DESC desc[] = {
 			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
@@ -109,7 +109,7 @@ JEngineDefaultShaderDX11::JEngineDefaultShaderDX11(const char* name)
 	// VS
 	{
 		ComPtr<ID3DBlob> vs{};
-		vs = CompileHLSL(L"Shaders/Default/DefaultShader.hlsl", nullptr, "DefaultVS", "vs_5_0");
+		vs = CompileHLSL(L"Shaders/Default/DefaultMaterialShader.hlsl", nullptr, "DefaultVS", "vs_5_0");
 
 		ThrowIfFailed(device->CreateVertexShader(vs->GetBufferPointer(), vs->GetBufferSize(), nullptr, m_VS.ReleaseAndGetAddressOf()));
 	}
@@ -117,7 +117,7 @@ JEngineDefaultShaderDX11::JEngineDefaultShaderDX11(const char* name)
 	// PS
 	{
 		ComPtr<ID3DBlob> ps{};
-		ps = CompileHLSL(L"Shaders/Default/DefaultShader.hlsl", nullptr, "DefaultPS", "ps_5_0");
+		ps = CompileHLSL(L"Shaders/Default/DefaultMaterialShader.hlsl", nullptr, "DefaultPS", "ps_5_0");
 
 		ThrowIfFailed(device->CreatePixelShader(ps->GetBufferPointer(), ps->GetBufferSize(), nullptr, m_PS.ReleaseAndGetAddressOf()));
 	}
@@ -158,7 +158,7 @@ JEngineDefaultSpriteShaderDX11::JEngineDefaultSpriteShaderDX11(const char* name)
 	// VS
 	{
 		ComPtr<ID3DBlob> vs{};
-		vs = CompileHLSL(L"Shaders/Default/DefaultSpriteShader.hlsl", nullptr, "SpriteVS", "vs_5_0");
+		vs = CompileHLSL(L"Shaders/Default/UVTransformShader.hlsl", nullptr, "UVTransformVS", "vs_5_0");
 
 		ThrowIfFailed(device->CreateVertexShader(vs->GetBufferPointer(), vs->GetBufferSize(), nullptr, m_VS.ReleaseAndGetAddressOf()));
 	}
@@ -166,7 +166,7 @@ JEngineDefaultSpriteShaderDX11::JEngineDefaultSpriteShaderDX11(const char* name)
 	// PS
 	{
 		ComPtr<ID3DBlob> ps{};
-		ps = CompileHLSL(L"Shaders/Default/DefaultSpriteShader.hlsl", nullptr, "SpritePS", "ps_5_0");
+		ps = CompileHLSL(L"Shaders/Default/UVTransformShader.hlsl", nullptr, "AlbedoTextureMappingPS", "ps_5_0");
 
 		ThrowIfFailed(device->CreatePixelShader(ps->GetBufferPointer(), ps->GetBufferSize(), nullptr, m_PS.ReleaseAndGetAddressOf()));
 	}

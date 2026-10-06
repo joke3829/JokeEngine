@@ -51,5 +51,5 @@ public:
 
 class JEngineDefaultSpriteShaderDX11 : public JEngineShaderDX11 {
 public:
-	JEngineDefaultSpriteShaderDX11(const char* name = "DefaultSpriteShader");
+	JEngineDefaultSpriteShaderDX11(const char* name = "UVTransformShader");
 };

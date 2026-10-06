@@ -42,6 +42,7 @@ void JSpriteAnimationObject::Update(float elapsedTime, XMFLOAT4X4* parent)
 	for (auto& p : m_Materials)
 		p->Update(elapsedTime);
 	
+	// 이것도 개선 필요
 	JObject::Update(elapsedTime, parent);
 }
 

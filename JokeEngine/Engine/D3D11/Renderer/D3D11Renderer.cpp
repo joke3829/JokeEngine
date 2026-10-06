@@ -47,7 +47,7 @@ void JEngineRendererDX11::RenderFrame()
 	// PSO
 	void* rtv[] = { m_RenderTargetView[m_CurrentFrameIndex].Get() };
 	m_PSOMap["DefaultShader"]->RenderObjects(m_CurrentFrameIndex, rtv, 1, m_DepthStencilView[m_CurrentFrameIndex].Get());
-	m_PSOMap["DefaultSpriteShader"]->RenderObjects(m_CurrentFrameIndex, rtv, 1, m_DepthStencilView[m_CurrentFrameIndex].Get());
+	m_PSOMap["UVTransformShader"]->RenderObjects(m_CurrentFrameIndex, rtv, 1, m_DepthStencilView[m_CurrentFrameIndex].Get());
 }
 
 void JEngineRendererDX11::CopyResult(void* outBuffer)

@@ -2,9 +2,10 @@
 
 #include "JObject.h"
 #include "Engine/D3D11/GResource/D3D11TextResource.h"
+#include "Engine/JContent/JStaticMesh.h"
 
+class JMeshConstant;
 
-class JStaticMesh;
 
 enum JText_Alignment : unsigned char {
 	Left,
@@ -28,6 +29,9 @@ public:
 	void Render(UINT currentFrameIndex);
 
 public:
+	// contentmanager를 받아 plane 준비: 필수
+	void ReadyPlanes(std::unordered_map<std::string, std::shared_ptr<JContent>>& contents);
+
 	void SetText(wchar_t* text) { m_Text = text; MakeDirtyFlag(); }
 	void SetFontSize(float size);
 	void SetFontCollectionName(const char* collectionname) { m_FontCollectionName = collectionname; }
@@ -64,8 +68,9 @@ protected:
 
 	// staticMesh 5개(plane 방향별 5개를 미리 세팅 해 놓고 alignment에 따라 바꿔 사용)
 	// 0: center, 1: 1quad, 2: 2quad, 3: 3quad, 4: 4quad
+	std::unique_ptr<JMeshConstant>	m_MeshCB;
 	std::vector<std::shared_ptr<JStaticMesh>> m_PlaneMeshes{};
-	BYTE m_RenderPlaneIndex{};
+	BYTE m_RenderPlaneIndex = 0x04;
 
 	bool m_GPUDirty[kNumRenderTarget]{};
 	bool m_CPUDirty{};

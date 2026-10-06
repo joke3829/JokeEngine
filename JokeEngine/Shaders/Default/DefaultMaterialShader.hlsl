@@ -49,7 +49,8 @@ float4 DefaultPS(DefaultPSInput input) : SV_Target
     {
         finalColor = g_Material.Albedo;
     }
+    if (finalColor.a <= 0.1f)
+        discard;
     return float4(finalColor);
-
 }
 
