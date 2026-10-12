@@ -55,7 +55,7 @@ void JEngineScene::BuildDefaultScene()
 		meshobject->SetShaderName("DefaultShader");
 		meshobject->SetStaticMesh(contents["DefaultCube"]);
 
-		meshobject->SetScale(0.1, 0.1, 0.1);
+		//meshobject->SetScale(5.f, 5.f, 5.f);
 		//meshobject->SetRotation(45.f, 65.f, 45.f);
 
 		m_Objects.emplace_back(meshobject);
@@ -121,6 +121,8 @@ void JEngineScene::BuildDefaultScene()
 		);
 		text->ReadyPlanes(contents);
 		text->SetShaderName("UVTransformShader");
+		//text->SetScale(0.05f, 0.05f, 0.05f);
+		text->SetPosition(2.5f, -1.f, 0.f);
 
 		m_Objects.emplace_back(text);
 	}

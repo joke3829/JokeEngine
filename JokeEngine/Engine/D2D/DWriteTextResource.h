@@ -3,7 +3,9 @@
 #include "Engine/GResource/JTextResource.h"
 #include "JD2DTextEngine.h"
 
-constexpr UINT kTextTexture2DSize = 256;
+// fontSize 32기준 줄3 열60
+constexpr UINT kTextTexture2DWidth = 1920;
+constexpr UINT kTextTexture2DHeight = 96;
 
 class JTextResourceD2D : public JTextResource {
 public:

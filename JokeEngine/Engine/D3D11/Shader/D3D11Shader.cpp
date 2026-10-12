@@ -176,7 +176,7 @@ JEngineDefaultSpriteShaderDX11::JEngineDefaultSpriteShaderDX11(const char* name)
 		D3D11_BLEND_DESC desc{};
 		auto& rt = desc.RenderTarget[0];
 		rt.BlendEnable = true;
-		rt.SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		rt.SrcBlend = D3D11_BLEND_ONE;
 		rt.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
 		rt.BlendOp = D3D11_BLEND_OP_ADD;
 

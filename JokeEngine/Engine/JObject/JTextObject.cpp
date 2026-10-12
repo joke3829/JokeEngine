@@ -2,14 +2,14 @@
 #include "Engine/D3D11/GResource/D3D11MeshConstant.h"
 #include "Engine/JokeEngineConfig.h"
 
-constexpr float kTextScale = 1.0f;
+constexpr float kTextScale = 0.05f;
 
 JTextObject::JTextObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name)
 	: JObject(vWorld, vWorldTP, nodeIndex, name)
 {
-	m_Text = L"엄준식";
+	m_Text = L"안녕하세요 저는 일찌감치 바이오하자드를 열심히 했지만 게임이 너무 재밌어서 인생이 망해버린 케이스 입니다.";
 	m_FontName = L"던파 연단된 칼날";
-	m_FontSize = 12.f;
+	m_FontSize = 32.f;
 
 
 	auto* opt = JEngineDefaultGlobalConfig::GetInstance()->GetConfigFactor();
@@ -41,9 +41,10 @@ void JTextObject::Update(float elapsedTime, XMFLOAT4X4* parent)
 
 	// 여기서 CPUDirty -> IDWrite, Brush 등 최신화
 	if (m_CPUDirty) {
-		m_TextResource->CreateDWriteTextFomat(m_FontName, m_FontCollectionName, m_FontSize, m_FontWeight, m_FontWidth);
-		float maxsize = static_cast<float>(kTextTexture2DSize);
-		m_TextResource->CreateDWriteTextLayout(m_Text, maxsize, maxsize);
+		m_TextResource->CreateDWriteTextFomat(m_FontName, m_FontCollectionName, m_FontSize, 1000, m_FontWidth);
+		float maxwidth = static_cast<float>(kTextTexture2DWidth);
+		float maxheight = static_cast<float>(kTextTexture2DHeight);
+		m_TextResource->CreateDWriteTextLayout(m_Text, maxwidth, maxheight);
 		m_CPUDirty = false;
 
 		m_TextMetrics = m_TextResource->GetMetricsWithUVMatrixUpdate();
