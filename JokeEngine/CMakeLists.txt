@@ -210,8 +210,6 @@ set(TEXTURE_LOADER
   Package/DirectXTex/WICTextureLoader12.cpp
 )
 
-
-
 # 제작할 게임에 맞는 파일 추가 ===========================================================
 
 # ========================================================================================
@@ -231,6 +229,34 @@ add_executable(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME} PRIVATE 
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/Package
+  ${CMAKE_CURRENT_SOURCE_DIR}/Package/imgui
+  ${CMAKE_CURRENT_SOURCE_DIR}/Package/imgui/backends
+)
+
+# imgui =========================================
+
+set(PKG_IMGUI
+  Package/imgui/imconfig.h
+  Package/imgui/imgui.cpp
+  Package/imgui/imgui.h
+  Package/imgui/imgui_demo.cpp
+  Package/imgui/imgui_draw.cpp
+  Package/imgui/imgui_internal.h
+  Package/imgui/imgui_tables.cpp
+  Package/imgui/imgui_widgets.cpp
+  Package/imgui/imstb_rectpack.h
+  Package/imgui/imstb_textedit.h
+  Package/imgui/imstb_truetype.h
+  Package/imgui/backends/imgui_impl_dx11.cpp
+  Package/imgui/backends/imgui_impl_dx11.h
+  Package/imgui/backends/imgui_impl_dx12.cpp
+  Package/imgui/backends/imgui_impl_dx12.h
+  Package/imgui/backends/imgui_impl_win32.cpp
+  Package/imgui/backends/imgui_impl_win32.h
+)
+
+target_sources(${PROJECT_NAME} PRIVATE
+  $<$<OR:$<CONFIG:Debug>,$<CONFIG:Develop>>:${PKG_IMGUI}>
 )
 
 
@@ -254,6 +280,9 @@ source_group("Engine\\D3D11\\Shader" FILES ${D3D11_SHADER})
 
 # TextureLoader 추가
 source_group("TextureLoader" FILES ${TEXTURE_LOADER})
+
+# imgui source_group
+source_group("imgui" FILES ${PKG_IMGUI})
 
 # Shader File 솔루션에 추가 + 빌드에 참여 안함
 source_group("Shaders" FILES ${SHADER_FILES})

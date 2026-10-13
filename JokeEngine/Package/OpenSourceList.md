@@ -14,3 +14,11 @@ License: MIT Licence
 url: <https://github.com/microsoft/DirectXTex>
 
 License: MIT License
+
+---
+### imgui
+url: <https://github.com/ocornut/imgui>
+
+etc: docking branch - 778992f
+
+License: MIT License
