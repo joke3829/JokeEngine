@@ -85,7 +85,7 @@ void JMaterialDX11::SetGPUBuffer(UINT currentFrameIndex, UINT parameter, JShader
 		context->CSSetShaderResources(2, TextureOrder::Count, srvs);
 		break;
 	default:
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		spdlog::error("[DX11] {0}에서 잘못된 SetGPUBuffer를 호출했습니다.", m_name.c_str());
 #endif
 		assert(0);
@@ -96,7 +96,7 @@ void JMaterialDX11::SetTextureNull(std::shared_ptr<JContent>& nulltexture)
 {
 	auto texDx11 = std::dynamic_pointer_cast<JTextureDX11>(nulltexture);
 	if (!texDx11) {
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		spdlog::error("{0} material에서 잘못된 texture를 이용한 SetTextureNull을 호출했습니다.", m_name.c_str());
 #endif
 		return;
@@ -110,7 +110,7 @@ void JMaterialDX11::SetTexture(std::shared_ptr<JContent>& texture, TextureOrder 
 {
 	auto texDx11 = std::dynamic_pointer_cast<JTextureDX11>(texture);
 	if (!texDx11) {
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		spdlog::error("{0} material에서 잘못된 texture를 이용한 SetTexture를 호출했습니다.", m_name.c_str());
 #endif
 		return;
@@ -126,7 +126,7 @@ void JMaterialDX11::SetTexture(std::shared_ptr<JContent>& texture, TextureOrder 
 		//m_SimpleMaterial.Normal = 1;
 		break;
 	default:
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		spdlog::error("{0} material에서 SetTexture에 잘못된 order를 설정했습니다.", m_name.c_str());
 #endif
 		break;

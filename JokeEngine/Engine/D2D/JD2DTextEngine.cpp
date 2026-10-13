@@ -14,7 +14,7 @@ void JD2DTextEngine::AddRTForD3D11Texture2D(const std::string& name, ID3D11Textu
 	ComPtr<ID2D1RenderTarget> rt{};
 
 	if (!texture2d) {
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		spdlog::error("{0} 가 AddRTForD3D11Texture2D를 호출할 nullptr를 전달했습니다.", name.c_str());
 #endif
 		return;
@@ -31,7 +31,7 @@ void JD2DTextEngine::AddRTForD3D11Texture2D(const std::string& name, ID3D11Textu
 	ThrowIfFailed(m_D2DFactory->CreateDxgiSurfaceRenderTarget(dxgisurface.Get(), properties, rt.ReleaseAndGetAddressOf()));
 
 	auto [iter, inserted] = m_RTTable.try_emplace(name, rt);
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 	if (not inserted) ShowInsertedFailed(name, "JD2DTextEngine");
 #endif
 }
@@ -72,7 +72,7 @@ ComPtr<ID2D1SolidColorBrush> JD2DTextEngine::CreateSolidColorBrush(std::string& 
 {
 	ComPtr<ID2D1SolidColorBrush> brush;
 	if (!m_RTTable.contains(name)) {
-#if defined(DEBUG) || defined(_DEBUG)
+#if DEV_MODE
 		spdlog::error("{0} 의 이름을 가진 RT가 없습니다. D2DTextEngine", name.c_str());
 #endif 
 		return brush;
@@ -85,7 +85,7 @@ ComPtr<ID2D1SolidColorBrush> JD2DTextEngine::CreateSolidColorBrush(std::string& 
 {
 	ComPtr<ID2D1SolidColorBrush> brush;
 	if (!m_RTTable.contains(name)) {
-#if defined(DEBUG) || defined(_DEBUG)
+#if DEV_MODE
 		spdlog::error("{0} 의 이름을 가진 RT가 없습니다. D2DTextEngine", name.c_str());
 #endif 
 		return brush;

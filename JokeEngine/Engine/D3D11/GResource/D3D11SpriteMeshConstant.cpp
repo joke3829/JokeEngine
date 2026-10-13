@@ -48,7 +48,7 @@ void JSpriteMeshConstantDX11::SetGPUBuffer(UINT currentFrameIndex, UINT paramete
 		context->CSSetConstantBuffers(parameter, 1, m_CBBuffer[currentFrameIndex].GetAddressOf());
 		break;
 	default:
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		spdlog::error("[DX11] MeshConstant 에서 잘못된 SetGPUBuffer를 호출했습니다.");
 #endif
 		assert(0);

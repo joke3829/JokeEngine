@@ -8,7 +8,7 @@ JObject::JObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorl
 	else m_name = "JObject";
 
 	if (nodeIndex >= m_WorldTransform.size()) {
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		spdlog::error("'{0}' Invalid NodeIndex", m_name.c_str());
 #endif
 		assert(0);

@@ -5,7 +5,7 @@ JEngineDefaultGlobalConfig* JEngineDefaultGlobalConfig::m_Instance = nullptr;
 void JEngineConfigDefaultFactor::InitFactorsByFile(nlohmann::json json)
 {
 	if (json.empty()) {
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		spdlog::error("InitFactorsByFile을 실행하던 중 json에 문제가 있어 실패했습니다. 프로그램을 종료합니다.");
 #endif
 		assert(0);
@@ -58,7 +58,7 @@ void JEngineDefaultGlobalConfig::OptionSaveAndFileGenerate()
 	outJson["V_SYNC"] = m_ConfigFactor->VerticalSYNC;
 
 	outFile << outJson;
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 	spdlog::error("'{0}' Save And Generate Success", optionFileName);
 #endif
 }
@@ -70,7 +70,7 @@ JEngineDefaultGlobalConfig::JEngineDefaultGlobalConfig()
 	const char* optionFileName = "JEngine_Config.json";
 	std::ifstream configFile{ optionFileName };
 	if (!configFile.is_open()) {
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		spdlog::error("'{0}' Read Failed, New '{0}' Generate Start", optionFileName);
 #endif
 		{
@@ -98,7 +98,7 @@ JEngineDefaultGlobalConfig::JEngineDefaultGlobalConfig()
 
 	m_ConfigFactor->InitFactorsByFile(configjson);
 
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 	spdlog::info("'{0}' Read Success", optionFileName);
 #endif
 }

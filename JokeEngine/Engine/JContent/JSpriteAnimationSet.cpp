@@ -14,7 +14,7 @@ const JSAnimData& JSpriteAnimationSet::GetKeyFrameData(std::string& animName, fl
 			animName = s->first;
 		}
 		else {
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 			spdlog::error("{0} m_KeyFrame이 비어있습니다.", m_name.c_str());
 #endif
 			JSAnimData data{};
@@ -40,7 +40,7 @@ void JSpriteAnimationSet::LoadAnimationFactorFromYaml(const char* filepath)
 {
 	std::ifstream inFile{ filepath, std::ios::binary };
 	if (not inFile.is_open()) {
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		spdlog::error("{0} Load Failed - File Not Exist(JSpriteAnimationSet)", filepath);
 #endif
 		return;
@@ -74,14 +74,14 @@ void JSpriteAnimationSet::LoadAnimationFactorFromYaml(const char* filepath)
 			}
 			// 무사히 다 정보가 오면 map에 추가
 			auto [iter, inserted] = m_KeyFrame.try_emplace(trackName, std::move(datas));
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 			if (not inserted) ShowInsertedFailed(trackName, "m_KeyFrame");
 #endif
 			m_PlayTime.try_emplace(trackName, playtime);
 		}
 	}
 	catch (fkyaml::exception& e) {
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		spdlog::error("{0} Load Failed", filepath);
 		spdlog::error("{0}", e.what());
 #endif

@@ -10,14 +10,14 @@ JEngineRendererDX11::JEngineRendererDX11(UINT width, UINT height, const char* na
 	{
 		std::shared_ptr<JEngineDefaultShaderDX11> shader = std::make_shared<JEngineDefaultShaderDX11>("DefaultShader");
 		auto[iter, inserted] = m_PSOMap.try_emplace(shader->GetName(), shader);
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		if (not inserted)  ShowInsertedFailed(shader->GetName(), "Renderer");
 #endif
 	}
 	{
 		std::shared_ptr<JEngineDefaultSpriteShaderDX11> shader = std::make_shared<JEngineDefaultSpriteShaderDX11>();
 		auto [iter, inserted] = m_PSOMap.try_emplace(shader->GetName(), shader);
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		if (not inserted)  ShowInsertedFailed(shader->GetName(), "Renderer");
 #endif
 	}
@@ -107,7 +107,7 @@ void JEngineRendererDX11::CreateRTV_DSV(UINT width, UINT height)
 		ThrowIfFailed(device->CreateRenderTargetView(m_RenderTarget[i].Get(), nullptr, m_RenderTargetView[i].ReleaseAndGetAddressOf()));
 		ThrowIfFailed(device->CreateDepthStencilView(m_DepthStencil[i].Get(), nullptr, m_DepthStencilView[i].ReleaseAndGetAddressOf()));
 	}
-#if defined(_DEBUG) || define(DEBUG)
+#if DEV_MODE
 	spdlog::info("{} RTV_DSV Ready", m_name.c_str());
 #endif
 }

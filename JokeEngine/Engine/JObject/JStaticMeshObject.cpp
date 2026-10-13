@@ -19,7 +19,7 @@ JStaticMeshObject::JStaticMeshObject(std::vector<XMFLOAT4X4>& vWorld, std::vecto
 	case 12:
 		break;
 	default:
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		spdlog::error("{0} - JStaticMeshObject가 잘못된 DirectX Version을 받았습니다.", m_name.c_str());
 #endif
 		assert(0);
@@ -64,7 +64,7 @@ void JStaticMeshObject::AddMaterial(std::shared_ptr<JContent> material, int inde
 {
 	std::shared_ptr<JMaterial> temp = std::dynamic_pointer_cast<JMaterial>(material);
 	if (!temp) {
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		spdlog::error("{0} StaticMeshObject에서 잘못된 AddMaterial를 호출했습니다.", m_name.c_str());
 #endif
 		return;
@@ -81,7 +81,7 @@ void JStaticMeshObject::SetStaticMesh(std::shared_ptr<JContent> mesh)
 {
 	std::shared_ptr<JStaticMesh> temp = std::dynamic_pointer_cast<JStaticMesh>(mesh);
 	if (!temp) {
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		spdlog::error("{0} StaticMeshObject에서 잘못된 SetStaticMesh를 호출했습니다.", m_name.c_str());
 #endif
 		return;

@@ -11,7 +11,7 @@ void JContentManagerDX11::ReadyDefaultContent()
 		std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>(XMFLOAT3(0.f, 0.f, 0.f), XMFLOAT3(2.5f, 2.5f, 2.5f), "DefaultCube");
 		//std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>(XMFLOAT3(0.f, 0.f, 0.f), 2.5f, 20, 20, 1, "DefaultCube");
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(mesh->GetName(), mesh);
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		if(not inserted) ShowInsertedFailed(mesh->GetName(), "ContentManager");
 #endif
 	}
@@ -20,35 +20,35 @@ void JContentManagerDX11::ReadyDefaultContent()
 		//quad1
 		std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>(XMFLOAT3(0.f, 0.f, 0.f), 1.f, 1.f, JSMPlane::quad1, "DefaultPlaneq1");
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(mesh->GetName(), mesh);
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		if (not inserted) ShowInsertedFailed(mesh->GetName(), "ContentManager");
 #endif
 	}
 	{
 		std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>(XMFLOAT3(0.f, 0.f, 0.f), 1.f, 1.f, JSMPlane::quad2, "DefaultPlaneq2");
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(mesh->GetName(), mesh);
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		if (not inserted) ShowInsertedFailed(mesh->GetName(), "ContentManager");
 #endif
 	}
 	{
 		std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>(XMFLOAT3(0.f, 0.f, 0.f), 1.f, 1.f, JSMPlane::quad3, "DefaultPlaneq3");
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(mesh->GetName(), mesh);
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		if (not inserted) ShowInsertedFailed(mesh->GetName(), "ContentManager");
 #endif
 	}
 	{
 		std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>(XMFLOAT3(0.f, 0.f, 0.f), 1.f, 1.f, JSMPlane::quad4, "DefaultPlaneq4");
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(mesh->GetName(), mesh);
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		if (not inserted) ShowInsertedFailed(mesh->GetName(), "ContentManager");
 #endif
 	}
 	{
 		std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>(XMFLOAT3(0.f, 0.f, 0.f), 1.f, 1.f, JSMPlane::quad_no, "DefaultPlane");
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(mesh->GetName(), mesh);
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		if (not inserted) ShowInsertedFailed(mesh->GetName(), "ContentManager");
 #endif
 	}
@@ -58,21 +58,21 @@ void JContentManagerDX11::ReadyDefaultContent()
 		std::shared_ptr<JTextureDX11> texture = std::make_shared<JTextureDX11>();
 		texture->MakeNullTexture();
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(texture->GetName(), texture);
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		if (not inserted) ShowInsertedFailed(texture->GetName(), "ContentManager");
 #endif
 	}
 	{
 		std::shared_ptr<JTextureDX11> texture = std::make_shared<JTextureDX11>(L"Resource/test.dds", "TestTexture");
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(texture->GetName(), texture);
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		if (not inserted) ShowInsertedFailed(texture->GetName(), "ContentManager");
 #endif
 	}
 	{
 		std::shared_ptr<JTextureDX11> texture = std::make_shared<JTextureDX11>(L"Resource/SpriteAnimation/mushroom.dds", "MushroomTexture");
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(texture->GetName(), texture);
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		if (not inserted) ShowInsertedFailed(texture->GetName(), "ContentManager");
 #endif
 	}
@@ -85,7 +85,7 @@ void JContentManagerDX11::ReadyDefaultContent()
 		material->SetTexture(m_ContentLookupTable["TestTexture"], TextureOrder::Albedo);
 
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(material->GetName(), material);
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		if (not inserted) ShowInsertedFailed(material->GetName(), "ContentManager");
 #endif
 	}
@@ -96,7 +96,7 @@ void JContentManagerDX11::ReadyDefaultContent()
 		material->SetTexture(m_ContentLookupTable["MushroomTexture"], TextureOrder::Albedo);
 
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(material->GetName(), material);
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		if (not inserted) ShowInsertedFailed(material->GetName(), "ContentManager");
 #endif
 	}
@@ -106,12 +106,12 @@ void JContentManagerDX11::ReadyDefaultContent()
 		std::shared_ptr<JSpriteAnimationSet> sprite = std::make_shared<JSpriteAnimationSet>("TestSprite");
 		sprite->LoadAnimationFactorFromYaml("Resource/SpriteAnimation/SpriteAnimationSample.yaml");
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(sprite->GetName(), sprite);
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		if (not inserted) ShowInsertedFailed(sprite->GetName(), "ContentManager");
 #endif
 	}
 
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 	spdlog::info("ContentManager의 DefualtContent가 준비되었습니다.");
 #endif
 }

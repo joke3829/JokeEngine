@@ -85,7 +85,7 @@ void JokeEngineDX11::CreateSwapChain()
 
 	ThrowIfFailed(swapchain->QueryInterface(IID_PPV_ARGS(m_SwapChain.GetAddressOf())));
 
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 	spdlog::info("SwapChain Generate Success");
 #endif
 

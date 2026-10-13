@@ -17,7 +17,7 @@ JSpriteAnimationObject::JSpriteAnimationObject(std::vector<XMFLOAT4X4>& vWorld, 
 	case 12:
 		break;
 	default:
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		spdlog::error("{0} - JSpriteAnimationMeshObject가 잘못된 DirectX Version을 받았습니다.", m_name.c_str());
 #endif
 		assert(0);
@@ -72,7 +72,7 @@ void JSpriteAnimationObject::SetSpriteSet(std::shared_ptr<JContent> spriteSet)
 {
 	auto p = std::dynamic_pointer_cast<JSpriteAnimationSet>(spriteSet);
 	if (!p) {
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		spdlog::error("{0} JSpriteAnimationObject에서 잘못된 SetSpriteSet을 호출했습니다.", m_name.c_str());
 #endif
 		return;

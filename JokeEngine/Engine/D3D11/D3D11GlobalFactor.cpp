@@ -27,7 +27,7 @@ JD3D11GlobalFactor::JD3D11GlobalFactor()
 	};
 
 	UINT device_flag = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
-#if defined(_DEBUG) || defined(DEBUG)
+#if defined(_DEBUG) || defined(DEBUG)		// 디버그 레이어는 Debug일 때만 (Develop은 x)
 	device_flag |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
@@ -57,7 +57,7 @@ JD3D11GlobalFactor::JD3D11GlobalFactor()
 
 	ThrowIfFailed(device->QueryInterface(IID_PPV_ARGS(m_Device.GetAddressOf())));
 	ThrowIfFailed(context->QueryInterface(IID_PPV_ARGS(m_MainDeviceContext.GetAddressOf())));
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 	spdlog::info("ID3D11Device Create Success");
 #endif
 	

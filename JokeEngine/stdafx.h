@@ -52,9 +52,16 @@
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
+// 매크로 =============================================
+#if defined(_DEBUG) || (DEBUG) || (DEVELOP)
+#define DEV_MODE 1
+#else
+#define DEV_MODE 0
+#endif
+
 
 // 외부 라이브러리
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 #include "Package/spdlog/spdlog.h"
 #endif
 #include "Package/nlohmann/json.hpp"
@@ -76,7 +83,7 @@ inline std::string WideToUtf8(const wchar_t* ws)
 inline void ThrowIfFailed(HRESULT hr)
 {
 	if (FAILED(hr)) {
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		_com_error err(hr);
 		std::string ss = WideToUtf8(err.ErrorMessage());
 		spdlog::critical("[FATAL ERROR] DirectX API Failed, HRESULT: 0x{0:X} | Message: {1}",
@@ -95,7 +102,7 @@ inline UINT Align(UINT size, UINT multiple)
 }
 
 
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 inline void ShowInsertedFailed(const std::string& name, const char* sector)
 {
 	spdlog::warn("{0} (이)가 이미 {1}에 있어 추가에 실패했습니다.", name.c_str(), sector);

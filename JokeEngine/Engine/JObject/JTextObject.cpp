@@ -138,7 +138,7 @@ void JTextObject::ReadyPlanes(std::unordered_map<std::string, std::shared_ptr<JC
 		else bError = true;
 	}
 
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 	if (bError) {
 		spdlog::warn("JTextObject::ReadyPlanes에서 Plane초기화를 실패했습니다.(contextmanager에 JStaticMesh가 없음)");
 	}

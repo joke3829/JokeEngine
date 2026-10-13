@@ -33,7 +33,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // TODO: 여기에 코드를 입력합니다.
 
 
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
     // 콘솔창 호출
     if (AllocConsole()) {
         FILE* fpDummy;
@@ -71,7 +71,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         g_Engine->Render();
     }
 
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
     FreeConsole();
 #endif
 }
@@ -147,7 +147,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
        g_Engine = std::make_unique<JokeEngineDX12>();
        break;
    default:
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
        spdlog::error("Config 파일에 기재된 DX 버젼이 Invalid합니다.");
 #endif
        assert(0);

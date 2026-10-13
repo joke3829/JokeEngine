@@ -8,11 +8,24 @@ if(MSVC)
 	add_compile_definitions(UNICODE _UNICODE)
 endif()
 
-set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Available build configurations" FORCE)
+set(CMAKE_CONFIGURATION_TYPES "Debug;Release;Develop" CACHE STRING "Available build configurations" FORCE)
 
 if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose Debug or Release" FORCE)
 endif()
+
+add_compile_definitions($<$<CONFIG:Develop>:DEVELOP>)
+
+
+# Develop 빌드 타입이 Release의 컴파일/링크 옵션을 그대로 상속받도록 설정
+# (CMake는 기본적으로 사용자 정의 빌드 타입에 대해 최적화나 런타임 라이브러리 설정을 모르므로 명시해 주어야 합니다)
+foreach(lang C CXX)
+    # 컴파일 플래그 (예: /O2 최적화 등 Release 설정 복사)
+    set(CMAKE_${lang}_FLAGS_DEVELOP "${CMAKE_${lang}_FLAGS_RELEASE}")
+    
+    # 전처리기 정의 (NDEBUG 등)
+    set(CMAKE_${lang}_FLAGS_DEVELOP_INIT "${CMAKE_${lang}_FLAGS_RELEASE_INIT}")
+endforeach()
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

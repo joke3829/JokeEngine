@@ -44,7 +44,7 @@ void JEngineShaderDX11::SetSamplers(UINT parameter, JShaderStage stage)
 		context->CSSetSamplers(parameter, m_Samplers.size(), m_Samplers.data());
 		break;
 	default:
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 		spdlog::error("[DX11] {0}에서 잘못된 SetSampler를 호출했습니다.", m_name.c_str());
 #endif
 		assert(0);

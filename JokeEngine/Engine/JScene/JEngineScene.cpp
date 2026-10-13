@@ -128,7 +128,7 @@ void JEngineScene::BuildDefaultScene()
 	}
 
 
-#if defined(_DEBUG) || defined(DEBUG)
+#if DEV_MODE
 	spdlog::info("DefaultScene Load Complete");
 #endif
 }
