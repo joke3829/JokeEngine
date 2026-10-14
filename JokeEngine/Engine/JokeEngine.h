@@ -13,7 +13,8 @@
 class JokeEngine {
 public:
 	virtual void Initialize(HWND hWnd, HINSTANCE hInstance);
-	virtual void Resize(UINT width, UINT height, bool FullScreenState);
+	virtual void ResizeSwapChain(UINT width, UINT height, bool FullScreenState);
+	virtual void ResizeRenderer(UINT width, UINT height);
 	
 	virtual void MouseMessageReceiver(JMouseState& state);
 
@@ -22,6 +23,22 @@ protected:
 	virtual void CreateSwapChain() {}
 	virtual void Update(float elapsedTime) {}
 
+#if DEV_MODE
+protected:
+	// imgui
+	virtual void ImGuiInitialize() { DockingLayoutSetup(); }
+	virtual void StartImGuiRender() {}
+	virtual void EndImGuiRender() {}
+	virtual void ImGuiShutDown() {}
+
+
+	void DockingLayoutSetup();
+	void RenderImGUI();
+	void RenderMenubar();			
+	void RenderSceneHierarchy();	// scene이 해줄것
+	void RenderInspector();			// scene::object가 해줄것
+	virtual void RenderSceneImange() {};
+#endif
 protected:
 
 	HWND m_hWnd{};
@@ -43,6 +60,7 @@ protected:
 class JokeEngineDX11 : public JokeEngine {
 public:
 	virtual void Initialize(HWND hWnd, HINSTANCE hInstance);
+	void ResizeSwapChain(UINT width, UINT height, bool FullScreenState);
 
 	virtual void Render();
 
@@ -51,6 +69,20 @@ private:
 	virtual void Update(float elapsedTime);
 
 	JD3D11GlobalFactor* m_GlobalFactor;
+
+#if DEV_MODE
+private:
+	void ImGuiInitialize();
+	void StartImGuiRender();
+	void EndImGuiRender();
+	void ImGuiShutDown();
+	void RenderSceneImage();
+
+	// imgui Image용 resource와 srv
+	ComPtr<ID3D11Texture2D> m_ImageDest{};
+	ComPtr<ID3D11ShaderResourceView> m_ImageDestSRV{};
+	ComPtr<ID3D11RenderTargetView> m_SwapChainRTV{};
+#endif
 };
 
 

@@ -4,3 +4,4 @@ build/
 
 *.aps
 *JEngine_Config.json
+*imgui.ini

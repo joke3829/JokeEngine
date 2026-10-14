@@ -126,6 +126,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     UINT height = factors->WindowsHeight;
 
     DWORD dwStyle = WS_OVERLAPPED | WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU | WS_BORDER;
+
+#if DEV_MODE
+    dwStyle = WS_OVERLAPPED | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_SIZEBOX | WS_SYSMENU | WS_BORDER | WS_CAPTION;
+#endif
     RECT rt = { 0, 0, width, height};
     // rt는 추후에 화면 크기 조정을 추가하면 바뀔 수 있다.
 
@@ -171,10 +175,26 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //  WM_DESTROY  - 종료 메시지를 게시하고 반환합니다.
 //
 //
+
+
+#if DEV_MODE
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+#endif
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+#if DEV_MODE
+    if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
+        return true;
+#endif
     switch (message)
     {
+    case WM_SIZE:
+    {
+        UINT width = LOWORD(lParam);
+        UINT height = HIWORD(lParam);
+        g_Engine->ResizeSwapChain(width, height, false);
+        break;
+    }
     case WM_DESTROY:
         PostQuitMessage(0);
         break;

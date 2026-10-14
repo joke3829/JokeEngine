@@ -63,6 +63,14 @@ using Microsoft::WRL::ComPtr;
 // 외부 라이브러리
 #if DEV_MODE
 #include "Package/spdlog/spdlog.h"
+
+//imgui
+#include "Package/imgui/imgui.h"
+#include "Package/imgui/imgui_internal.h"
+#include "Package/imgui/backends/imgui_impl_win32.h"
+#include "Package/imgui/backends/imgui_impl_dx11.h"
+#include "Package/imgui/backends/imgui_impl_dx12.h"
+
 #endif
 #include "Package/nlohmann/json.hpp"
 #include "Package/fkYAML/node.hpp"
