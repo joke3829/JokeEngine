@@ -26,7 +26,7 @@ protected:
 #if DEV_MODE
 protected:
 	// imgui
-	virtual void ImGuiInitialize() { DockingLayoutSetup(); }
+	virtual void ImGuiInitialize() {}
 	virtual void StartImGuiRender() {}
 	virtual void EndImGuiRender() {}
 	virtual void ImGuiShutDown() {}

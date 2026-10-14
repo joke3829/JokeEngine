@@ -48,7 +48,18 @@ void JokeEngine::DockingLayoutSetup()
 
 	if (ImGui::DockBuilderGetNode(dockspace_id) == nullptr)
 	{
-
+		ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
+		ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->Size);
+		ImGuiID ViewportScreen = dockspace_id;
+		ImGuiID Right = 0;
+		ImGui::DockBuilderSplitNode(ViewportScreen, ImGuiDir_Right, 0.25f, &Right, &ViewportScreen);
+		ImGuiID RightDown = 0;
+		ImGuiID RightUp = 0;
+		ImGui::DockBuilderSplitNode(Right, ImGuiDir_Down, 0.7f, &RightDown, &RightUp);
+		ImGui::DockBuilderDockWindow("Scene", ViewportScreen);
+		ImGui::DockBuilderDockWindow("Hierarchy", RightUp);
+		ImGui::DockBuilderDockWindow("Inspector", RightDown);
+		ImGui::DockBuilderFinish(dockspace_id);
 	}
 
 	ImGui::DockSpaceOverViewport(dockspace_id, viewport, ImGuiDockNodeFlags_PassthruCentralNode);
@@ -65,12 +76,44 @@ void JokeEngine::RenderImGUI()
 
 void JokeEngine::RenderMenubar()
 {
-
+	if (ImGui::BeginMainMenuBar()) {
+		if (ImGui::BeginMenu("File")) {
+			if (ImGui::MenuItem("New Scene", "Ctrl+N")) {
+				spdlog::info("누름");
+			}
+			if (ImGui::MenuItem("Open Scene", "Ctrl+O")) {
+				spdlog::info("누름");
+			}
+			if (ImGui::MenuItem("Save", "Ctrl+S")) {
+				spdlog::info("누름");
+			}
+			if (ImGui::MenuItem("Save As", "Ctrl+Shitf+S")) {
+				spdlog::info("누름");
+			}
+			if (ImGui::MenuItem("Quit")) {
+				// 저장 묻기
+				PostQuitMessage(0);
+			}
+			ImGui::EndMenu();
+		}
+		ImGui::EndMainMenuBar();
+	}
 }
 
 void JokeEngine::RenderSceneHierarchy()
 {
-
+	if (ImGui::Begin("Scene")) {
+		ImGui::Text("empty");
+	}
+	ImGui::End();
+	if (ImGui::Begin("Hierarchy")) {
+		ImGui::Text("empty");
+	}
+	ImGui::End();
+	if (ImGui::Begin("Inspector")) {
+		ImGui::Text("empty");
+	}
+	ImGui::End();
 }
 
 void JokeEngine::RenderInspector()
@@ -222,7 +265,6 @@ void JokeEngineDX11::Render()
 #endif
 
 #if DEV_MODE
-	
 	context->OMSetRenderTargets(1, m_SwapChainRTV.GetAddressOf(), nullptr);
 	RenderImGUI();
 	EndImGuiRender();
@@ -252,8 +294,6 @@ void JokeEngineDX11::ImGuiInitialize()
 
 	ImGui_ImplWin32_Init(m_hWnd);
 	ImGui_ImplDX11_Init(m_GlobalFactor->GetDevice(), m_GlobalFactor->GetDeviceContext());
-
-	JokeEngine::ImGuiInitialize();
 }
 
 void JokeEngineDX11::StartImGuiRender()
