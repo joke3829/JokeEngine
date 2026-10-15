@@ -180,8 +180,8 @@ JEngineDefaultSpriteShaderDX11::JEngineDefaultSpriteShaderDX11(const char* name)
 		rt.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
 		rt.BlendOp = D3D11_BLEND_OP_ADD;
 
-		rt.SrcBlendAlpha = D3D11_BLEND_ONE;
-		rt.DestBlendAlpha = D3D11_BLEND_ZERO;
+		rt.SrcBlendAlpha = D3D11_BLEND_ZERO;
+		rt.DestBlendAlpha = D3D11_BLEND_ONE;
 		rt.BlendOpAlpha = D3D11_BLEND_OP_ADD;
 		rt.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 		ThrowIfFailed(device->CreateBlendState(&desc, m_BlendState.ReleaseAndGetAddressOf()));

@@ -37,7 +37,13 @@ protected:
 	void RenderMenubar();			
 	void RenderSceneHierarchy();	// scene이 해줄것
 	void RenderInspector();			// scene::object가 해줄것
-	virtual void RenderSceneImange() {};
+	virtual void RenderSceneImage() {};
+	
+	// ImageDest ReSize
+	virtual void ResizeImageDest(UINT width, UINT height) {}
+
+	bool m_PlayMode{true};		// false = editmode, true gamemode
+
 #endif
 protected:
 
@@ -82,6 +88,7 @@ private:
 	ComPtr<ID3D11Texture2D> m_ImageDest{};
 	ComPtr<ID3D11ShaderResourceView> m_ImageDestSRV{};
 	ComPtr<ID3D11RenderTargetView> m_SwapChainRTV{};
+	void ResizeImageDest(UINT width, UINT height);
 #endif
 };
 

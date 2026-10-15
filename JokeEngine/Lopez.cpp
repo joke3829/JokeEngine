@@ -128,6 +128,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     DWORD dwStyle = WS_OVERLAPPED | WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU | WS_BORDER;
 
 #if DEV_MODE
+    width = 1920; height = 1080;
     dwStyle = WS_OVERLAPPED | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_SIZEBOX | WS_SYSMENU | WS_BORDER | WS_CAPTION;
 #endif
     RECT rt = { 0, 0, width, height};

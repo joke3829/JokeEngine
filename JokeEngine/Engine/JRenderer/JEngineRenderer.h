@@ -16,6 +16,8 @@ public:
 	virtual void AdvanceBufferIndex();
 
 	virtual void SetScene(std::shared_ptr<JEngineScene> scene) { m_Scene = scene; }
+
+	XMUINT2 GetTargetSize() { return m_TargetSize; }
 protected:
 	virtual void CreateRTV_DSV(UINT width, UINT height) {}
 
@@ -28,4 +30,6 @@ protected:
 
 	// 지금 그릴 버퍼
 	UINT																m_CurrentFrameIndex{};
+	
+	XMUINT2																m_TargetSize{};
 };

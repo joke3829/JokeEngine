@@ -71,7 +71,7 @@ void JokeEngine::RenderImGUI()
 	DockingLayoutSetup();
 	RenderSceneHierarchy();
 	RenderInspector();
-	RenderSceneImange();
+	RenderSceneImage();
 }
 
 void JokeEngine::RenderMenubar()
@@ -102,10 +102,6 @@ void JokeEngine::RenderMenubar()
 
 void JokeEngine::RenderSceneHierarchy()
 {
-	if (ImGui::Begin("Scene")) {
-		ImGui::Text("empty");
-	}
-	ImGui::End();
 	if (ImGui::Begin("Hierarchy")) {
 		ImGui::Text("empty");
 	}
@@ -150,22 +146,9 @@ void JokeEngineDX11::Initialize(HWND hWnd, HINSTANCE hInstance)
 #if DEV_MODE
 	{
 		auto* device = m_GlobalFactor->GetDevice();
-		// imgui용 타겟 생성
-		D3D11_TEXTURE2D_DESC desc{
-		.Width = config->WindowsWidth,
-		.Height = config->WindowsHeight,
-		.MipLevels = 1,
-		.ArraySize = 1,
-		.Format = DXGI_FORMAT_R8G8B8A8_UNORM,
-		.SampleDesc = {.Count = 1},
-		.Usage = D3D11_USAGE_DEFAULT,
-		.BindFlags = D3D11_BIND_SHADER_RESOURCE
-		};
-		ThrowIfFailed(device->CreateTexture2D(&desc, nullptr, m_ImageDest.ReleaseAndGetAddressOf()));
-
-		// imgui용 srv
-		ThrowIfFailed(device->CreateShaderResourceView(m_ImageDest.Get(), nullptr, m_ImageDestSRV.ReleaseAndGetAddressOf()));
-
+		
+		// ImageDest 생성
+		ResizeImageDest(config->WindowsWidth, config->WindowsHeight);
 
 		// swapchain rendertarget
 		ComPtr<ID3D11Texture2D> buffer{};
@@ -206,8 +189,13 @@ void JokeEngineDX11::CreateSwapChain()
 	ComPtr<IDXGISwapChain1> swapchain{};
 
 	DXGI_SWAP_CHAIN_DESC1 desc{
+#if DEV_MODE
+	.Width = 1920,
+	.Height = 1080,
+#else
 	.Width = config->WindowsWidth,
 	.Height = config->WindowsHeight,
+#endif
 	.Format = DXGI_FORMAT_R8G8B8A8_UNORM,
 	.SampleDesc = {.Count = 1},
 	.BufferUsage = DXGI_USAGE_BACK_BUFFER | DXGI_USAGE_RENDER_TARGET_OUTPUT,
@@ -247,6 +235,18 @@ void JokeEngineDX11::Render()
 	auto* context = m_GlobalFactor->GetDeviceContext();
 	float clearcolor[4] = { 0.0f, 0.5f, 0.5f, 1.0f };
 	context->ClearRenderTargetView(m_SwapChainRTV.Get(), clearcolor);
+
+	// 렌더링 전 렌더타겟 크기 바꾸기
+	XMUINT2 renderer_size = m_Renderer->GetTargetSize();
+	if (m_PlayMode) {
+		if(renderer_size.x != gfactor->WindowsWidth || renderer_size.y != gfactor->WindowsHeight)
+		m_Renderer->ResizeTarget(gfactor->WindowsWidth, gfactor->WindowsHeight);
+		ResizeImageDest(gfactor->WindowsWidth, gfactor->WindowsHeight);
+	}
+	else {
+
+	}
+
 #endif
 
 	m_Scene->Update(elapsedTime);       // CPU
@@ -319,7 +319,37 @@ void JokeEngineDX11::ImGuiShutDown()
 
 void JokeEngineDX11::RenderSceneImage()
 {
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+	if (ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoBackground)) {
+		// Imgui::Image 할 때 넘겨주는 사이즈를 맞춰줘야한다.
+		ImVec2 ImageSize = ImGui::GetContentRegionAvail();
+		if (m_PlayMode) {
+			
+		}
+		ImGui::Image(m_ImageDestSRV.Get(), ImageSize);
+	}
+	ImGui::PopStyleVar();
+	ImGui::End();
+}
 
+void JokeEngineDX11::ResizeImageDest(UINT width, UINT height)
+{
+	auto* device = m_GlobalFactor->GetDevice();
+	// imgui용 타겟 생성
+	D3D11_TEXTURE2D_DESC desc{
+	.Width = width,
+	.Height = height,
+	.MipLevels = 1,
+	.ArraySize = 1,
+	.Format = DXGI_FORMAT_R8G8B8A8_UNORM,
+	.SampleDesc = {.Count = 1},
+	.Usage = D3D11_USAGE_DEFAULT,
+	.BindFlags = D3D11_BIND_SHADER_RESOURCE
+	};
+	ThrowIfFailed(device->CreateTexture2D(&desc, nullptr, m_ImageDest.ReleaseAndGetAddressOf()));
+
+	// imgui용 srv
+	ThrowIfFailed(device->CreateShaderResourceView(m_ImageDest.Get(), nullptr, m_ImageDestSRV.ReleaseAndGetAddressOf()));
 }
 #endif
 

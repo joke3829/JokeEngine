@@ -7,7 +7,7 @@ constexpr float kTextScale = 0.05f;
 JTextObject::JTextObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name)
 	: JObject(vWorld, vWorldTP, nodeIndex, name)
 {
-	m_Text = L"안녕하세요 저는 일찌감치 바이오하자드를 열심히 했지만 게임이 너무 재밌어서 인생이 망해버린 케이스 입니다.";
+	m_Text = L"박준서 엄준식";
 	m_FontName = L"던파 연단된 칼날";
 	m_FontSize = 32.f;
 
