@@ -42,8 +42,12 @@ protected:
 	// ImageDest ReSize
 	virtual void ResizeImageDest(UINT width, UINT height) {}
 
-	bool m_PlayMode{true};		// false = editmode, true gamemode
+	bool m_PlayMode{ false };		// false = editmode, true gamemode
+	bool m_ControlEditorScene{ false };	// 우클릭으로 Scene window를 잡고 있나를 판단
 
+	ImVec2 m_OldEditorSceneSP{}; // GetCursorScreenPos
+	ImVec2 m_OldEditorSceneAvail{};
+	XMUINT2 m_NewImageDestSize{};
 #endif
 protected:
 

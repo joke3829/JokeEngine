@@ -135,8 +135,12 @@ void JokeEngineDX11::Initialize(HWND hWnd, HINSTANCE hInstance)
 	m_Scene = std::make_shared<JEngineDefaultSceneDX11>();
 	m_Scene->SetContentManager(m_ContentManager);
 	m_Scene->SetInputThread(m_InputThread);
-	m_Scene->BuildDefaultScene();
-
+#if DEV_MODE
+	m_Scene->BuildDefaultEditorScene();
+	m_Scene->SetPlayMode(m_PlayMode);
+#else
+	//m_Scene->BuildSceneFromFile(scene file path); or m_Scene->BuildScene(); // virtual로 상속받아 쓰는것도 되고
+#endif
 	m_Renderer = std::make_shared<JEngineRendererDX11>(config->WindowsWidth, config->WindowsHeight);
 	m_Renderer->SetScene(m_Scene);
 
@@ -149,6 +153,7 @@ void JokeEngineDX11::Initialize(HWND hWnd, HINSTANCE hInstance)
 		
 		// ImageDest 생성
 		ResizeImageDest(config->WindowsWidth, config->WindowsHeight);
+		m_NewImageDestSize.x = config->WindowsWidth; m_NewImageDestSize.y = config->WindowsHeight;
 
 		// swapchain rendertarget
 		ComPtr<ID3D11Texture2D> buffer{};
@@ -233,7 +238,7 @@ void JokeEngineDX11::Render()
 #if DEV_MODE
 	StartImGuiRender();
 	auto* context = m_GlobalFactor->GetDeviceContext();
-	float clearcolor[4] = { 0.0f, 0.5f, 0.5f, 1.0f };
+	float clearcolor[4] = { 0.2f, 0.2f, 0.2f, 1.0f };
 	context->ClearRenderTargetView(m_SwapChainRTV.Get(), clearcolor);
 
 	// 렌더링 전 렌더타겟 크기 바꾸기
@@ -244,7 +249,30 @@ void JokeEngineDX11::Render()
 		ResizeImageDest(gfactor->WindowsWidth, gfactor->WindowsHeight);
 	}
 	else {
-
+		if (renderer_size.x != m_NewImageDestSize.x || renderer_size.y != m_NewImageDestSize.y) {
+			m_Renderer->ResizeTarget(m_NewImageDestSize.x, m_NewImageDestSize.y);
+			//m_Scene->EditCameraProjectionChange(fov, aspect);
+			ResizeImageDest(m_NewImageDestSize.x, m_NewImageDestSize.y);
+		}
+		// Scene 창 클릭 관련
+		auto& io = ImGui::GetIO();
+		if (m_ControlEditorScene) {
+			if (ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
+				m_ControlEditorScene = false;
+				m_Scene->SetControlEditorScene(m_ControlEditorScene);
+			}
+		}
+		else {
+			if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
+				float mx = io.MousePos.x; float my = io.MousePos.y;
+				bool isInside = mx > m_OldEditorSceneSP.x && mx < (m_OldEditorSceneSP.x + m_OldEditorSceneAvail.x)
+					&& my > m_OldEditorSceneSP.y && my < (m_OldEditorSceneSP.y + m_OldEditorSceneAvail.y);
+				if (isInside) {
+					m_ControlEditorScene = true;
+					m_Scene->SetControlEditorScene(m_ControlEditorScene);
+				}
+			}
+		}
 	}
 
 #endif
@@ -320,13 +348,44 @@ void JokeEngineDX11::ImGuiShutDown()
 void JokeEngineDX11::RenderSceneImage()
 {
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-	if (ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoBackground)) {
+	if (ImGui::Begin("Scene", nullptr)) {
 		// Imgui::Image 할 때 넘겨주는 사이즈를 맞춰줘야한다.
 		ImVec2 ImageSize = ImGui::GetContentRegionAvail();
+		ImVec2 avail = ImageSize;
+		m_OldEditorSceneAvail = avail;
+		m_NewImageDestSize.x = static_cast<UINT>(ImageSize.x);
+		m_NewImageDestSize.y = static_cast<UINT>(ImageSize.y);
+		ImVec2 InitCursorPos = ImGui::GetCursorPos();
+		m_OldEditorSceneSP = ImGui::GetCursorScreenPos();
+
 		if (m_PlayMode) {
-			
+			XMUINT2 cnSize = m_Renderer->GetTargetSize();
+			// avil size랑 현재 배율 보고
+			XMFLOAT2 fsize = { static_cast<float>(cnSize.x), static_cast<float>(cnSize.y) };
+
+			float scaleX = avail.x / fsize.x;
+			float scaleY = avail.y / fsize.y;
+			float targetscale = (scaleX < scaleY) ? scaleX : scaleY;
+
+			ImageSize.x = fsize.x * targetscale; ImageSize.y = fsize.y * targetscale;
+			// 중앙 정렬을 위한 오프셋 계산 (contentStartPos 기준)
+
+			float offsetX = (avail.x - ImageSize.x) * 0.5f;
+			float offsetY = (avail.y - ImageSize.y) * 0.5f;
+
+			ImGui::SetCursorPos(ImVec2(InitCursorPos.x + offsetX, InitCursorPos.y + offsetY));
 		}
 		ImGui::Image(m_ImageDestSRV.Get(), ImageSize);
+
+		ImGui::SetCursorPos(InitCursorPos);
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.f, 1.f, 0.f, 1.f));
+		auto& io = ImGui::GetIO();
+		ImGui::Text("%.2fFPS", io.Framerate);
+		ImGui::Text("%.1f, %.1f", io.MousePos.x, io.MousePos.y);
+		ImGui::Text("GetCursorPos: %.1f, %.1f", InitCursorPos.x, InitCursorPos.y);
+		ImGui::Text("GetCursorScreenPos: %.1f, %.1f", m_OldEditorSceneSP.x, m_OldEditorSceneSP.y);
+		ImGui::Text("%.1f, %.1f", avail.x, avail.y);
+		ImGui::PopStyleColor();
 	}
 	ImGui::PopStyleVar();
 	ImGui::End();

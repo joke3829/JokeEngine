@@ -6,6 +6,10 @@
 #include "Engine/JObject/JSpriteAnimationObject.h"
 #include "Engine/JObject/JTextObject.h"
 
+#if DEV_MODE
+#include "Engine/JObject/JEditorPlayer.h"
+#endif
+
 
 void JEngineScene::Update(float elapsedTime)
 {
@@ -13,11 +17,23 @@ void JEngineScene::Update(float elapsedTime)
 	std::vector<JKeyState> inputs{};
 	m_InputThread->GetInputs(inputs);
 
+#if DEV_MODE
+	if (m_PlayMode) {
+		for (auto& state : inputs) {
+			m_Players[m_CurrentPlayer]->UpdateInput(state);
+		}
+	}
+	else {
+		if (m_CurrentPlayer == 0 && m_ControlEditorScene)
+			for (auto& state : inputs)
+				m_EditorPlayer->UpdateInput(state);
+	}
+#else
 	// player, ui 업데이트
 	for (auto& state : inputs) {
 		m_Players[m_CurrentPlayer]->UpdateInput(state);
 	}
-
+#endif
 
 	for (auto& object : m_Objects)
 		object->Update(elapsedTime);
@@ -38,9 +54,39 @@ void JEngineScene::ProcessMouseMessage(JMouseState& state)
 	
 }
 
-void JEngineScene::BuildDefaultScene()
+#if DEV_MODE
+void JEngineScene::BuildDefaultEditorScene()
 {
 	auto& contents = m_ContentManager->GetContentTable();
+
+	// 1. EditorPlayer 추가
+	{
+		m_WorldMatrices.emplace_back();
+		m_WorldMatricesTP.emplace_back();
+		std::shared_ptr<JEditorPlayerObject> eplayer = std::make_shared<JEditorPlayerObject>(
+			m_WorldMatrices,
+			m_WorldMatricesTP,
+			static_cast<UINT>(m_WorldMatrices.size() - 1),
+			"EditorPlayer"
+		);
+		eplayer->SetPosition(0.f, 0.f, -15.f);
+		m_EditorPlayer = eplayer;
+
+		// Camera 추가 예제
+		m_WorldMatrices.emplace_back();
+		m_WorldMatricesTP.emplace_back();
+		std::shared_ptr<JCameraObject> camera = std::make_shared<JCameraObject>(
+			m_WorldMatrices,
+			m_WorldMatricesTP,
+			static_cast<UINT>(m_WorldMatrices.size() - 1),
+			"EditorCamera"
+		);
+		m_Cameras.emplace_back(camera);
+
+		eplayer->Attach(camera);
+
+		m_Objects.emplace_back(eplayer);
+	}
 
 	{	// StaticMesh 추가 예제
 		m_WorldMatrices.emplace_back();
@@ -62,53 +108,53 @@ void JEngineScene::BuildDefaultScene()
 	}
 
 
-	{// sprite object
-		m_WorldMatrices.emplace_back();
-		m_WorldMatricesTP.emplace_back();
-		std::shared_ptr<JSpriteAnimationObject> spriteobject = std::make_shared<JSpriteAnimationObject>(
-			m_WorldMatrices,
-			m_WorldMatricesTP,
-			static_cast<UINT>(m_WorldMatrices.size() - 1),
-			"MyTestSprite"
-		);
-		spriteobject->SetStaticMesh(contents["DefaultPlaneq1"]);
-		spriteobject->SetSpriteSet(contents["TestSprite"]);
-		spriteobject->AddMaterial(contents["DefaultSpriteMaterial"]);
-		spriteobject->SetShaderName("UVTransformShader");
+	//{// sprite object
+	//	m_WorldMatrices.emplace_back();
+	//	m_WorldMatricesTP.emplace_back();
+	//	std::shared_ptr<JSpriteAnimationObject> spriteobject = std::make_shared<JSpriteAnimationObject>(
+	//		m_WorldMatrices,
+	//		m_WorldMatricesTP,
+	//		static_cast<UINT>(m_WorldMatrices.size() - 1),
+	//		"MyTestSprite"
+	//	);
+	//	spriteobject->SetStaticMesh(contents["DefaultPlaneq1"]);
+	//	spriteobject->SetSpriteSet(contents["TestSprite"]);
+	//	spriteobject->AddMaterial(contents["DefaultSpriteMaterial"]);
+	//	spriteobject->SetShaderName("UVTransformShader");
 
-		spriteobject->SetScale(85.f, 85.f, 1.f);
-		m_Objects.emplace_back(spriteobject);
-	}
+	//	spriteobject->SetScale(85.f, 85.f, 1.f);
+	//	m_Objects.emplace_back(spriteobject);
+	//}
 
-	// player + camera
-	{
-		m_WorldMatrices.emplace_back();
-		m_WorldMatricesTP.emplace_back();
-		std::shared_ptr<JPlayerObject> player = std::make_shared<JPlayerObject>(
-			m_WorldMatrices,
-			m_WorldMatricesTP,
-			static_cast<UINT>(m_WorldMatrices.size() - 1),
-			"Player0"
-		);
+	//// player + camera
+	//{
+	//	m_WorldMatrices.emplace_back();
+	//	m_WorldMatricesTP.emplace_back();
+	//	std::shared_ptr<JPlayerObject> player = std::make_shared<JPlayerObject>(
+	//		m_WorldMatrices,
+	//		m_WorldMatricesTP,
+	//		static_cast<UINT>(m_WorldMatrices.size() - 1),
+	//		"Player0"
+	//	);
 
-		player->SetPosition(0.f, 0.f, -15.f);
-		m_Players.emplace_back(player);
+	//	player->SetPosition(0.f, 0.f, -15.f);
+	//	m_Players.emplace_back(player);
 
-		// Camera 추가 예제
-		m_WorldMatrices.emplace_back();
-		m_WorldMatricesTP.emplace_back();
-		std::shared_ptr<JCameraObject> camera = std::make_shared<JCameraObject>(
-			m_WorldMatrices,
-			m_WorldMatricesTP,
-			static_cast<UINT>(m_WorldMatrices.size() - 1),
-			"MyCamera"
-		);
-		m_Cameras.emplace_back(camera);
+	//	// Camera 추가 예제
+	//	m_WorldMatrices.emplace_back();
+	//	m_WorldMatricesTP.emplace_back();
+	//	std::shared_ptr<JCameraObject> camera = std::make_shared<JCameraObject>(
+	//		m_WorldMatrices,
+	//		m_WorldMatricesTP,
+	//		static_cast<UINT>(m_WorldMatrices.size() - 1),
+	//		"MyCamera"
+	//	);
+	//	m_Cameras.emplace_back(camera);
 
-		player->Attach(camera);
+	//	player->Attach(camera);
 
-		m_Objects.emplace_back(player);
-	}
+	//	m_Objects.emplace_back(player);
+	//}
 
 	{
 		m_WorldMatrices.emplace_back();
@@ -128,7 +174,6 @@ void JEngineScene::BuildDefaultScene()
 	}
 
 
-#if DEV_MODE
 	spdlog::info("DefaultScene Load Complete");
-#endif
 }
+#endif

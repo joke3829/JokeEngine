@@ -22,10 +22,18 @@ public:
 	void SetInputThread(std::shared_ptr<JInputThread>& input) { m_InputThread = input; }
 
 	// DefaultScene - 불러올 Scene 파일이 없으면 이걸 불러라
-	void BuildDefaultScene();
 
 	std::vector<std::shared_ptr<JObject>>& GetObjects() { return m_Objects; }
-
+#if DEV_MODE
+public:
+	void BuildDefaultEditorScene();
+	void SetPlayMode(bool pmode) { m_PlayMode = pmode; }
+	void SetControlEditorScene(bool ces) { m_ControlEditorScene = ces; }
+protected:
+	bool m_PlayMode{};
+	bool m_ControlEditorScene{};
+	std::shared_ptr<JPlayerObject> m_EditorPlayer{};
+#endif
 protected:
 
 	std::vector<std::shared_ptr<JObject>>			m_Objects;

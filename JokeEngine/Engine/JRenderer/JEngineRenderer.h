@@ -17,7 +17,7 @@ public:
 
 	virtual void SetScene(std::shared_ptr<JEngineScene> scene) { m_Scene = scene; }
 
-	XMUINT2 GetTargetSize() { return m_TargetSize; }
+	const XMUINT2& GetTargetSize() { return m_TargetSize; }
 protected:
 	virtual void CreateRTV_DSV(UINT width, UINT height) {}
 

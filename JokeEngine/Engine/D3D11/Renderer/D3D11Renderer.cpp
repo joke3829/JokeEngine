@@ -27,7 +27,7 @@ void JEngineRendererDX11::ResizeTarget(UINT width, UINT height)
 {
 	// 이것저것 뭐 문제 없이 동기 작업 하고
 
-	CreateRTV_DSV(width, height);
+	JEngineRenderer::ResizeTarget(width, height);
 }
 
 void JEngineRendererDX11::RenderFrame()
@@ -108,7 +108,7 @@ void JEngineRendererDX11::CreateRTV_DSV(UINT width, UINT height)
 		ThrowIfFailed(device->CreateDepthStencilView(m_DepthStencil[i].Get(), nullptr, m_DepthStencilView[i].ReleaseAndGetAddressOf()));
 	}
 #if DEV_MODE
-	spdlog::info("{} RTV_DSV Ready", m_name.c_str());
+	spdlog::info("{} RTV_DSV Ready - Size: width - {}, height - {}", m_name.c_str(), width, height);
 #endif
 }
 

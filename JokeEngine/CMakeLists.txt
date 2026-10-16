@@ -82,6 +82,8 @@ set(ENGINE_OBJECT
   Engine/JObject/JSpriteAnimationObject.cpp
   Engine/JObject/JTextObject.h
   Engine/JObject/JTextObject.cpp
+  Engine/JObject/JEditorPlayer.h
+  Engine/JObject/JEditorPlayer.cpp
 )
 
 set(ENGINE_CONTENT

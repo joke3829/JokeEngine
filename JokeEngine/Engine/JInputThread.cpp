@@ -84,45 +84,46 @@ void JInputThread::InputQueueLoop()
 			float limitfps = 1.f / m_RefreshHz.load(std::memory_order_acquire);
 			if (elapsed >= limitfps) {
 				JKeyState state{};
+				// 마우스 위치는 항상 받기
+				GetCursorPos(&state.CursorPos);
+				ScreenToClient(m_hWnd, &state.CursorPos);
+
+				// delta
+				state.deltaX = state.CursorPos.x - previousCursorPos.x;
+				state.deltaY = state.CursorPos.y - previousCursorPos.y;
+
+				previousCursorPos = state.CursorPos;
+
+				RECT winSize{};
+				GetClientRect(m_hWnd, &winSize);
+
 				if (GetForegroundWindow() == m_hWnd) {
-					for (int i = 0; i < 256; ++i) {
-						// 0x0000 = 이전에 누른적 없고 현재도 안눌린 상태	(누른적 없음)
-						// 0x8000 = 이전에 누른적 없고 현재 눌린 상태		(지금 눌림)
-						// 0x8001 = 이전에 눌렀고 현재도 눌려있는 상태		(계속 눌림)
-						// 0x0001 = 이전에 눌렀고 현재 안눌린 상태			(지금 뗌)
-						state.KeyState[i] = GetAsyncKeyState(i);
-					}
-					GetCursorPos(&state.CursorPos);
-					ScreenToClient(m_hWnd, &state.CursorPos);
-
-					// delta
-					state.deltaX = state.CursorPos.x - previousCursorPos.x;
-					state.deltaY = state.CursorPos.y - previousCursorPos.y;
-
-					previousCursorPos = state.CursorPos;
-
-					
-					cursorlock = m_CursorLock.load(std::memory_order_acquire);
-					if (cursorlock) {
-						if (!preCursorlock) {	// alt tab - 클라이언트 화면 사이즈 조절 시 문제 있을 수 있음(있을 것 같음 확실히)
-							RECT winSize{};
-							GetClientRect(m_hWnd, &winSize);
-							lockedCursorPos.x = (winSize.right - winSize.left) / 2;
-							lockedCursorPos.y = (winSize.bottom - winSize.top) / 2;
+					bool isOutside = state.CursorPos.x < 0 || state.CursorPos.x > winSize.right ||
+						state.CursorPos.y < 0 || state.CursorPos.y > winSize.bottom;
+					if (!isOutside) {
+						for (int i = 0; i < 256; ++i) {
+							// 0x0000 = 이전에 누른적 없고 현재도 안눌린 상태	(누른적 없음)
+							// 0x8000 = 이전에 누른적 없고 현재 눌린 상태		(지금 눌림)
+							// 0x8001 = 이전에 눌렀고 현재도 눌려있는 상태		(계속 눌림)
+							// 0x0001 = 이전에 눌렀고 현재 안눌린 상태			(지금 뗌)
+							state.KeyState[i] = GetAsyncKeyState(i);
 						}
-						previousCursorPos = lockedCursorPos;
-						POINT screenpos = lockedCursorPos;
-						ClientToScreen(m_hWnd, &screenpos);
-						SetCursorPos(screenpos.x, screenpos.y);
-					}
-					preCursorlock = cursorlock;
 
+						cursorlock = m_CursorLock.load(std::memory_order_acquire);
+						if (cursorlock) {
+							if (!preCursorlock) {	// alt tab - 클라이언트 화면 사이즈 조절 시 문제 있을 수 있음(있을 것 같음 확실히)
+								lockedCursorPos.x = (winSize.right - winSize.left) / 2;
+								lockedCursorPos.y = (winSize.bottom - winSize.top) / 2;
+							}
+							previousCursorPos = lockedCursorPos;
+							POINT screenpos = lockedCursorPos;
+							ClientToScreen(m_hWnd, &screenpos);
+							SetCursorPos(screenpos.x, screenpos.y);
+						}
+						preCursorlock = cursorlock;
+					}
 				}
 					state.elapsedTime = elapsed;
-//#if defined(_DEBUG) || defined(DEBUG)
-//				if (state.KeyState['A'])
-//					spdlog::info("Input hz - {:.3f}, {:d}, {:d}", elapsed, state.deltaX, state.deltaY);
-//#endif
 
 				m_InputQueue.push(state);
 
