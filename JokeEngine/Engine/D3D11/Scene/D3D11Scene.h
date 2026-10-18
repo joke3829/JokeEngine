@@ -27,6 +27,8 @@ protected:
 class JEngineDefaultSceneDX11 : public JEngineSceneDX11 {
 public:
 	void SetGPUBuffer(UINT currentBufferIndex, UINT parameter, JShaderStage stage);
+
+	void Update(float elapsedTime);
 	void UpdateBuffers(UINT currentBufferIndex);
 protected:
 	struct DefaultSceneConstant {

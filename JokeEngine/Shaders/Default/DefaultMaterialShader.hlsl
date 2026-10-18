@@ -31,6 +31,7 @@ DefaultPSInput DefaultVS(DefaultVSInput input)
     output.BiTangent = mul(input.BiTangent, (float3x3) g_WorldMatrices[nodeindex]);
     output.TexCoord0 = input.TexCoord0;
     output.TexCoord1 = input.TexCoord1;
+    output.ViewportIdx = cameraindex;
     
     return output;
 }

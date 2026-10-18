@@ -16,7 +16,7 @@ public:
 	virtual void ResizeSwapChain(UINT width, UINT height, bool FullScreenState);
 	virtual void ResizeRenderer(UINT width, UINT height);
 	
-	virtual void MouseMessageReceiver(JMouseState& state);
+	virtual void WindowMessageProcessor(UINT msg, WPARAM wParam, LPARAM lParam);
 
 	virtual void Render() {};
 protected:

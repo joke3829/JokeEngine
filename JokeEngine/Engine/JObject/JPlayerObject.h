@@ -10,6 +10,8 @@ public:
 
 	// Input에 따른 업데이트
 	virtual void UpdateInput(JKeyState& input);
+
+	virtual void UpdateInputWindowMessage(UINT msg, WPARAM wParam, LPARAM lParam);
 protected:
 	// 기능의 따른 키 설정 상태
 	std::unordered_map<int, int> dmdkr;

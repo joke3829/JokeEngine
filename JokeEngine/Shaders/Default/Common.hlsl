@@ -34,6 +34,7 @@ struct DefaultPSInput
     float3 BiTangent : BITANGENT;
     float2 TexCoord0 : TEXCOORD0;
     float2 TexCoord1 : TEXCOORD1;
+    uint ViewportIdx : SV_ViewportArrayIndex;
 };
 
 // ===============================================================

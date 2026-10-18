@@ -11,6 +11,8 @@ public:
 	JSpriteAnimationObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name = nullptr);
 	~JSpriteAnimationObject();
 
+	void Reset();
+
 	void Update(float elapsedTime, XMFLOAT4X4* parent = nullptr);
 	
 	void SetAnimationSet(const char* setName, float minustime = 0.f);
@@ -21,8 +23,10 @@ public:
 	void SetSpriteSet(std::shared_ptr<JContent> spriteSet);
 protected:
 	bool									m_bMirror{};
+	bool									m_bInitialMirror{};
 
 	std::pair<std::string, UINT>			m_CurrentAnimation{};
+	std::string								m_InitialAnimation{};
 
 	float									m_ElapsedTime{};
 

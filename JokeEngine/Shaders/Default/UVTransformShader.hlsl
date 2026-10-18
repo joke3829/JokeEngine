@@ -29,6 +29,7 @@ DefaultPSInput UVTransformVS(DefaultVSInput input)
     output.BiTangent = mul(input.BiTangent, (float3x3) g_WorldMatrices[nodeindex]);
     output.TexCoord0 = mul(float4(input.TexCoord0, 0.f, 1.f), g_uvMatrix).xy;
     output.TexCoord1 = input.TexCoord1;
+    output.ViewportIdx = cameraindex;
     
     return output;
 }

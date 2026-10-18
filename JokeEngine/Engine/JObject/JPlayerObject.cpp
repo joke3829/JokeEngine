@@ -42,3 +42,8 @@ void JPlayerObject::UpdateInput(JKeyState& input)
 		XMStoreFloat3(&m_Position, XMLoadFloat3(&m_Position) + (XMVectorSet(0.f, 1.f, 0.f, 0.f) * mspeed * elapsed));
 	}
 }
+
+void JPlayerObject::UpdateInputWindowMessage(UINT msg, WPARAM wParam, LPARAM lParam)
+{
+
+}

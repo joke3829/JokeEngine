@@ -150,6 +150,12 @@ void JEngineDefaultSceneDX11::SetGPUBuffer(UINT currentBufferIndex, UINT paramet
 	}
 }
 
+void JEngineDefaultSceneDX11::Update(float elapsedTime)
+{
+	JEngineScene::Update(elapsedTime);
+	m_SceneConstant.mainCameraIndex = m_CurrnetMainCamera;
+}
+
 void JEngineDefaultSceneDX11::UpdateBuffers(UINT currentBufferIndex)
 {
 	JEngineSceneDX11::UpdateBuffers(currentBufferIndex);

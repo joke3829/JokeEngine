@@ -59,6 +59,8 @@ protected:
 	// Left Top -> 4quad
 	// Right Bottom -> 2quad
 
+	// Reset용 Initialize요소들 추가하기
+
 protected:
 	std::unique_ptr<JTextResource>	m_TextResource;
 	JTextMetrics					m_TextMetrics;

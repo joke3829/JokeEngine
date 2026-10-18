@@ -17,6 +17,14 @@ JObject::JObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorl
 	XMStoreFloat4x4(&m_LocalTransform, XMMatrixIdentity());
 }
 
+void JObject::Reset()
+{
+	m_Active = m_InitialActive;
+	m_Position = m_InitialPosition;
+	m_Rotation = m_InitialRotation;
+	m_Scale = m_InitialScale;
+}
+
 void JObject::Update(float elapsedTime, XMFLOAT4X4* parent)
 {
 	MakeLocalTransform();

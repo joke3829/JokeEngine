@@ -11,11 +11,13 @@ class JEngineScene : public JCommon {
 public:
 	virtual void SetGPUBuffer(UINT currentBufferIndex, UINT parameter, JShaderStage stage) {}
 
-	void Update(float elapsedTime);
+	virtual void Update(float elapsedTime);
 	virtual void UpdateBuffers(UINT currentBufferIndex) {}
+
+	virtual void Reset();
 	
 	// 동기 마우스 메시지 처리
-	virtual void ProcessMouseMessage(JMouseState& state);
+	virtual void WindowMessageProcessor(UINT msg, WPARAM wParam, LPARAM lParam);
 
 	// Scene 기능을 사용하기 전 반드시 설정을 해줘야한다.
 	void SetContentManager(std::shared_ptr<JContentManager>& manager) { m_ContentManager = manager; }
@@ -27,12 +29,14 @@ public:
 #if DEV_MODE
 public:
 	void BuildDefaultEditorScene();
-	void SetPlayMode(bool pmode) { m_PlayMode = pmode; }
+	void SetPlayMode(bool pmode);
 	void SetControlEditorScene(bool ces) { m_ControlEditorScene = ces; }
+	void EditorCameraResize(float width, float height);
 protected:
 	bool m_PlayMode{};
 	bool m_ControlEditorScene{};
 	std::shared_ptr<JPlayerObject> m_EditorPlayer{};
+	std::shared_ptr<JCameraObject> m_EditorCamera{};
 #endif
 protected:
 
@@ -40,7 +44,9 @@ protected:
 	std::vector<std::shared_ptr<JCameraObject>>		m_Cameras{};
 	std::vector<std::shared_ptr<JPlayerObject>>		m_Players{};
 	// player(character) 목록 추기
-	unsigned int									m_CurrentPlayer{};
+	int												m_CurrentPlayer{ -1 };	// -1일땐 Scene에 Player가 없는걸로
+	int												m_CurrnetMainCamera{};	// 상수버퍼에 넘길 카메라 인덱스(사용할 것)
+	int												m_InitialCameraIdx{};	// Scene이 시작할 때 사용할 카메라 인덱스
 
 
 	std::vector<XMFLOAT4X4>						m_WorldMatrices{};

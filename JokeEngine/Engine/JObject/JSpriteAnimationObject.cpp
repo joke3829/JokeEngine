@@ -29,6 +29,11 @@ JSpriteAnimationObject::~JSpriteAnimationObject()
 {
 }
 
+void JSpriteAnimationObject::Reset()
+{
+
+}
+
 void JSpriteAnimationObject::Update(float elapsedTime, XMFLOAT4X4* parent)
 {
 	m_ElapsedTime += elapsedTime;
@@ -78,4 +83,8 @@ void JSpriteAnimationObject::SetSpriteSet(std::shared_ptr<JContent> spriteSet)
 		return;
 	}
 	m_SpriteSet = p;
+
+	// 처음 AnimationSet이 붙으면 AnimationSet에 있는것으로 초기화
+	m_SpriteSet->GetKeyFrameData(m_CurrentAnimation.first, m_ElapsedTime);
+	m_InitialAnimation = m_CurrentAnimation.first;
 }

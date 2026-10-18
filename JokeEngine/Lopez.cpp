@@ -187,6 +187,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
         return true;
 #endif
+
+    if(g_Engine)
+        g_Engine->WindowMessageProcessor(message, wParam, lParam);
     switch (message)
     {
     case WM_SIZE:

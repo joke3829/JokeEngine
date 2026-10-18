@@ -34,9 +34,9 @@ void JokeEngine::ResizeRenderer(UINT width, UINT height)
 
 
 // 단순히 Scene에게 전달만
-void JokeEngine::MouseMessageReceiver(JMouseState& state)
+void JokeEngine::WindowMessageProcessor(UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	m_Scene->ProcessMouseMessage(state);
+	m_Scene->WindowMessageProcessor(msg, wParam, lParam);
 }
 
 
@@ -76,25 +76,61 @@ void JokeEngine::RenderImGUI()
 
 void JokeEngine::RenderMenubar()
 {
+	ImGuiIO& io = ImGui::GetIO();
 	if (ImGui::BeginMainMenuBar()) {
-		if (ImGui::BeginMenu("File")) {
-			if (ImGui::MenuItem("New Scene", "Ctrl+N")) {
-				spdlog::info("누름");
+		{
+			// File Menu
+			if (ImGui::BeginMenu("File")) {
+				if (ImGui::MenuItem("New Scene", "Ctrl+N")) {
+					spdlog::info("누름");
+				}
+				if (ImGui::MenuItem("Open Scene", "Ctrl+O")) {
+					spdlog::info("누름");
+				}
+				if (ImGui::MenuItem("Save", "Ctrl+S")) {
+					spdlog::info("누름");
+				}
+				if (ImGui::MenuItem("Save As", "Ctrl+Shitf+S")) {
+					spdlog::info("누름");
+				}
+				if (ImGui::MenuItem("Quit")) {
+					// 저장 묻기
+					PostQuitMessage(0);
+				}
+				ImGui::EndMenu();
 			}
-			if (ImGui::MenuItem("Open Scene", "Ctrl+O")) {
-				spdlog::info("누름");
+		}
+		{
+			auto ConvertPlayMode = [&](bool mode) {
+				m_PlayMode = mode;
+				m_Scene->SetPlayMode(mode);
+				if (!m_PlayMode)
+					m_Scene->Reset();
+				};
+
+			// Debug Menu
+			if (!m_PlayMode) {
+				if (ImGui::IsKeyPressed(ImGuiKey_F5) && io.KeyCtrl) {
+					ConvertPlayMode(true);
+				}
 			}
-			if (ImGui::MenuItem("Save", "Ctrl+S")) {
-				spdlog::info("누름");
+			else {
+				if (ImGui::IsKeyPressed(ImGuiKey_F5) && io.KeyShift) {
+					ConvertPlayMode(false);
+				}
 			}
-			if (ImGui::MenuItem("Save As", "Ctrl+Shitf+S")) {
-				spdlog::info("누름");
+			if (ImGui::BeginMenu("Debug")) {
+				if (ImGui::MenuItem("Play", "Ctrl+F5", false, !m_PlayMode)) {
+					ConvertPlayMode(true);
+				}
+				if (ImGui::MenuItem("Pause", "Ctrl+Alt+Pause", false, m_PlayMode)) {
+
+				}
+				if (ImGui::MenuItem("Stop", "Shift+F5", false, m_PlayMode)) {
+					ConvertPlayMode(false);
+				}
+				ImGui::EndMenu();
 			}
-			if (ImGui::MenuItem("Quit")) {
-				// 저장 묻기
-				PostQuitMessage(0);
-			}
-			ImGui::EndMenu();
 		}
 		ImGui::EndMainMenuBar();
 	}
@@ -104,17 +140,19 @@ void JokeEngine::RenderSceneHierarchy()
 {
 	if (ImGui::Begin("Hierarchy")) {
 		ImGui::Text("empty");
-	}
-	ImGui::End();
-	if (ImGui::Begin("Inspector")) {
-		ImGui::Text("empty");
+		if (ImGui::Button("▶", ImVec2(30, 30))) {
+
+		}
 	}
 	ImGui::End();
 }
 
 void JokeEngine::RenderInspector()
 {
-
+	if (ImGui::Begin("Inspector")) {
+		ImGui::Text("empty");
+	}
+	ImGui::End();
 }
 #endif
 
@@ -251,7 +289,7 @@ void JokeEngineDX11::Render()
 	else {
 		if (renderer_size.x != m_NewImageDestSize.x || renderer_size.y != m_NewImageDestSize.y) {
 			m_Renderer->ResizeTarget(m_NewImageDestSize.x, m_NewImageDestSize.y);
-			//m_Scene->EditCameraProjectionChange(fov, aspect);
+			m_Scene->EditorCameraResize(static_cast<float>(m_NewImageDestSize.x), static_cast<float>(m_NewImageDestSize.y));
 			ResizeImageDest(m_NewImageDestSize.x, m_NewImageDestSize.y);
 		}
 		// Scene 창 클릭 관련

@@ -19,39 +19,48 @@ void JEngineScene::Update(float elapsedTime)
 
 #if DEV_MODE
 	if (m_PlayMode) {
-		for (auto& state : inputs) {
-			m_Players[m_CurrentPlayer]->UpdateInput(state);
+		if (m_CurrentPlayer > -1) {
+			for (auto& state : inputs) {
+				m_Players[m_CurrentPlayer]->UpdateInput(state);
+			}
 		}
 	}
 	else {
-		if (m_CurrentPlayer == 0 && m_ControlEditorScene)
+		if (m_ControlEditorScene)
 			for (auto& state : inputs)
 				m_EditorPlayer->UpdateInput(state);
 	}
 #else
 	// player, ui 업데이트
-	for (auto& state : inputs) {
-		m_Players[m_CurrentPlayer]->UpdateInput(state);
-	}
+	if(m_CurrentPlayer > -1)
+		for (auto& state : inputs) {
+			m_Players[m_CurrentPlayer]->UpdateInput(state);
+		}
 #endif
 
 	for (auto& object : m_Objects)
 		object->Update(elapsedTime);
 }
 
-void JEngineScene::ProcessMouseMessage(JMouseState& state)
+void JEngineScene::Reset()
 {
-	// 일반적으론 player, ui 업데이트
-	static bool lc{};
-	switch (state.message) {
-	case WM_LBUTTONDOWN:
-		lc = true;
-		break;
-	case WM_LBUTTONUP:
-		lc = false;
-		break;
+	for (auto& object : m_Objects)
+		object->Reset();
+}
+
+void JEngineScene::WindowMessageProcessor(UINT msg, WPARAM wParam, LPARAM lParam)
+{
+#if DEV_MODE
+	if (m_ControlEditorScene)
+		m_EditorPlayer->UpdateInputWindowMessage(msg, wParam, lParam);
+	else {
+		if(m_CurrentPlayer > -1)
+			m_Players[m_CurrentPlayer]->UpdateInputWindowMessage(msg, wParam, lParam);
+		// ui update
 	}
-	
+#else
+
+#endif
 }
 
 #if DEV_MODE
@@ -69,7 +78,8 @@ void JEngineScene::BuildDefaultEditorScene()
 			static_cast<UINT>(m_WorldMatrices.size() - 1),
 			"EditorPlayer"
 		);
-		eplayer->SetPosition(0.f, 0.f, -15.f);
+		eplayer->SetRotation(45.f, -45.f, 0.f);
+		eplayer->SetPosition(15.f, 15.f, -15.f);
 		m_EditorPlayer = eplayer;
 
 		// Camera 추가 예제
@@ -81,6 +91,7 @@ void JEngineScene::BuildDefaultEditorScene()
 			static_cast<UINT>(m_WorldMatrices.size() - 1),
 			"EditorCamera"
 		);
+		m_EditorCamera = camera;
 		m_Cameras.emplace_back(camera);
 
 		eplayer->Attach(camera);
@@ -126,54 +137,73 @@ void JEngineScene::BuildDefaultEditorScene()
 	//	m_Objects.emplace_back(spriteobject);
 	//}
 
-	//// player + camera
-	//{
-	//	m_WorldMatrices.emplace_back();
-	//	m_WorldMatricesTP.emplace_back();
-	//	std::shared_ptr<JPlayerObject> player = std::make_shared<JPlayerObject>(
-	//		m_WorldMatrices,
-	//		m_WorldMatricesTP,
-	//		static_cast<UINT>(m_WorldMatrices.size() - 1),
-	//		"Player0"
-	//	);
-
-	//	player->SetPosition(0.f, 0.f, -15.f);
-	//	m_Players.emplace_back(player);
-
-	//	// Camera 추가 예제
-	//	m_WorldMatrices.emplace_back();
-	//	m_WorldMatricesTP.emplace_back();
-	//	std::shared_ptr<JCameraObject> camera = std::make_shared<JCameraObject>(
-	//		m_WorldMatrices,
-	//		m_WorldMatricesTP,
-	//		static_cast<UINT>(m_WorldMatrices.size() - 1),
-	//		"MyCamera"
-	//	);
-	//	m_Cameras.emplace_back(camera);
-
-	//	player->Attach(camera);
-
-	//	m_Objects.emplace_back(player);
-	//}
-
+	// player + camera
 	{
 		m_WorldMatrices.emplace_back();
 		m_WorldMatricesTP.emplace_back();
-		std::shared_ptr<JTextObject> text = std::make_shared<JTextObject>(
+		std::shared_ptr<JPlayerObject> player = std::make_shared<JPlayerObject>(
 			m_WorldMatrices,
 			m_WorldMatricesTP,
 			static_cast<UINT>(m_WorldMatrices.size() - 1),
-			"TextObject"
+			"Player"
 		);
-		text->ReadyPlanes(contents);
-		text->SetShaderName("UVTransformShader");
-		//text->SetScale(0.05f, 0.05f, 0.05f);
-		text->SetPosition(2.5f, -1.f, 0.f);
 
-		m_Objects.emplace_back(text);
+		player->SetPosition(0.f, 0.f, -15.f, true);
+		m_Players.emplace_back(player);
+		m_CurrentPlayer = 0;
+
+		// Camera 추가 예제
+		m_WorldMatrices.emplace_back();
+		m_WorldMatricesTP.emplace_back();
+		std::shared_ptr<JCameraObject> camera = std::make_shared<JCameraObject>(
+			m_WorldMatrices,
+			m_WorldMatricesTP,
+			static_cast<UINT>(m_WorldMatrices.size() - 1),
+			"PlayerCamera"
+		);
+		m_Cameras.emplace_back(camera);
+
+		player->Attach(camera);
+
+		m_Objects.emplace_back(player);
 	}
+
+	//{
+	//	m_WorldMatrices.emplace_back();
+	//	m_WorldMatricesTP.emplace_back();
+	//	std::shared_ptr<JTextObject> text = std::make_shared<JTextObject>(
+	//		m_WorldMatrices,
+	//		m_WorldMatricesTP,
+	//		static_cast<UINT>(m_WorldMatrices.size() - 1),
+	//		"TextObject"
+	//	);
+	//	text->ReadyPlanes(contents);
+	//	text->SetShaderName("UVTransformShader");
+	//	//text->SetScale(0.05f, 0.05f, 0.05f);
+	//	text->SetPosition(2.5f, -1.f, 0.f);
+
+	//	m_Objects.emplace_back(text);
+	//}
 
 
 	spdlog::info("DefaultScene Load Complete");
+}
+
+void JEngineScene::SetPlayMode(bool pmode)
+{
+	m_PlayMode = pmode;
+	if (m_PlayMode) {
+		m_CurrnetMainCamera += 1;
+	}
+	else
+		m_CurrnetMainCamera = 0;
+}
+
+void JEngineScene::EditorCameraResize(float width, float height)
+{
+	auto& factor = m_EditorCamera->GetProjFactor();
+	m_EditorCamera->SetProjFactorPerspective(factor.Fov, width / height, factor.Near, factor.Far);
+	auto& vp = m_EditorCamera->GetViewport();
+	m_EditorCamera->SetViewport(vp.TopLeftX, vp.TopLeftY, width, height, vp.MinDepth, vp.MaxDepth);
 }
 #endif
