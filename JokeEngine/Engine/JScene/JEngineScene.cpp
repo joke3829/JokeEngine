@@ -18,7 +18,7 @@ void JEngineScene::Update(float elapsedTime)
 	m_InputThread->GetInputs(inputs);
 
 #if DEV_MODE
-	if (m_PlayMode) {
+	if (m_PlayMode && !m_Pause) {
 		if (m_CurrentPlayer > -1) {
 			for (auto& state : inputs) {
 				m_Players[m_CurrentPlayer]->UpdateInput(state);
@@ -54,8 +54,10 @@ void JEngineScene::WindowMessageProcessor(UINT msg, WPARAM wParam, LPARAM lParam
 	if (m_ControlEditorScene)
 		m_EditorPlayer->UpdateInputWindowMessage(msg, wParam, lParam);
 	else {
-		if(m_CurrentPlayer > -1)
-			m_Players[m_CurrentPlayer]->UpdateInputWindowMessage(msg, wParam, lParam);
+		if (m_PlayMode && !m_Pause) {
+			if (m_CurrentPlayer > -1)
+				m_Players[m_CurrentPlayer]->UpdateInputWindowMessage(msg, wParam, lParam);
+		}
 		// ui update
 	}
 #else
@@ -78,8 +80,8 @@ void JEngineScene::BuildDefaultEditorScene()
 			static_cast<UINT>(m_WorldMatrices.size() - 1),
 			"EditorPlayer"
 		);
-		eplayer->SetRotation(45.f, -45.f, 0.f);
-		eplayer->SetPosition(15.f, 15.f, -15.f);
+		eplayer->SetRotation(45.f, -45.f, 0.f, true);
+		eplayer->SetPosition(15.f, 15.f, -15.f, true);
 		m_EditorPlayer = eplayer;
 
 		// Camera 추가 예제
@@ -119,23 +121,23 @@ void JEngineScene::BuildDefaultEditorScene()
 	}
 
 
-	//{// sprite object
-	//	m_WorldMatrices.emplace_back();
-	//	m_WorldMatricesTP.emplace_back();
-	//	std::shared_ptr<JSpriteAnimationObject> spriteobject = std::make_shared<JSpriteAnimationObject>(
-	//		m_WorldMatrices,
-	//		m_WorldMatricesTP,
-	//		static_cast<UINT>(m_WorldMatrices.size() - 1),
-	//		"MyTestSprite"
-	//	);
-	//	spriteobject->SetStaticMesh(contents["DefaultPlaneq1"]);
-	//	spriteobject->SetSpriteSet(contents["TestSprite"]);
-	//	spriteobject->AddMaterial(contents["DefaultSpriteMaterial"]);
-	//	spriteobject->SetShaderName("UVTransformShader");
+	{// sprite object
+		m_WorldMatrices.emplace_back();
+		m_WorldMatricesTP.emplace_back();
+		std::shared_ptr<JSpriteAnimationObject> spriteobject = std::make_shared<JSpriteAnimationObject>(
+			m_WorldMatrices,
+			m_WorldMatricesTP,
+			static_cast<UINT>(m_WorldMatrices.size() - 1),
+			"MyTestSprite"
+		);
+		spriteobject->SetStaticMesh(contents["DefaultPlaneq1"]);
+		spriteobject->SetSpriteSet(contents["TestSprite"]);
+		spriteobject->AddMaterial(contents["DefaultSpriteMaterial"]);
+		spriteobject->SetShaderName("UVTransformShader");
 
-	//	spriteobject->SetScale(85.f, 85.f, 1.f);
-	//	m_Objects.emplace_back(spriteobject);
-	//}
+		spriteobject->SetScale(85.f, 85.f, 1.f, true);
+		m_Objects.emplace_back(spriteobject);
+	}
 
 	// player + camera
 	{

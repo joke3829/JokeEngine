@@ -58,7 +58,7 @@ protected:
 	XMFLOAT4X4									m_LocalTransform{};
 	std::vector<XMFLOAT4X4>&					m_WorldTransform;				// 이것에[m_NodeIndex]가 m_WorldTransform
 	std::vector<XMFLOAT4X4>&					m_WorldTransformTP;				// Transpose WorldMatrix
-	UINT										m_NodeIndex{};
+	UINT										m_NodeIndex{};					// node id로도 사용
 	
 	std::string									m_ShaderName{};	// 이 오브젝트를 렌더링 할 때 사용할 Shader(매핑 할 때 사용)
 

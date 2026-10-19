@@ -72,6 +72,7 @@ void JokeEngine::RenderImGUI()
 	RenderSceneHierarchy();
 	RenderInspector();
 	RenderSceneImage();
+	RenderProjectSettingPopup();
 }
 
 void JokeEngine::RenderMenubar()
@@ -81,18 +82,17 @@ void JokeEngine::RenderMenubar()
 		{
 			// File Menu
 			if (ImGui::BeginMenu("File")) {
-				if (ImGui::MenuItem("New Scene", "Ctrl+N")) {
-					spdlog::info("누름");
+				if (ImGui::MenuItem("New Scene", "Ctrl+N")) { spdlog::info("누름"); }
+				if (ImGui::MenuItem("Open Scene", "Ctrl+O")) { spdlog::info("누름"); }
+				if (ImGui::MenuItem("Save", "Ctrl+S")) { spdlog::info("누름"); }
+				if (ImGui::MenuItem("Save As", "Ctrl+Shitf+S")) { spdlog::info("누름"); }
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem("Project Setting", "Ctrl+O")) {
+					m_ProjectSettingPopup = true;
 				}
-				if (ImGui::MenuItem("Open Scene", "Ctrl+O")) {
-					spdlog::info("누름");
-				}
-				if (ImGui::MenuItem("Save", "Ctrl+S")) {
-					spdlog::info("누름");
-				}
-				if (ImGui::MenuItem("Save As", "Ctrl+Shitf+S")) {
-					spdlog::info("누름");
-				}
+				ImGui::Separator();
 				if (ImGui::MenuItem("Quit")) {
 					// 저장 묻기
 					PostQuitMessage(0);
@@ -104,8 +104,21 @@ void JokeEngine::RenderMenubar()
 			auto ConvertPlayMode = [&](bool mode) {
 				m_PlayMode = mode;
 				m_Scene->SetPlayMode(mode);
-				if (!m_PlayMode)
+				if (!m_PlayMode) {
 					m_Scene->Reset();
+					m_Pause = false;
+					m_Scene->SetPause(m_Pause);
+					spdlog::info("PlayMode: Off");
+				}
+				else
+					spdlog::info("PlayMode: On");
+				
+				};
+			auto TogglePause = [&]() {
+				m_Pause = !m_Pause;
+				m_Scene->SetPause(m_Pause);
+				if (m_Pause) spdlog::info("Pause: On");
+				else spdlog::info("Pause: Off");
 				};
 
 			// Debug Menu
@@ -115,6 +128,9 @@ void JokeEngine::RenderMenubar()
 				}
 			}
 			else {
+				if (ImGui::IsKeyPressed(ImGuiKey_P) && io.KeyCtrl && io.KeyAlt) {
+					TogglePause();
+				}
 				if (ImGui::IsKeyPressed(ImGuiKey_F5) && io.KeyShift) {
 					ConvertPlayMode(false);
 				}
@@ -123,11 +139,15 @@ void JokeEngine::RenderMenubar()
 				if (ImGui::MenuItem("Play", "Ctrl+F5", false, !m_PlayMode)) {
 					ConvertPlayMode(true);
 				}
-				if (ImGui::MenuItem("Pause", "Ctrl+Alt+Pause", false, m_PlayMode)) {
-
+				if (ImGui::MenuItem("Pause", "Ctrl+Alt+P", m_Pause, m_PlayMode)) {
+					TogglePause();
 				}
 				if (ImGui::MenuItem("Stop", "Shift+F5", false, m_PlayMode)) {
 					ConvertPlayMode(false);
+				}
+				ImGui::Separator();
+				if (ImGui::MenuItem("ShowCollision", "Alt+C")) {
+
 				}
 				ImGui::EndMenu();
 			}
@@ -138,10 +158,37 @@ void JokeEngine::RenderMenubar()
 
 void JokeEngine::RenderSceneHierarchy()
 {
-	if (ImGui::Begin("Hierarchy")) {
-		ImGui::Text("empty");
-		if (ImGui::Button("▶", ImVec2(30, 30))) {
+	auto& objects = m_Scene->GetObjects();
 
+	ImGuiTreeNodeFlags flags =
+		ImGuiTreeNodeFlags_OpenOnArrow |
+		ImGuiTreeNodeFlags_OpenOnDoubleClick |
+		ImGuiTreeNodeFlags_DrawLinesFull |
+		ImGuiTreeNodeFlags_DefaultOpen |
+		ImGuiTreeNodeFlags_SpanFullWidth;
+
+	auto DrawHierarchy = [&](auto& self, std::shared_ptr<JObject>& object) -> void{
+		ImGuiTreeNodeFlags node_flag = flags;
+		if (object->GetLeafObjects().size() == 0) {
+			node_flag |= ImGuiTreeNodeFlags_Leaf;
+			if (ImGui::TreeNodeEx(object->GetName().c_str(), node_flag))
+				ImGui::TreePop();
+			return;
+		}
+		else {
+			if (ImGui::TreeNodeEx(object->GetName().c_str(), node_flag)) {
+				for (auto& child : object->GetLeafObjects())
+					self(self, child);
+				ImGui::TreePop();
+			}
+		}
+		};
+	if (ImGui::Begin("Hierarchy")) {
+		if (ImGui::TreeNodeEx(m_Scene->GetName().c_str(), flags)) {
+			for (auto& object : objects) {
+				DrawHierarchy(DrawHierarchy, object);
+			}
+			ImGui::TreePop();
 		}
 	}
 	ImGui::End();
@@ -153,6 +200,21 @@ void JokeEngine::RenderInspector()
 		ImGui::Text("empty");
 	}
 	ImGui::End();
+}
+
+void JokeEngine::RenderProjectSettingPopup()
+{
+	if (m_ProjectSettingPopup) {
+		ImGui::OpenPopup("Project Setting");
+		m_ProjectSettingPopup = false;
+	}
+	ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+	if (ImGui::BeginPopupModal("Project Setting", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		if (ImGui::Button("Test", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
+		ImGui::EndPopup();
+	}
 }
 #endif
 
@@ -171,6 +233,7 @@ void JokeEngineDX11::Initialize(HWND hWnd, HINSTANCE hInstance)
 	
 
 	m_Scene = std::make_shared<JEngineDefaultSceneDX11>();
+	m_Scene->SetName("NewScene");
 	m_Scene->SetContentManager(m_ContentManager);
 	m_Scene->SetInputThread(m_InputThread);
 #if DEV_MODE
@@ -313,6 +376,7 @@ void JokeEngineDX11::Render()
 		}
 	}
 
+	if (!m_PlayMode || m_Pause) elapsedTime = 0.f;
 #endif
 
 	m_Scene->Update(elapsedTime);       // CPU

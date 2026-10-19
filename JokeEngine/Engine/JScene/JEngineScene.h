@@ -23,17 +23,18 @@ public:
 	void SetContentManager(std::shared_ptr<JContentManager>& manager) { m_ContentManager = manager; }
 	void SetInputThread(std::shared_ptr<JInputThread>& input) { m_InputThread = input; }
 
-	// DefaultScene - 불러올 Scene 파일이 없으면 이걸 불러라
-
+	// Scene 내 ObjectList 요청
 	std::vector<std::shared_ptr<JObject>>& GetObjects() { return m_Objects; }
 #if DEV_MODE
 public:
 	void BuildDefaultEditorScene();
 	void SetPlayMode(bool pmode);
+	void SetPause(bool pause) { m_Pause = pause; }
 	void SetControlEditorScene(bool ces) { m_ControlEditorScene = ces; }
 	void EditorCameraResize(float width, float height);
 protected:
 	bool m_PlayMode{};
+	bool m_Pause{};
 	bool m_ControlEditorScene{};
 	std::shared_ptr<JPlayerObject> m_EditorPlayer{};
 	std::shared_ptr<JCameraObject> m_EditorCamera{};

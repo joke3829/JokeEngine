@@ -35,15 +35,18 @@ protected:
 	void DockingLayoutSetup();
 	void RenderImGUI();
 	void RenderMenubar();			
-	void RenderSceneHierarchy();	// scene이 해줄것
+	void RenderSceneHierarchy();
 	void RenderInspector();			// scene::object가 해줄것
+	void RenderProjectSettingPopup();
 	virtual void RenderSceneImage() {};
 	
 	// ImageDest ReSize
 	virtual void ResizeImageDest(UINT width, UINT height) {}
 
 	bool m_PlayMode{ false };		// false = editmode, true gamemode
+	bool m_Pause{ false };
 	bool m_ControlEditorScene{ false };	// 우클릭으로 Scene window를 잡고 있나를 판단
+	bool m_ProjectSettingPopup{ false };
 
 	ImVec2 m_OldEditorSceneSP{}; // GetCursorScreenPos
 	ImVec2 m_OldEditorSceneAvail{};

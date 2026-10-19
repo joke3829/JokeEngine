@@ -31,7 +31,12 @@ JSpriteAnimationObject::~JSpriteAnimationObject()
 
 void JSpriteAnimationObject::Reset()
 {
+	m_ElapsedTime = 0;
 
+	m_bMirror = m_bInitialMirror;
+	m_CurrentAnimation.first = m_InitialAnimation;
+
+	JObject::Reset();
 }
 
 void JSpriteAnimationObject::Update(float elapsedTime, XMFLOAT4X4* parent)
