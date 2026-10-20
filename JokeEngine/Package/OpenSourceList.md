@@ -22,3 +22,11 @@ url: <https://github.com/ocornut/imgui>
 etc: docking branch - 778992f
 
 License: MIT License
+
+---
+### ImGuizmo
+url: <https://github.com/CedricGuillemet/ImGuizmo>
+
+etc: master branch - 105e4fd
+
+License: MIT License

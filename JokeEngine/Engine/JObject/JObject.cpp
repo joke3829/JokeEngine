@@ -61,3 +61,80 @@ void JObject::MakeLocalTransform()
 	);
 	XMStoreFloat4x4(&m_LocalTransform, XMMatrixAffineTransformation(S, g_XMZero, R, T));
 }
+
+#if DEV_MODE
+void JObject::SetPlayMode(bool mod)
+{
+	m_PlayMode = mod;
+	for (auto& child : m_LeafObjects)
+		child->SetPlayMode(m_PlayMode);
+}
+
+void JObject::RenderInspector()
+{
+	{	// General
+		ImGui::SeparatorText("General");
+		if (m_PlayMode)
+			ImGui::BeginDisabled(true);
+		ImGui::Text("Name"); ImGui::SameLine();
+		char cname[128]{};
+		strcpy(cname, m_name.c_str());
+
+		if (ImGui::InputText("##InputName", cname, std::size(cname), ImGuiInputTextFlags_EnterReturnsTrue)) {
+			if (IsValidString(cname))
+				m_name = cname;
+		}
+		ImGui::SameLine();
+		ImGui::TextDisabled("(?)");
+		if (ImGui::BeginItemTooltip()) {
+			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+			ImGui::TextUnformatted("Rule: Alphanumeric and '_' only. No spaces/special chars.");
+			ImGui::PopTextWrapPos();
+			ImGui::EndTooltip();
+		}
+		if (m_PlayMode)
+			ImGui::EndDisabled();
+	}
+	{	// Transform
+		ImGui::SeparatorText("Transform");
+
+		if (m_PlayMode)
+			ImGui::BeginDisabled(true);
+
+		XMFLOAT3 scale = m_Scale;
+		XMFLOAT3 rotation = m_Rotation;
+		XMFLOAT3 position = m_Position;
+
+		auto resetbutton = [](const char* id, XMFLOAT3& out, XMFLOAT3 goal) {
+			if (ImGui::Button(id, ImVec2(18, 18))) {
+				out = goal;
+			}
+			ImGui::SetItemTooltip("Reset Factor");
+			};
+
+		float labelwidth = 70.f;
+
+		ImGui::Text("Scale"); ImGui::SameLine();
+		ImGui::SetCursorPosX(labelwidth);
+		ImGui::DragFloat3("##Scale", reinterpret_cast<float*>(&scale), 0.05f,0.f, 0.f, "%.3f", ImGuiSliderFlags_ColorMarkers); ImGui::SameLine();
+		resetbutton("##resetscale", scale, XMFLOAT3(1.f, 1.f, 1.f));
+
+		ImGui::Text("Rotation"); ImGui::SameLine();
+		ImGui::SetCursorPosX(labelwidth);
+		ImGui::DragFloat3("##Rotation", reinterpret_cast<float*>(&rotation), 0.2f, 0.f, 0.f, "%.3f", ImGuiSliderFlags_ColorMarkers); ImGui::SameLine();
+		resetbutton("##resetrotate", rotation, XMFLOAT3(0.f, 0.f, 0.f));
+
+		ImGui::Text("Position"); ImGui::SameLine();
+		ImGui::SetCursorPosX(labelwidth);
+		ImGui::DragFloat3("##Position", reinterpret_cast<float*>(&position), 0.05f, 0.f, 0.f, "%.3f", ImGuiSliderFlags_ColorMarkers); ImGui::SameLine();
+		resetbutton("##resetposition", position, XMFLOAT3(0.f, 0.f, 0.f));
+
+		SetScale(scale, true);
+		SetRotation(rotation, true);
+		SetPosition(position, true);
+
+		if (m_PlayMode)
+			ImGui::EndDisabled();
+	}
+}
+#endif

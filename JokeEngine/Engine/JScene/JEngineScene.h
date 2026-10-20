@@ -32,6 +32,7 @@ public:
 	void SetPause(bool pause) { m_Pause = pause; }
 	void SetControlEditorScene(bool ces) { m_ControlEditorScene = ces; }
 	void EditorCameraResize(float width, float height);
+	JCameraObject* GetEditorCamera() { return m_EditorCamera.get(); }
 protected:
 	bool m_PlayMode{};
 	bool m_Pause{};

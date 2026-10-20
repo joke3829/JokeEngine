@@ -2,6 +2,9 @@
 #include "D3D11/Content/D3D11ContentManager.h"
 #include "D3D11/Scene/D3D11Scene.h"
 #include "D3D11/Renderer/D3D11Renderer.h"
+#if DEV_MODE
+#include "Engine/JObject/JCameraObject.h"
+#endif
 
 // =======================================================================
 
@@ -56,9 +59,12 @@ void JokeEngine::DockingLayoutSetup()
 		ImGuiID RightDown = 0;
 		ImGuiID RightUp = 0;
 		ImGui::DockBuilderSplitNode(Right, ImGuiDir_Down, 0.7f, &RightDown, &RightUp);
+		ImGuiID LeftUp = 0;
+		ImGui::DockBuilderSplitNode(ViewportScreen, ImGuiDir_Up, 0.06f, &LeftUp, &ViewportScreen);
 		ImGui::DockBuilderDockWindow("Scene", ViewportScreen);
 		ImGui::DockBuilderDockWindow("Hierarchy", RightUp);
 		ImGui::DockBuilderDockWindow("Inspector", RightDown);
+		ImGui::DockBuilderDockWindow("Tools", LeftUp);
 		ImGui::DockBuilderFinish(dockspace_id);
 	}
 
@@ -69,6 +75,7 @@ void JokeEngine::RenderImGUI()
 {
 	RenderMenubar();
 	DockingLayoutSetup();
+	RenderToolBar();
 	RenderSceneHierarchy();
 	RenderInspector();
 	RenderSceneImage();
@@ -169,14 +176,22 @@ void JokeEngine::RenderSceneHierarchy()
 
 	auto DrawHierarchy = [&](auto& self, std::shared_ptr<JObject>& object) -> void{
 		ImGuiTreeNodeFlags node_flag = flags;
+		if (object.get() == m_SelectedObject)
+			node_flag |= ImGuiTreeNodeFlags_Selected;
 		if (object->GetLeafObjects().size() == 0) {
 			node_flag |= ImGuiTreeNodeFlags_Leaf;
 			if (ImGui::TreeNodeEx(object->GetName().c_str(), node_flag))
+				if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) {
+					m_SelectedObject = object.get();
+				}
 				ImGui::TreePop();
 			return;
 		}
 		else {
 			if (ImGui::TreeNodeEx(object->GetName().c_str(), node_flag)) {
+				if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) {
+					m_SelectedObject = object.get();
+				}
 				for (auto& child : object->GetLeafObjects())
 					self(self, child);
 				ImGui::TreePop();
@@ -197,7 +212,11 @@ void JokeEngine::RenderSceneHierarchy()
 void JokeEngine::RenderInspector()
 {
 	if (ImGui::Begin("Inspector")) {
-		ImGui::Text("empty");
+		if (m_SelectedObject) {
+			m_SelectedObject->RenderInspector();
+		}
+		else
+			ImGui::Text("None");
 	}
 	ImGui::End();
 }
@@ -215,6 +234,77 @@ void JokeEngine::RenderProjectSettingPopup()
 		if (ImGui::Button("Test", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
 		ImGui::EndPopup();
 	}
+}
+
+void JokeEngine::RenderToolBar()
+{
+	if (!m_PlayMode && !m_ControlEditorScene) {
+		if (ImGui::IsKeyPressed(ImGuiKey_Q)) { m_GizmoOperator = 0; }
+		if (ImGui::IsKeyPressed(ImGuiKey_W)) { m_GizmoOperator = 1; }
+		if (ImGui::IsKeyPressed(ImGuiKey_E)) { m_GizmoOperator = 2; }
+		if (ImGui::IsKeyPressed(ImGuiKey_R)) { m_GizmoOperator = 3; }
+	}
+	
+	if (m_PlayMode) ImGui::BeginDisabled(true);
+	if (ImGui::Begin("Tools")) {
+		// gizmo
+		if (ImGui::RadioButton("Select", m_GizmoOperator == 0)) { m_GizmoOperator = 0; } ImGui::SameLine();
+		if (ImGui::RadioButton("Move", m_GizmoOperator == 1)) { m_GizmoOperator = 1; } ImGui::SameLine();
+		if (ImGui::RadioButton("Rotate", m_GizmoOperator == 2)) { m_GizmoOperator = 2; } ImGui::SameLine();
+		if (ImGui::RadioButton("Scale", m_GizmoOperator == 3)) { m_GizmoOperator = 3; } ImGui::SameLine();
+
+		// snap
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 50.f);
+		if (ImGui::Checkbox("Use Snap", &m_UseSnap)); ImGui::SameLine();
+		ImGui::SetNextItemWidth(70.f);
+		ImGui::DragFloat("##MoveSnapDragFloat", &m_SnapFactor.x, 0.05f, 0.f, 100.f, "%.2f", ImGuiSliderFlags_AlwaysClamp); ImGui::SetItemTooltip("MoveFactor"); ImGui::SameLine();
+		ImGui::SetNextItemWidth(70.f);
+		ImGui::DragFloat("##RotateSnapDragFloat", &m_SnapFactor.y, 0.1f, 0.f, 90.f, "%.2f", ImGuiSliderFlags_AlwaysClamp); ImGui::SetItemTooltip("RotateFactor"); ImGui::SameLine();
+		ImGui::SetNextItemWidth(70.f);
+		ImGui::DragFloat("##ScaleSnapDragFloat", &m_SnapFactor.z, 0.05f, 0.f, 50.f, "%.2f", ImGuiSliderFlags_AlwaysClamp); ImGui::SetItemTooltip("ScaleFactor");
+	}
+	ImGui::End();
+	if (m_PlayMode) ImGui::EndDisabled();
+}
+
+void JokeEngine::RenderImGuizo()
+{
+	//	SetOrthographics
+	//	BegineFrame
+
+
+	//	SetDrawList
+	//	SetRect(그릴 화면 크기)
+
+	//	DrawGrid
+	//	DrawAxes
+	//	Manipulate
+
+	//	====================== =
+
+	//	IsUsing()으로 현재 끌고 있는지 확인 가능
+	//	IsOver(ImGuizmo::TRANSLATE(ROTATE, SCALE))로 특정 기능위에 올라가 있는지 확인 가능 안쓰면 그냥 다 확인함
+
+	auto* cam = m_Scene->GetEditorCamera();
+	ImGuizmo::SetOrthographic(cam->GetProjFactor().bOrtho);
+
+	ImGuizmo::SetDrawlist();
+	ImVec2 winpos = ImGui::GetWindowPos();
+	ImVec2 winsize = ImGui::GetWindowSize();
+	ImGuizmo::SetRect(winpos.x, winpos.y, winsize.x, winsize.y);
+	XMFLOAT4X4 view = cam->GetViewMatrix();
+	XMFLOAT4X4 proj = cam->GetProjMatrix();
+	XMFLOAT4X4 identity;
+	XMStoreFloat4x4(&identity, XMMatrixIdentity());
+	//ImGuizmo::DrawGrid(reinterpret_cast<float*>(&view), reinterpret_cast<float*>(&proj), reinterpret_cast<float*>(&identity), 100.f);
+	ImGuizmo::OPERATION oper{};
+	switch (m_GizmoOperator) {
+	case 0:
+	case 1:
+	case 2:
+	case 3:
+	}
+	ImGuizmo::Manipulate(reinterpret_cast<float*>(&view), reinterpret_cast<float*>(&proj), )
 }
 #endif
 
@@ -431,7 +521,9 @@ void JokeEngineDX11::StartImGuiRender()
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
-	//ImGui::ShowDemoWindow();
+	
+	// ImGuizmo
+	ImGuizmo::BeginFrame();
 }
 
 void JokeEngineDX11::EndImGuiRender()
@@ -478,6 +570,8 @@ void JokeEngineDX11::RenderSceneImage()
 			ImGui::SetCursorPos(ImVec2(InitCursorPos.x + offsetX, InitCursorPos.y + offsetY));
 		}
 		ImGui::Image(m_ImageDestSRV.Get(), ImageSize);
+
+		JokeEngine::RenderImGuizo();
 
 		ImGui::SetCursorPos(InitCursorPos);
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.f, 1.f, 0.f, 1.f));

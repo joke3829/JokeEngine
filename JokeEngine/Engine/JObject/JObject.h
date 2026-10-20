@@ -25,7 +25,7 @@ public:
 
 	// bool edit가 true일 땐 Initial 정보도 함께 변경(EditorMod일 때만 사용)
 	void SetPosition(float x, float y, float z, bool edit = false) { m_Position = XMFLOAT3(x, y, z); if (edit) m_InitialPosition = m_Position; }
-	void SetPosition(XMFLOAT3 position, bool edit = false) { m_Position = position; }
+	void SetPosition(XMFLOAT3 position, bool edit = false) { m_Position = position; if (edit) m_InitialPosition = m_Position; }
 	const XMFLOAT3& GetPosition() { return m_Position; }
 
 	void SetRotation(float x, float y, float z, bool edit = false) { m_Rotation = XMFLOAT3(x, y, z); if (edit) m_InitialRotation = m_Rotation; }
@@ -37,6 +37,14 @@ public:
 	const XMFLOAT3& GetScale() { return m_Scale; }
 
 	std::vector<std::shared_ptr<JObject>>& GetLeafObjects() { return m_LeafObjects; }
+
+#if DEV_MODE
+public:
+	void SetPlayMode(bool mod);
+	virtual void RenderInspector();
+protected:
+	bool m_PlayMode{ false };
+#endif
 
 protected:
 	void MakeLocalTransform();

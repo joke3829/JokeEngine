@@ -70,6 +70,7 @@ using Microsoft::WRL::ComPtr;
 #include "Package/imgui/backends/imgui_impl_win32.h"
 #include "Package/imgui/backends/imgui_impl_dx11.h"
 #include "Package/imgui/backends/imgui_impl_dx12.h"
+#include "Package/imgui/ImGuizmo.h"
 
 #endif
 #include "Package/nlohmann/json.hpp"
@@ -107,6 +108,13 @@ inline void ThrowIfFailed(HRESULT hr)
 inline UINT Align(UINT size, UINT multiple)
 {
 	return (size + (multiple - 1)) & ~(multiple - 1);
+}
+
+inline bool IsValidString(const char* str)
+{
+	return std::all_of(str, str + strlen(str), [](unsigned char c) {
+		return std::isalnum(c) || c == '_';
+		});
 }
 
 

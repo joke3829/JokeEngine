@@ -255,6 +255,8 @@ set(PKG_IMGUI
   Package/imgui/backends/imgui_impl_dx12.h
   Package/imgui/backends/imgui_impl_win32.cpp
   Package/imgui/backends/imgui_impl_win32.h
+  Package/imgui/ImGuizmo.h
+  Package/imgui/ImGuizmo.cpp
 )
 
 target_sources(${PROJECT_NAME} PRIVATE

@@ -194,6 +194,9 @@ void JEngineScene::BuildDefaultEditorScene()
 void JEngineScene::SetPlayMode(bool pmode)
 {
 	m_PlayMode = pmode;
+	for (auto& object : m_Objects)
+		object->SetPlayMode(m_PlayMode);
+
 	if (m_PlayMode) {
 		m_CurrnetMainCamera += 1;
 	}

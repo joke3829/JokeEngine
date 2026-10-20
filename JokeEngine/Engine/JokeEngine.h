@@ -38,6 +38,8 @@ protected:
 	void RenderSceneHierarchy();
 	void RenderInspector();			// scene::object가 해줄것
 	void RenderProjectSettingPopup();
+	void RenderToolBar();
+	void RenderImGuizo();
 	virtual void RenderSceneImage() {};
 	
 	// ImageDest ReSize
@@ -51,6 +53,11 @@ protected:
 	ImVec2 m_OldEditorSceneSP{}; // GetCursorScreenPos
 	ImVec2 m_OldEditorSceneAvail{};
 	XMUINT2 m_NewImageDestSize{};
+	char m_GizmoOperator{};
+	bool m_UseSnap{};
+	XMFLOAT3 m_SnapFactor{ 1.f, 5.f, 1.f };		// x: move, y: rotate, z:scale
+	
+	JObject* m_SelectedObject = nullptr;
 #endif
 protected:
 
