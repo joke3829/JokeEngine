@@ -70,6 +70,8 @@ set(ENGINE_GRESOURCE
 )
 
 set(ENGINE_OBJECT
+  Engine/JObject/JObjectRegistry.h
+  Engine/JObject/JObjectRegistry.cpp
   Engine/JObject/JObject.h
   Engine/JObject/JObject.cpp
   Engine/JObject/JCameraObject.h

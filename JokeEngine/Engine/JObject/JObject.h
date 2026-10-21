@@ -28,13 +28,18 @@ public:
 	void SetPosition(XMFLOAT3 position, bool edit = false) { m_Position = position; if (edit) m_InitialPosition = m_Position; }
 	const XMFLOAT3& GetPosition() { return m_Position; }
 
-	void SetRotation(float x, float y, float z, bool edit = false) { m_Rotation = XMFLOAT3(x, y, z); if (edit) m_InitialRotation = m_Rotation; }
-	void SetRotation(XMFLOAT3 rotate, bool edit = false) { m_Rotation = rotate; if (edit) m_InitialRotation = rotate; }
+	void SetRotation(float x, float y, float z, bool edit = false);
+	void SetRotation(XMFLOAT3 rotate, bool edit = false);
+	void SetRotation(float x, float y, float z, float w, bool edit = false);
+	void SetRotation(XMFLOAT4 quarternion, bool edit = false);
 	const XMFLOAT3& GetRotation() { return m_Rotation; }
 
 	void SetScale(float x, float y, float z, bool edit = false) { m_Scale = XMFLOAT3(x, y, z); if (edit) m_InitialScale = m_Scale; }
 	void SetScale(XMFLOAT3 scale, bool edit = false) { m_Scale = scale; if (edit) m_InitialScale = m_Scale; }
 	const XMFLOAT3& GetScale() { return m_Scale; }
+
+	// Update 이후에 사용해야 올바른 값이 나온다.
+	const XMFLOAT4X4& GetWorldTransform() { return m_WorldTransform[m_NodeIndex]; }
 
 	std::vector<std::shared_ptr<JObject>>& GetLeafObjects() { return m_LeafObjects; }
 
@@ -42,7 +47,9 @@ public:
 public:
 	void SetPlayMode(bool mod);
 	virtual void RenderInspector();
+	const XMFLOAT4X4& GetParentWorldTransform() { return m_ParentWorldMatix; }
 protected:
+	XMFLOAT4X4 m_ParentWorldMatix{};
 	bool m_PlayMode{ false };
 #endif
 
@@ -56,11 +63,13 @@ protected:
 
 	XMFLOAT3									m_Position{};
 	XMFLOAT3									m_Rotation{};				// Yaw, Pitch, Roll
+	XMFLOAT4									m_Quaternion{ 0.f, 0.f, 0.f, 1.f }; //xyz: vector, w: scalar
 	XMFLOAT3									m_Scale{ 1.f, 1.f ,1.f };
 
 	// 초기 상태, Reset할 때 사용된다. editor에서 수정할 땐 함께 수정됨
 	XMFLOAT3									m_InitialPosition{};
 	XMFLOAT3									m_InitialRotation{};
+	XMFLOAT4									m_InitialQuaternion{ 0.f, 0.f, 0.f, 1.f };
 	XMFLOAT3									m_InitialScale{ 1.f, 1.f, 1.f };
 
 	XMFLOAT4X4									m_LocalTransform{};

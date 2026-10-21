@@ -10,8 +10,10 @@ JEditorPlayerObject::JEditorPlayerObject(std::vector<XMFLOAT4X4>& vWorld, std::v
 void JEditorPlayerObject::UpdateInput(JKeyState& input)
 {
 	float elapsed = input.elapsedTime;
-	m_Rotation.y += static_cast<float>(input.deltaX) * m_MouseRotSpeed * elapsed;
-	m_Rotation.x += static_cast<float>(input.deltaY) * m_MouseRotSpeed * elapsed;
+	XMFLOAT3 rot = m_Rotation;
+	rot.y += static_cast<float>(input.deltaX) * m_MouseRotSpeed * elapsed;
+	rot.x += static_cast<float>(input.deltaY) * m_MouseRotSpeed * elapsed;
+	SetRotation(rot);
 
 	MakeLocalTransform();
 	XMFLOAT3 lookd{ m_LocalTransform._31, m_LocalTransform._32, m_LocalTransform._33 };
@@ -42,6 +44,7 @@ void JEditorPlayerObject::UpdateInput(JKeyState& input)
 	// 이건 에디터때만 쓰니까
 	m_InitialPosition = m_Position;
 	m_InitialRotation = m_Rotation;
+	m_InitialQuaternion = m_Quaternion;
 }
 
 void JEditorPlayerObject::UpdateInputWindowMessage(UINT msg, WPARAM wParam, LPARAM lParam)
@@ -50,7 +53,7 @@ void JEditorPlayerObject::UpdateInputWindowMessage(UINT msg, WPARAM wParam, LPAR
 	case WM_MOUSEWHEEL:
 	{
 		float wDelta = static_cast<float>(GET_WHEEL_DELTA_WPARAM(wParam)) / static_cast<float>(WHEEL_DELTA);
-		float deltaScale = 1.f;
+		float deltaScale = 2.f;
 			m_MoveSpeed += (wDelta * deltaScale);
 
 		if (m_MoveSpeed < 0.5) m_MoveSpeed = 0.5;

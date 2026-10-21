@@ -26,6 +26,7 @@
 #include <unordered_map>
 #include <thread>
 #include <chrono>
+#include <functional>
 
 #include <d3d11_4.h>
 #include <d3d12.h>
@@ -79,22 +80,62 @@ using Microsoft::WRL::ComPtr;
 
 // 공용 함수 선언부===============================================================================
 
-inline std::string WideToUtf8(const wchar_t* ws)
-{
-	if (!ws) return {};
-	int len = WideCharToMultiByte(CP_UTF8, 0, ws, -1, nullptr, 0, nullptr, nullptr);
-	if (len <= 0) return {};
-	std::string s(len - 1, '\0');  // -1: 널 종료 문자 제외
-	WideCharToMultiByte(CP_UTF8, 0, ws, -1, s.data(), len, nullptr, nullptr);
-	return s;
+namespace ConvertHelper {
+    inline XMFLOAT4 EulerToQuaternion(const XMFLOAT3& eulerDegrees)
+    {
+        XMFLOAT4 q;
+        XMStoreFloat4(&q, XMQuaternionRotationRollPitchYaw(
+            XMConvertToRadians(eulerDegrees.x),
+            XMConvertToRadians(eulerDegrees.y),
+            XMConvertToRadians(eulerDegrees.z)));
+        return q;
+    }
+
+    inline XMFLOAT3 QuaternionToEuler(const XMFLOAT4& q)
+    {
+        float pitchRad, yawRad, rollRad;
+        float sinp = 2.0f * (q.w * q.x - q.y * q.z);
+
+        if (fabsf(sinp) >= 0.9999f)     // 짐벌락 근처
+        {
+            pitchRad = copysignf(XM_PIDIV2, sinp);
+            yawRad = atan2f(2.0f * (q.w * q.y - q.x * q.z),
+                1.0f - 2.0f * (q.y * q.y + q.z * q.z));
+            rollRad = 0.0f;
+        }
+        else
+        {
+            pitchRad = asinf(sinp);
+            yawRad = atan2f(2.0f * (q.w * q.y + q.x * q.z),
+                1.0f - 2.0f * (q.x * q.x + q.y * q.y));
+            rollRad = atan2f(2.0f * (q.w * q.z + q.x * q.y),
+                1.0f - 2.0f * (q.x * q.x + q.z * q.z));
+        }
+
+        return XMFLOAT3(XMConvertToDegrees(pitchRad),
+            XMConvertToDegrees(yawRad),
+            XMConvertToDegrees(rollRad));
+    }
+
+	inline std::string WideToUtf8(const wchar_t* ws)
+	{
+		if (!ws) return {};
+		int len = WideCharToMultiByte(CP_UTF8, 0, ws, -1, nullptr, 0, nullptr, nullptr);
+		if (len <= 0) return {};
+		std::string s(len - 1, '\0');  // -1: 널 종료 문자 제외
+		WideCharToMultiByte(CP_UTF8, 0, ws, -1, s.data(), len, nullptr, nullptr);
+		return s;
+	}
 }
+
+
 
 inline void ThrowIfFailed(HRESULT hr)
 {
 	if (FAILED(hr)) {
 #if DEV_MODE
 		_com_error err(hr);
-		std::string ss = WideToUtf8(err.ErrorMessage());
+		std::string ss = ConvertHelper::WideToUtf8(err.ErrorMessage());
 		spdlog::critical("[FATAL ERROR] DirectX API Failed, HRESULT: 0x{0:X} | Message: {1}",
 			static_cast<unsigned int>(hr), ss.c_str());
 #endif

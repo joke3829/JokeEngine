@@ -34,6 +34,10 @@ void JObject::Update(float elapsedTime, XMFLOAT4X4* parent)
 	if (parent) parentMatrix = XMLoadFloat4x4(parent);
 	else parentMatrix = XMMatrixIdentity();
 
+#if DEV_MODE
+	XMStoreFloat4x4(&m_ParentWorldMatix, parentMatrix);
+#endif
+
 	XMMATRIX world = XMLoadFloat4x4(&m_LocalTransform) * parentMatrix;
 	XMStoreFloat4x4(&m_WorldTransform[m_NodeIndex], world);
 	XMStoreFloat4x4(&m_WorldTransformTP[m_NodeIndex], XMMatrixTranspose(world));
@@ -41,6 +45,30 @@ void JObject::Update(float elapsedTime, XMFLOAT4X4* parent)
 	for (auto& child : m_LeafObjects) {
 		child->Update(elapsedTime, &m_WorldTransform[m_NodeIndex]);
 	}
+}
+
+void JObject::SetRotation(float x, float y, float z, bool edit)
+{
+	m_Rotation = XMFLOAT3(x, y, z); if (edit) m_InitialRotation = m_Rotation;
+	m_Quaternion = ConvertHelper::EulerToQuaternion(m_Rotation); if (edit) m_InitialQuaternion = m_Quaternion;
+}
+
+void JObject::SetRotation(XMFLOAT3 rotate, bool edit)
+{
+	m_Rotation = rotate; if (edit) m_InitialRotation = m_Rotation;
+	m_Quaternion = ConvertHelper::EulerToQuaternion(m_Rotation); if (edit) m_InitialQuaternion = m_Quaternion;
+}
+
+void JObject::SetRotation(float x, float y, float z, float w, bool edit)
+{
+	m_Quaternion = XMFLOAT4(x, y, z, w); if (edit) m_InitialQuaternion = m_Quaternion;
+	m_Rotation = ConvertHelper::QuaternionToEuler(m_Quaternion); if (edit) m_InitialRotation = m_Rotation;
+}
+
+void JObject::SetRotation(XMFLOAT4 quarternion, bool edit)
+{
+	m_Quaternion = quarternion; if (edit) m_InitialQuaternion = m_Quaternion;
+	m_Rotation = ConvertHelper::QuaternionToEuler(m_Quaternion); if (edit) m_InitialRotation = m_Rotation;
 }
 
 //void JObject::Render()
@@ -54,11 +82,7 @@ void JObject::MakeLocalTransform()
 	XMVECTOR S, R, T;
 	S = XMLoadFloat3(&m_Scale);
 	T = XMLoadFloat3(&m_Position);
-	R = XMQuaternionRotationRollPitchYaw(
-		XMConvertToRadians(m_Rotation.x), 
-		XMConvertToRadians(m_Rotation.y), 
-		XMConvertToRadians(m_Rotation.z)
-	);
+	R = XMLoadFloat4(&m_Quaternion);
 	XMStoreFloat4x4(&m_LocalTransform, XMMatrixAffineTransformation(S, g_XMZero, R, T));
 }
 

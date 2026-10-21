@@ -10,10 +10,12 @@ void JPlayerObject::UpdateInput(JKeyState& input)
 {
 	float elapsed = input.elapsedTime;
 	float speed = 70.f;
+	XMFLOAT3 rot = m_Rotation;
 	if (input.KeyState[VK_LBUTTON] & 0x8000) {
-		m_Rotation.y += static_cast<float>(input.deltaX) * speed * elapsed;
-		m_Rotation.x += static_cast<float>(input.deltaY) * speed * elapsed;
+		rot.y += static_cast<float>(input.deltaX) * speed * elapsed;
+		rot.x += static_cast<float>(input.deltaY) * speed * elapsed;
 	}
+	SetRotation(rot);
 
 	MakeLocalTransform();
 	XMFLOAT3 lookd{ m_LocalTransform._31, m_LocalTransform._32, m_LocalTransform._33 };

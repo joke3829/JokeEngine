@@ -76,9 +76,9 @@ void JokeEngine::RenderImGUI()
 	RenderMenubar();
 	DockingLayoutSetup();
 	RenderToolBar();
+	RenderSceneImage();
 	RenderSceneHierarchy();
 	RenderInspector();
-	RenderSceneImage();
 	RenderProjectSettingPopup();
 }
 
@@ -107,7 +107,7 @@ void JokeEngine::RenderMenubar()
 				ImGui::EndMenu();
 			}
 		}
-		{
+		{ // Debug Menu
 			auto ConvertPlayMode = [&](bool mode) {
 				m_PlayMode = mode;
 				m_Scene->SetPlayMode(mode);
@@ -128,7 +128,7 @@ void JokeEngine::RenderMenubar()
 				else spdlog::info("Pause: Off");
 				};
 
-			// Debug Menu
+			
 			if (!m_PlayMode) {
 				if (ImGui::IsKeyPressed(ImGuiKey_F5) && io.KeyCtrl) {
 					ConvertPlayMode(true);
@@ -154,6 +154,30 @@ void JokeEngine::RenderMenubar()
 				}
 				ImGui::Separator();
 				if (ImGui::MenuItem("ShowCollision", "Alt+C")) {
+
+				}
+				ImGui::EndMenu();
+			}
+		}
+		{ // Create Menu
+			if (ImGui::BeginMenu("Create")) {
+				if (ImGui::MenuItem("Cube")) {
+
+				}
+				if (ImGui::MenuItem("Sphere")) {
+
+				}
+				if (ImGui::MenuItem("Plane")) {
+
+				}
+				if (ImGui::MenuItem("SpriteAnimationObject")) {
+
+				}
+				if (ImGui::MenuItem("Text")) {
+
+				}
+				ImGui::Separator();
+				if (ImGui::MenuItem("ObjectWindow")) {
 
 				}
 				ImGui::EndMenu();
@@ -199,6 +223,8 @@ void JokeEngine::RenderSceneHierarchy()
 		}
 		};
 	if (ImGui::Begin("Hierarchy")) {
+		if (ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows) && ImGui::IsMouseClicked(0)) 
+			m_SelectedObject = nullptr;
 		if (ImGui::TreeNodeEx(m_Scene->GetName().c_str(), flags)) {
 			for (auto& object : objects) {
 				DrawHierarchy(DrawHierarchy, object);
@@ -239,10 +265,10 @@ void JokeEngine::RenderProjectSettingPopup()
 void JokeEngine::RenderToolBar()
 {
 	if (!m_PlayMode && !m_ControlEditorScene) {
-		if (ImGui::IsKeyPressed(ImGuiKey_Q)) { m_GizmoOperator = 0; }
-		if (ImGui::IsKeyPressed(ImGuiKey_W)) { m_GizmoOperator = 1; }
-		if (ImGui::IsKeyPressed(ImGuiKey_E)) { m_GizmoOperator = 2; }
-		if (ImGui::IsKeyPressed(ImGuiKey_R)) { m_GizmoOperator = 3; }
+		if (ImGui::IsKeyPressed(ImGuiKey_Q, false)) { m_GizmoOperator = 0; }
+		if (ImGui::IsKeyPressed(ImGuiKey_W, false)) { m_GizmoOperator = 1; }
+		if (ImGui::IsKeyPressed(ImGuiKey_E, false)) { m_GizmoOperator = 2; }
+		if (ImGui::IsKeyPressed(ImGuiKey_R, false)) { m_GizmoOperator = 3; }
 	}
 	
 	if (m_PlayMode) ImGui::BeginDisabled(true);
@@ -269,42 +295,64 @@ void JokeEngine::RenderToolBar()
 
 void JokeEngine::RenderImGuizo()
 {
-	//	SetOrthographics
-	//	BegineFrame
+	if (m_SelectedObject) {
+		auto* cam = m_Scene->GetEditorCamera();
+		if (m_PlayMode)
+			cam = m_Scene->GetCurrentMainCamera();
+		ImGuizmo::SetOrthographic(cam->GetProjFactor().bOrtho);
 
+		ImGuizmo::SetDrawlist();
+		ImVec2 winpos = ImGui::GetWindowPos();
+		ImVec2 winsize = ImGui::GetWindowSize();
+		ImGuizmo::SetRect(winpos.x, winpos.y, winsize.x, winsize.y);
+		XMFLOAT4X4 view = cam->GetViewMatrix();
+		XMFLOAT4X4 proj = cam->GetProjMatrix();
+		XMFLOAT4X4 identity;
+		XMStoreFloat4x4(&identity, XMMatrixIdentity());
+		XMFLOAT4X4 oMatrix = m_SelectedObject->GetWorldTransform();
+		
+		//ImGuizmo::DrawGrid(reinterpret_cast<float*>(&view), reinterpret_cast<float*>(&proj), reinterpret_cast<float*>(&identity), 100.f);
+		if (m_GizmoOperator == 0 || m_PlayMode) {
+			XMVECTOR S, R, T;
+			XMMatrixDecompose(&S, &R, &T, XMLoadFloat4x4(&oMatrix));
+			S = XMVectorSet(1.f, 1.f, 1.f, 1.f);
+			XMStoreFloat4x4(&oMatrix, XMMatrixAffineTransformation(S, g_XMZero, R, T));
+			ImGuizmo::DrawAxes(reinterpret_cast<float*>(&view), reinterpret_cast<float*>(&proj), reinterpret_cast<float*>(&oMatrix), 1);
+		}
+		else {
+			ImGuizmo::OPERATION oper{};
+			float sf[3]{};
+			switch (m_GizmoOperator) {
+			case 1:
+				oper = ImGuizmo::OPERATION::TRANSLATE;
+				sf[0] = sf[1] = sf[2] = m_SnapFactor.x;
+				break;
+			case 2:
+				oper = ImGuizmo::OPERATION::ROTATE;
+				sf[0] = sf[1] = sf[2] = m_SnapFactor.y;
+				break;
+			case 3:
+				oper = ImGuizmo::OPERATION::SCALE;
+				sf[0] = sf[1] = sf[2] = m_SnapFactor.z;
+				break;
+			}
+			ImGuizmo::Manipulate(reinterpret_cast<float*>(&view), reinterpret_cast<float*>(&proj), oper, ImGuizmo::MODE::WORLD, reinterpret_cast<float*>(&oMatrix),
+				nullptr, m_UseSnap ? sf : nullptr, nullptr, nullptr);
+			if (ImGuizmo::IsUsing()) {
+				XMMATRIX parentinverse = XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_SelectedObject->GetParentWorldTransform()));
+				XMMATRIX result = XMLoadFloat4x4(&oMatrix) * parentinverse;
+				XMVECTOR S, R, T;
+				XMMatrixDecompose(&S, &R, &T, result);
 
-	//	SetDrawList
-	//	SetRect(그릴 화면 크기)
-
-	//	DrawGrid
-	//	DrawAxes
-	//	Manipulate
-
-	//	====================== =
-
-	//	IsUsing()으로 현재 끌고 있는지 확인 가능
-	//	IsOver(ImGuizmo::TRANSLATE(ROTATE, SCALE))로 특정 기능위에 올라가 있는지 확인 가능 안쓰면 그냥 다 확인함
-
-	auto* cam = m_Scene->GetEditorCamera();
-	ImGuizmo::SetOrthographic(cam->GetProjFactor().bOrtho);
-
-	ImGuizmo::SetDrawlist();
-	ImVec2 winpos = ImGui::GetWindowPos();
-	ImVec2 winsize = ImGui::GetWindowSize();
-	ImGuizmo::SetRect(winpos.x, winpos.y, winsize.x, winsize.y);
-	XMFLOAT4X4 view = cam->GetViewMatrix();
-	XMFLOAT4X4 proj = cam->GetProjMatrix();
-	XMFLOAT4X4 identity;
-	XMStoreFloat4x4(&identity, XMMatrixIdentity());
-	//ImGuizmo::DrawGrid(reinterpret_cast<float*>(&view), reinterpret_cast<float*>(&proj), reinterpret_cast<float*>(&identity), 100.f);
-	ImGuizmo::OPERATION oper{};
-	switch (m_GizmoOperator) {
-	case 0:
-	case 1:
-	case 2:
-	case 3:
+				XMFLOAT3 pos, scale;
+				XMFLOAT4 quat;
+				XMStoreFloat3(&pos, T); XMStoreFloat3(&scale, S); XMStoreFloat4(&quat, R);
+				m_SelectedObject->SetPosition(pos, true);
+				m_SelectedObject->SetRotation(quat, true);
+				m_SelectedObject->SetScale(scale, true);
+			}
+		}
 	}
-	ImGuizmo::Manipulate(reinterpret_cast<float*>(&view), reinterpret_cast<float*>(&proj), )
 }
 #endif
 

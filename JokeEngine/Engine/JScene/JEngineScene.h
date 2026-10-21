@@ -33,6 +33,7 @@ public:
 	void SetControlEditorScene(bool ces) { m_ControlEditorScene = ces; }
 	void EditorCameraResize(float width, float height);
 	JCameraObject* GetEditorCamera() { return m_EditorCamera.get(); }
+	JCameraObject* GetCurrentMainCamera() { return m_Cameras[m_CurrnetMainCamera].get(); }
 protected:
 	bool m_PlayMode{};
 	bool m_Pause{};
