@@ -8,10 +8,21 @@ public:
 	using CreateFunc = std::function<std::shared_ptr<JObject>(std::vector<XMFLOAT4X4>&, std::vector<XMFLOAT4X4>&, UINT, const char*)>;
 
 	static bool Register(const char* ObjectType, CreateFunc func);
-	static std::shared_ptr<JObject> CreateObject(const char* objecttype, std::vector<XMFLOAT4X4>& matricesA, std::vector<XMFLOAT4X4>& matricesB,
-		UINT index, const char* name);
+	static std::shared_ptr<JObject> CreateObject(const char* ObjectType, std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP,
+		UINT nodeIndex, const char* name);
+
+	static const std::vector<std::string>& GetRegisterdObjectNames();
 private:
-	static std::unordered_map<std::string, CreateFunc>& GetMap();
+	static std::unordered_map<std::string, CreateFunc>& GetMap()
+	{
+		static std::unordered_map<std::string, CreateFunc> map;
+		return map;
+	}
+	static std::vector<std::string>& GetKeys()
+	{
+		static std::vector<std::string> keys;
+		return keys;
+	}
 };
 
 

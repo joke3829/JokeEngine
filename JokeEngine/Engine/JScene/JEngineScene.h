@@ -9,6 +9,14 @@ class JPlayerObject;
 
 class JEngineScene : public JCommon {
 public:
+	// scene 파일 읽어 Scene 구성하는 함수
+	JEngineScene();
+
+	void ClearScene();
+
+	bool CreateObject(const char* ObjectType);
+	void CreateSceneFromFile() {}
+
 	virtual void SetGPUBuffer(UINT currentBufferIndex, UINT parameter, JShaderStage stage) {}
 
 	virtual void Update(float elapsedTime);
@@ -25,6 +33,10 @@ public:
 
 	// Scene 내 ObjectList 요청
 	std::vector<std::shared_ptr<JObject>>& GetObjects() { return m_Objects; }
+
+	// true -> 이미 존재
+	bool ObjectNameDuplicateCheck(const char* name) { return m_ObjectNames.contains(name); }
+	bool ObjectNameDuplicateCheck(std::string& name) { return m_ObjectNames.contains(name); }
 #if DEV_MODE
 public:
 	void BuildDefaultEditorScene();
@@ -42,7 +54,7 @@ protected:
 	std::shared_ptr<JCameraObject> m_EditorCamera{};
 #endif
 protected:
-
+	std::set<std::string>							m_ObjectNames{};		// Scene 내 오브젝트 이름들
 	std::vector<std::shared_ptr<JObject>>			m_Objects;
 	std::vector<std::shared_ptr<JCameraObject>>		m_Cameras{};
 	std::vector<std::shared_ptr<JPlayerObject>>		m_Players{};

@@ -68,7 +68,7 @@ void JEngineShaderDX11::RenderObjects(UINT currentFrameIndex, void** rtv, UINT n
 	context->OMSetRenderTargets(numRTV, drtv, ddsv);
 
 	for (auto& object : m_Objects)
-		object->Render(currentFrameIndex);
+		object.second->Render(currentFrameIndex);
 }
 
 void JEngineShaderDX11::CreateInputLayout(bool skinning)

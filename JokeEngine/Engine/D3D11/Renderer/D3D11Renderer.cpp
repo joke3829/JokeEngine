@@ -66,18 +66,10 @@ void JEngineRendererDX11::SetScene(std::shared_ptr<JEngineScene> scene)
 	for (auto& shader : m_PSOMap)
 		shader.second->ClearObject();
 	
-	auto TravelAndSetObject = [&](auto&& self, std::vector<std::shared_ptr<JObject>>& v) -> void
-		{
-			for (auto& p : v) {
-				self(self, p->GetLeafObjects());
-				if (m_PSOMap.contains(p->GetShaderName())) {
-					m_PSOMap[p->GetShaderName()]->AddObject(p);
-				}
-			}
-		};
-
-	auto& objects = m_Scene->GetObjects();
-	TravelAndSetObject(TravelAndSetObject, objects);
+	for (auto& object : scene->GetObjects()) {
+		if (m_PSOMap.contains(object->GetShaderName()))
+			m_PSOMap[object->GetShaderName()]->AddObject(object);
+	}
 }
 
 void JEngineRendererDX11::CreateRTV_DSV(UINT width, UINT height)

@@ -1,6 +1,7 @@
 #include "JTextObject.h"
 #include "Engine/D3D11/GResource/D3D11MeshConstant.h"
 #include "Engine/JokeEngineConfig.h"
+#include "JObjectRegistry.h"
 
 constexpr float kTextScale = 0.05f;
 
@@ -84,6 +85,7 @@ void JTextObject::Update(float elapsedTime, XMFLOAT4X4* parent)
 		// 상수 버퍼에 들어가는 것만 업데이트, WorldTransform은 일단은 제외
 		XMStoreFloat4x4(&m_WorldTransformTP[m_NodeIndex], XMMatrixTranspose(result));
 	}
+	m_MeshCB->m_CBMesh.nodeIndex = m_NodeIndex;
 }
 
 void JTextObject::Render(UINT currentFrameIndex)
@@ -180,3 +182,7 @@ void JTextObject::MakeDirtyFlag()
 	for (UINT i = 0; i < kNumRenderTarget; ++i)
 		m_GPUDirty[i] = true;
 }
+
+
+
+REGISTER_OBJECT(JTextObject)

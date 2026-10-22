@@ -15,6 +15,13 @@ void JContentManagerDX11::ReadyDefaultContent()
 		if(not inserted) ShowInsertedFailed(mesh->GetName(), "ContentManager");
 #endif
 	}
+	{ // Default Sphere
+		std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>(XMFLOAT3(0.f, 0.f, 0.f), 2.5f, 20, 20, 0, "DefaultSphere");
+		auto [iter, inserted] = m_ContentLookupTable.try_emplace(mesh->GetName(), mesh);
+#if DEV_MODE
+		if (not inserted) ShowInsertedFailed(mesh->GetName(), "ContentManager");
+#endif
+	}
 
 	{	// DefaultPlane
 		//quad1

@@ -3,6 +3,7 @@
 #include "Engine/JContent/JMaterial.h"
 #include "Engine/JContent/JStaticMesh.h"
 #include "Engine/D3D11/GResource/D3D11MeshConstant.h"
+#include "JObjectRegistry.h"
 
 
 
@@ -34,6 +35,7 @@ JStaticMeshObject::~JStaticMeshObject()
 
 void JStaticMeshObject::Update(float elapsedTime, XMFLOAT4X4* parent)
 {
+	m_MeshCB->m_CBMesh.nodeIndex = m_NodeIndex;
 	m_MeshCB->Update(elapsedTime);
 	for (auto& p : m_Materials)
 		p->Update(elapsedTime);
@@ -88,3 +90,6 @@ void JStaticMeshObject::SetStaticMesh(std::shared_ptr<JContent> mesh)
 	}
 	m_StaticMesh = temp;
 }
+
+
+REGISTER_OBJECT(JStaticMeshObject)

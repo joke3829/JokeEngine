@@ -265,7 +265,6 @@ target_sources(${PROJECT_NAME} PRIVATE
   $<$<OR:$<CONFIG:Debug>,$<CONFIG:Develop>>:${PKG_IMGUI}>
 )
 
-
 source_group("Engine" FILES ${ENGINE})
 source_group("Engine\\GResource" FILES ${ENGINE_GRESOURCE})
 source_group("Engine\\JObject" FILES ${ENGINE_OBJECT})

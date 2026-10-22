@@ -24,11 +24,12 @@ public:
 	// 외부의 버퍼를 자신의 RenderTarget으로 이용
 	virtual void RenderObjects(UINT currnetFrameIndex, void** rtv, UINT numRTV, void* dsv = nullptr) {}
 
-	void AddObject(std::shared_ptr<JObject>& object) { m_Objects.emplace_back(object); }
+	void AddObject(std::shared_ptr<JObject>& object) { m_Objects.try_emplace(object->GetName(), object); }
+	void DeleteObject(std::string& name) { m_Objects.erase(name); }
 	void ClearObject() { m_Objects.clear(); }
 protected:
 	// 직접 blob을 넣어 만들 수 도 있을것
 
 
-	std::vector<std::shared_ptr<JObject>> m_Objects{};
+	std::unordered_map<std::string, std::shared_ptr<JObject>> m_Objects{};
 };

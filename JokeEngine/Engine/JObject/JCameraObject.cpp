@@ -1,5 +1,6 @@
 #include "JCameraObject.h"
 #include "Engine/JokeEngineConfig.h"
+#include "JObjectRegistry.h"
 
 JCameraObject::JCameraObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name)
 	: JObject(vWorld, vWorldTP, nodeIndex, name)
@@ -84,3 +85,5 @@ void JCameraObject::SetProjFactorOrthographic(float Left, float Right, float Bot
 	m_ProjFactor.Near = Near;
 	m_ProjFactor.Far = Far;
 }
+
+REGISTER_OBJECT(JCameraObject)

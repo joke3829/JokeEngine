@@ -1,5 +1,6 @@
 #include "JObject.h"
 #include "Engine/JShader/JEngineShader.h"
+#include "JObjectRegistry.h"
 
 JObject::JObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name)
 	: m_WorldTransform{ vWorld }, m_NodeIndex{ nodeIndex }, m_WorldTransformTP{ vWorldTP }
@@ -23,6 +24,34 @@ void JObject::Reset()
 	m_Position = m_InitialPosition;
 	m_Rotation = m_InitialRotation;
 	m_Scale = m_InitialScale;
+}
+
+void JObject::Attach(std::shared_ptr<JObject> leaf)
+{
+	leaf->SetParent(this);
+	m_LeafObjects.emplace_back(leaf);
+}
+
+// 내 자식에서 떼어내는것, Scene에서 삭제가 아니다.
+void JObject::Dettach(std::string& name)
+{
+	for (unsigned int i = 0; i < m_LeafObjects.size(); ++i) {
+		if (m_LeafObjects[i]->GetName() == name) {
+			m_LeafObjects.erase(m_LeafObjects.begin() + i);
+			break;
+		}
+	}
+}
+
+// 내가 Scene에서 사라질 때 해줘야하는 작업 (소멸자와 비슷하나 다르다)
+void JObject::Delete()
+{
+	// 내 부모에게서 날 떼어내고
+	m_ParentObject->Dettach(m_name);
+
+	// 내 자식의 부모를 지운다.
+	for (auto& leaf : m_LeafObjects)
+		leaf->SetParent(nullptr);
 }
 
 void JObject::Update(float elapsedTime, XMFLOAT4X4* parent)
@@ -162,3 +191,7 @@ void JObject::RenderInspector()
 	}
 }
 #endif
+
+
+
+REGISTER_OBJECT(JObject);

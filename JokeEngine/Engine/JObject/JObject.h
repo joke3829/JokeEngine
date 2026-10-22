@@ -1,6 +1,22 @@
 #pragma once
 #include "Engine/JCommon.h"
 
+// ==========================================================================================
+// JObject
+// Scene에 포함 돼 자신만의 기능을 하는 요소
+// 
+// JObject는 기본적으로 기하 정보를 가지고 그 외의 역할은 없습니다.
+// 추가 역할을 원하시면 JObject를 상속해 CustomObject를 만들어야합니다.
+// 
+// !!!상속 시 반드시 지킬것!!!
+// 1. 기본생성자를 아래 JObject의 파라미터와 같게 작성(JObjectRegistry가 해당 양식을 사용)
+// 2. Reset, RenderInspector override 필요 하지 않을 경우 JObject의 기본 요소만 사용됨
+// 3. File 관련 저장법, 읽는법 작성 필요
+// 
+// .cpp에 #include "Engine/JObject/JObjectRegistry.h" 포함 + .cpp 끝에는 REGISTER_OBJECT()
+// 매크로를 사용해야 정상적으로 Object가 등록되어 사용 가능합니다.
+// ==========================================================================================
+
 class JEngineShader;
 
 class JObject : public JCommon {
@@ -10,11 +26,16 @@ public:
 
 	virtual void Reset();
 
-	void Attach(std::shared_ptr<JObject> leaf) { m_LeafObjects.emplace_back(leaf); }
+	void Attach(std::shared_ptr<JObject> leaf);
+	void Dettach(std::string& name);
+	void Delete();
 
 	virtual void Update(float elapsedTime, XMFLOAT4X4* parent = nullptr);
 
 	virtual void Render(UINT currentFrameIndex) {};
+
+	bool IsHasParent() { return m_ParentObject ? true : false; }
+	void SetParent(JObject* parent) { m_ParentObject = parent; }
 
 	// 렌더링이 필요하면 반드시 셰이더 이름을 작성
 	void SetShaderName(const char* name) { m_ShaderName = name; }
@@ -60,6 +81,7 @@ protected:
 	bool										m_Active{ true };		// 렌더 여부, 카메라 사용 여부 등, 오브젝트 별로 기능 
 	bool										m_InitialActive{ true };
 	std::vector<std::shared_ptr<JObject>>		m_LeafObjects{};
+	JObject*									m_ParentObject{};		// 트리에 사용, 부모 object의 pointer
 
 	XMFLOAT3									m_Position{};
 	XMFLOAT3									m_Rotation{};				// Yaw, Pitch, Roll

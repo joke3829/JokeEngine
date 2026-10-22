@@ -5,6 +5,7 @@
 #include "Engine/D3D11/GResource/D3D11MeshConstant.h"
 #include "Engine/D3D11/GResource/D3D11SpriteMeshConstant.h"
 #include "Engine/JContent/JSpriteAnimationSet.h"
+#include "JObjectRegistry.h"
 
 JSpriteAnimationObject::JSpriteAnimationObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name)
 	: JStaticMeshObject(vWorld, vWorldTP, nodeIndex, name)
@@ -43,6 +44,7 @@ void JSpriteAnimationObject::Update(float elapsedTime, XMFLOAT4X4* parent)
 {
 	m_ElapsedTime += elapsedTime;
 	
+	m_MeshCB->m_CBMesh.nodeIndex = m_NodeIndex;
 	if (m_SpriteSet) {
 		const JSAnimData& data = m_SpriteSet->GetKeyFrameData(m_CurrentAnimation.first, m_ElapsedTime);
 		m_CurrentAnimation.second = data.materialIndex;
@@ -93,3 +95,6 @@ void JSpriteAnimationObject::SetSpriteSet(std::shared_ptr<JContent> spriteSet)
 	m_SpriteSet->GetKeyFrameData(m_CurrentAnimation.first, m_ElapsedTime);
 	m_InitialAnimation = m_CurrentAnimation.first;
 }
+
+
+REGISTER_OBJECT(JSpriteAnimationObject)
