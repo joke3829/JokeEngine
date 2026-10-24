@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.24)
 
 
-project(Lopez)
+project(JokeEngine)
 
 if(MSVC)
 	add_compile_options(/utf-8)
@@ -33,7 +33,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 
 set(RESOURCE_FILES
-  Lopez.rc
+  JokeEngine.rc
   Resource.h
 )
 
@@ -43,15 +43,15 @@ set(COMMON_HEADER
 )
 
 set(COMMON_SOURCE
-  Lopez.cpp
+  main.cpp
   stdafx.cpp
 )
 
 # Engine 관련 Set ==================================================
 
 set(ENGINE
-  Engine/JokeEngine.h
-  Engine/JokeEngine.cpp
+  Engine/JEngine.h
+  Engine/JEngine.cpp
   Engine/JokeEngineConfig.h
   Engine/JokeEngineConfig.cpp
   Engine/JCommon.h

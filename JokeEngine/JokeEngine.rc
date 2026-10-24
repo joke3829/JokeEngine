@@ -27,15 +27,15 @@ LANGUAGE 18, 1
 // 애플리케이션 아이콘이 모든 시스템에서 일관된 상태로 유지되도록
 // 가장 낮은 ID 값을 가진 아이콘이 맨 처음 배치됩니다.
 
-IDI_LOPEZ       ICON         "Resource/JKEngine/Lopez.ico"
-IDI_SMALL               ICON         "Resource/JKEngine/small.ico"
+IDI_JOKEENGINE       ICON         "Resource/JKEngine/App.ico"
+IDI_SMALL               ICON         "Resource/JKEngine/AppSmall.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // 메뉴
 //
 
-IDC_LOPEZ MENU
+IDC_JOKEENGINE MENU
 BEGIN
     POPUP "파일(&F)"
     BEGIN
@@ -53,7 +53,7 @@ END
 // 액셀러레이터 키
 //
 
-IDC_LOPEZ ACCELERATORS
+IDC_JOKEENGINE ACCELERATORS
 BEGIN
     "?",            IDM_ABOUT,              ASCII,  ALT
     "/",            IDM_ABOUT,              ASCII,  ALT
@@ -67,11 +67,11 @@ END
 
 IDD_ABOUTBOX DIALOGEX 0, 0, 170, 62
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "정보 Lopez"
+CAPTION "정보 JokeEnigne"
 FONT 9, "MS Shell Dlg"
 BEGIN
-    ICON            IDI_LOPEZ,IDC_STATIC,14,14,21,20
-    LTEXT           "Lopez, 버전 1.0",IDC_STATIC,42,14,114,8,SS_NOPREFIX
+    ICON            IDI_JOKEENGINE,IDC_STATIC,14,14,21,20
+    LTEXT           "JokeEngine, 버전 1.0",IDC_STATIC,42,14,114,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2026",IDC_STATIC,42,26,114,8
     DEFPUSHBUTTON   "확인",IDOK,113,41,50,14,WS_GROUP
 END
@@ -130,8 +130,8 @@ END
 
 STRINGTABLE
 BEGIN
-   IDC_LOPEZ   "LOPEZ"
-   IDS_APP_TITLE       "Lopez"
+   IDC_JOKEENGINE   "JOKEENGINE"
+   IDS_APP_TITLE       "JokeEngine"
 END
 
 #endif

@@ -4,9 +4,9 @@
 
 
 #include "stdafx.h"
-#include "Lopez.h"
+#include "main.h"
 
-#include "Engine/JokeEngine.h"
+#include "Engine/JEngine.h"
 
 #define MAX_LOADSTRING 100
 
@@ -49,7 +49,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     // 전역 문자열을 초기화합니다.
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-    LoadStringW(hInstance, IDC_LOPEZ, szWindowClass, MAX_LOADSTRING);
+    LoadStringW(hInstance, IDC_JOKEENGINE, szWindowClass, MAX_LOADSTRING);
     MyRegisterClass(hInstance);
 
     // 애플리케이션 초기화를 수행합니다:
@@ -58,7 +58,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         return FALSE;
     }
 
-    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_LOPEZ));
+    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_JOKEENGINE));
 
     // 기본 메시지 루프입니다:
     for (MSG msg;;) {
@@ -94,7 +94,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.cbClsExtra     = 0;
     wcex.cbWndExtra     = 0;
     wcex.hInstance      = hInstance;
-    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_LOPEZ));
+    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_JOKEENGINE));
     wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
     wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
     wcex.lpszMenuName   = NULL;
