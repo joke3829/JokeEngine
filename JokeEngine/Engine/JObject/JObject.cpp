@@ -134,8 +134,11 @@ void JObject::RenderInspector()
 		strcpy(cname, m_name.c_str());
 
 		if (ImGui::InputText("##InputName", cname, std::size(cname), ImGuiInputTextFlags_EnterReturnsTrue)) {
-			if (IsValidString(cname) && not JObjectNameDuplicateManager::DuplicateCheck(cname))
+			if (IsValidString(cname) && not JObjectNameDuplicateManager::DuplicateCheck(cname)) {
+				JObjectNameDuplicateManager::DeleteName(m_name); // 목록에서 현 이름을 빼고
+				JObjectNameDuplicateManager::AddName(cname);	// 새 이름을 넣는다
 				m_name = cname;
+			}
 		}
 		ImGui::SameLine();
 		ImGui::TextDisabled("(?)");

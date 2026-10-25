@@ -55,6 +55,7 @@ std::shared_ptr<JObject> JEngineScene::CreateObject(const char* ObjectType)
 			static_cast<UINT>(m_WorldMatrices.size() - 1),
 			ObjectType);
 		noloop = true;
+		name = ObjectType;
 	}
 	bool breakloop = false;
 	if (not noloop) {
@@ -163,6 +164,7 @@ void JEngineScene::BuildDefaultEditorScene()
 		m_EditorPlayer = eplayer;
 
 		m_Objects.emplace_back(eplayer);
+		JObjectNameDuplicateManager::AddName("EditorPlayer");
 
 		// Camera 추가 예제
 		m_WorldMatrices.emplace_back();
@@ -177,6 +179,7 @@ void JEngineScene::BuildDefaultEditorScene()
 		m_Cameras.emplace_back(camera);
 
 		eplayer->Attach(camera);
+		JObjectNameDuplicateManager::AddName("EditorCamera");
 
 		m_Objects.emplace_back(camera);
 	}
@@ -238,23 +241,6 @@ void JEngineScene::BuildDefaultEditorScene()
 			text->ReadyPlanes(contents);
 		}
 	}
-	//{
-	//	m_WorldMatrices.emplace_back();
-	//	m_WorldMatricesTP.emplace_back();
-	//	std::shared_ptr<JTextObject> text = std::make_shared<JTextObject>(
-	//		m_WorldMatrices,
-	//		m_WorldMatricesTP,
-	//		static_cast<UINT>(m_WorldMatrices.size() - 1),
-	//		"TextObject"
-	//	);
-	//	text->ReadyPlanes(contents);
-	//	text->SetShaderName("UVTransformShader");
-	//	//text->SetScale(0.05f, 0.05f, 0.05f);
-	//	text->SetPosition(2.5f, -1.f, 0.f);
-
-	//	m_Objects.emplace_back(text);
-	//}
-
 
 	spdlog::info("DefaultScene Load Complete");
 }
