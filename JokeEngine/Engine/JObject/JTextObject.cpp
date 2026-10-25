@@ -61,6 +61,11 @@ void JTextObject::Update(float elapsedTime, XMFLOAT4X4* parent)
 
 		if (parent) parentMatrix = XMLoadFloat4x4(parent);
 		else parentMatrix = XMMatrixIdentity();
+
+#if DEV_MODE
+		XMStoreFloat4x4(&m_ParentWorldMatix, parentMatrix);
+#endif
+
 		MakeLocalTransform();
 		XMMATRIX realworld = XMLoadFloat4x4(&m_LocalTransform) * parentMatrix;
 		XMFLOAT4X4 realworld_f{};
@@ -82,7 +87,9 @@ void JTextObject::Update(float elapsedTime, XMFLOAT4X4* parent)
 		}
 		XMMATRIX tscale = XMMatrixScaling(textscale.x, textscale.y, 1.f);
 		XMMATRIX result = tscale * realworld;
-		// 상수 버퍼에 들어가는 것만 업데이트, WorldTransform은 일단은 제외
+		// 연산용
+		XMStoreFloat4x4(&m_WorldTransform[m_NodeIndex], realworld);
+		// 아래는 렌더링용
 		XMStoreFloat4x4(&m_WorldTransformTP[m_NodeIndex], XMMatrixTranspose(result));
 	}
 	m_MeshCB->m_CBMesh.nodeIndex = m_NodeIndex;
@@ -154,6 +161,7 @@ void JTextObject::SetFontSize(float size)
 		return;
 	}
 	m_FontSize = size;
+	MakeDirtyFlag();
 }
 
 void JTextObject::SetFontWeight(float weight)
@@ -169,11 +177,13 @@ void JTextObject::SetFontWeight(float weight)
 	}
 
 	m_FontWeight = weight;
+	MakeDirtyFlag();
 }
 
 void JTextObject::SetFontWidth(float width)
 {
 	m_FontWidth = width <= 0 ? 1 : width;
+	MakeDirtyFlag();
 }
 
 void JTextObject::MakeDirtyFlag()
@@ -182,6 +192,27 @@ void JTextObject::MakeDirtyFlag()
 	for (UINT i = 0; i < kNumRenderTarget; ++i)
 		m_GPUDirty[i] = true;
 }
+
+
+#if DEV_MODE
+void JTextObject::RenderInspector()
+{
+	JObject::RenderInspector();
+
+	ImGui::SeparatorText("TextOption");
+
+	const char* tempitems[] = { "1", "2" };
+	if (ImGui::BeginCombo("FontCollection", tempitems[0])) {
+		ImGui::EndCombo();
+	}
+	ImGui::Text("Text"); ImGui::SameLine();
+	char ctext[128]{};
+	strcpy(ctext, ConvertHelper::WideToUtf8(m_Text).c_str());
+	if (ImGui::InputText("##Text", ctext, std::size(ctext), ImGuiInputTextFlags_EnterReturnsTrue)) {
+		SetText(ConvertHelper::Utf8ToWide(std::string(ctext)).c_str());
+	}
+}
+#endif
 
 
 

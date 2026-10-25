@@ -118,15 +118,23 @@ namespace ConvertHelper {
             XMConvertToDegrees(rollRad));
     }
 
-	inline std::string WideToUtf8(const wchar_t* ws)
-	{
-		if (!ws) return {};
-		int len = WideCharToMultiByte(CP_UTF8, 0, ws, -1, nullptr, 0, nullptr, nullptr);
-		if (len <= 0) return {};
-		std::string s(len - 1, '\0');  // -1: 널 종료 문자 제외
-		WideCharToMultiByte(CP_UTF8, 0, ws, -1, s.data(), len, nullptr, nullptr);
-		return s;
-	}
+    inline std::string WideToUtf8(std::wstring_view ws)
+    {
+        if (ws.empty()) return {};
+        int len = WideCharToMultiByte(CP_UTF8, 0, ws.data(), (int)ws.size(), nullptr, 0, nullptr, nullptr);
+        std::string s(len, '\0');
+        WideCharToMultiByte(CP_UTF8, 0, ws.data(), (int)ws.size(), s.data(), len, nullptr, nullptr);
+        return s;
+    }
+
+    inline std::wstring Utf8ToWide(std::string_view s)
+    {
+        if (s.empty()) return {};
+        int len = MultiByteToWideChar(CP_UTF8, 0, s.data(), (int)s.size(), nullptr, 0);
+        std::wstring ws(len, L'\0');
+        MultiByteToWideChar(CP_UTF8, 0, s.data(), (int)s.size(), ws.data(), len);
+        return ws;
+    }
 }
 
 

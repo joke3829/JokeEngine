@@ -102,3 +102,42 @@ protected:
 	std::string									m_ShaderName{};	// 이 오브젝트를 렌더링 할 때 사용할 Shader(매핑 할 때 사용)
 
 };
+
+
+
+class JObjectNameDuplicateManager {
+public:
+	static bool AddName(const char* name) { auto [it, inserted] = GetNameSet().insert(name); return inserted; }
+	static bool AddName(std::string& name) { auto [it, inserted] = GetNameSet().insert(name); return inserted; }
+
+	static bool DeleteName(const char* name) 
+	{ 
+		auto& s = GetNameSet(); 
+		if (s.contains(name)) { 
+			s.erase(std::string(name)); 
+			return true; 
+		} 
+		else 
+			return false; 
+	}
+	
+	static bool DeleteName(std::string& name)
+	{
+		auto& s = GetNameSet();
+		if (s.contains(name)) {
+			s.erase(name);
+			return true;
+		}
+		else
+			return false;
+	}
+
+	static void Clear() { GetNameSet().clear(); }
+
+	static size_t GetNumNames() { return GetNameSet().size(); }
+
+	static bool DuplicateCheck(const char* name) { return GetNameSet().contains(name); }
+	static bool DuplicateCheck(std::string& name){ return GetNameSet().contains(name); }
+
+	static std::set<std::string>& GetNameSet() { static std::set<std::string> names; return names; }
+};

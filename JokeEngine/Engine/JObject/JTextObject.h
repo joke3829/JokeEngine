@@ -32,7 +32,7 @@ public:
 	// contentmanager를 받아 plane 준비: 필수
 	void ReadyPlanes(std::unordered_map<std::string, std::shared_ptr<JContent>>& contents);
 
-	void SetText(wchar_t* text) { m_Text = text; MakeDirtyFlag(); }
+	void SetText(const wchar_t* text) { m_Text = text; MakeDirtyFlag(); }
 	void SetFontSize(float size);
 	void SetFontCollectionName(const char* collectionname) { m_FontCollectionName = collectionname; }
 	void SetFontWeight(float weight);
@@ -41,6 +41,10 @@ public:
 
 	void MakeDirtyFlag();
 
+#if DEV_MODE
+public:
+	virtual void RenderInspector();
+#endif
 
 protected:
 

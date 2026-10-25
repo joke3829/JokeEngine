@@ -36,18 +36,18 @@ void JEngineScene::ClearScene()
 	m_CurrnetMainCamera = 0;
 	m_InitialCameraIdx = 0;
 
-	m_ObjectNames.clear();
 	m_Objects.clear();
+	JObjectNameDuplicateManager::Clear();
 }
 
-bool JEngineScene::CreateObject(const char* ObjectType)
+std::shared_ptr<JObject> JEngineScene::CreateObject(const char* ObjectType)
 {
 	m_WorldMatrices.emplace_back();
 	m_WorldMatricesTP.emplace_back();
 	std::string name{};
 	std::shared_ptr<JObject> object;
 	bool noloop = false;
-	if (!ObjectNameDuplicateCheck(ObjectType)) {
+	if (not JObjectNameDuplicateManager::DuplicateCheck(ObjectType)) {
 		object = JObjectRegistry::CreateObject(
 			ObjectType,
 			m_WorldMatrices,
@@ -60,7 +60,7 @@ bool JEngineScene::CreateObject(const char* ObjectType)
 	if (not noloop) {
 		for (unsigned int i = 1; i < 0xFFFFFFFF; ++i) {
 			name = ObjectType + std::to_string(i);
-			if (ObjectNameDuplicateCheck(name)) continue;
+			if (not JObjectNameDuplicateManager::DuplicateCheck(name)) continue;
 			object = JObjectRegistry::CreateObject(
 				ObjectType,
 				m_WorldMatrices,
@@ -79,12 +79,12 @@ bool JEngineScene::CreateObject(const char* ObjectType)
 		else
 			spdlog::error("{0}(num)가 너무 많습니다. {0}(num) 일부의 이름을 변경 후 다시 시도해주세요.", ObjectType);
 #endif
-		return false;
+		return object;
 	}
 
-	m_ObjectNames.insert(object->GetName());
+	JObjectNameDuplicateManager::AddName(name);
 	m_Objects.emplace_back(object);
-	return true;
+	return object;
 }
 
 void JEngineScene::Update(float elapsedTime)
@@ -228,6 +228,16 @@ void JEngineScene::BuildDefaultEditorScene()
 		}
 	}
 
+	{
+		if (not CreateObject("JTextObject"))
+			spdlog::error("JTextObject 추가 실패");
+		else {
+			m_Objects.back()->SetPosition(5.f, -5.f, 0.f, true);
+			m_Objects.back()->SetShaderName("UVTransformShader");
+			std::shared_ptr<JTextObject> text = std::dynamic_pointer_cast<JTextObject>(m_Objects.back());
+			text->ReadyPlanes(contents);
+		}
+	}
 	//{
 	//	m_WorldMatrices.emplace_back();
 	//	m_WorldMatricesTP.emplace_back();

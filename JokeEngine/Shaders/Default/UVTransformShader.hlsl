@@ -44,6 +44,7 @@ float4 AlbedoTextureMappingPS(DefaultPSInput input) : SV_Target
 
     finalColor = g_Material.Albedo * g_Texture[0].Sample(g_Sampler, input.TexCoord0);
     
+    clip(finalColor.a - 0.05f);
     // premultiplied
     finalColor.rgb *= finalColor.a;
     

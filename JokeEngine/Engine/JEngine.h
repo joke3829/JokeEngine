@@ -56,6 +56,7 @@ protected:
 	char m_GizmoOperator{};
 	bool m_UseSnap{};
 	XMFLOAT3 m_SnapFactor{ 1.f, 5.f, 1.f };		// x: move, y: rotate, z:scale
+	bool m_LocalGizmo{};
 	
 	JObject* m_SelectedObject = nullptr;
 #endif

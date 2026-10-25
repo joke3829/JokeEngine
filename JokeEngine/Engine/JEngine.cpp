@@ -227,7 +227,8 @@ void JokeEngine::RenderSceneHierarchy()
 			m_SelectedObject = nullptr;
 		if (ImGui::TreeNodeEx(m_Scene->GetName().c_str(), flags)) {
 			for (auto& object : objects) {
-				DrawHierarchy(DrawHierarchy, object);
+				if(not object->IsHasParent())
+					DrawHierarchy(DrawHierarchy, object);
 			}
 			ImGui::TreePop();
 		}
@@ -272,8 +273,10 @@ void JokeEngine::RenderToolBar()
 	}
 	
 	if (m_PlayMode) ImGui::BeginDisabled(true);
-	if (ImGui::Begin("Tools")) {
+	if (ImGui::Begin("Tools", 0, ImGuiWindowFlags_NoScrollbar)) {
 		// gizmo
+		ImGui::Checkbox("Local", &m_LocalGizmo); ImGui::SameLine();
+
 		if (ImGui::RadioButton("Select", m_GizmoOperator == 0)) { m_GizmoOperator = 0; } ImGui::SameLine();
 		if (ImGui::RadioButton("Move", m_GizmoOperator == 1)) { m_GizmoOperator = 1; } ImGui::SameLine();
 		if (ImGui::RadioButton("Rotate", m_GizmoOperator == 2)) { m_GizmoOperator = 2; } ImGui::SameLine();
@@ -281,7 +284,7 @@ void JokeEngine::RenderToolBar()
 
 		// snap
 		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 50.f);
-		if (ImGui::Checkbox("Use Snap", &m_UseSnap)); ImGui::SameLine();
+		ImGui::Checkbox("Use Snap", &m_UseSnap); ImGui::SameLine();
 		ImGui::SetNextItemWidth(70.f);
 		ImGui::DragFloat("##MoveSnapDragFloat", &m_SnapFactor.x, 0.05f, 0.f, 100.f, "%.2f", ImGuiSliderFlags_AlwaysClamp); ImGui::SetItemTooltip("MoveFactor"); ImGui::SameLine();
 		ImGui::SetNextItemWidth(70.f);
@@ -321,6 +324,7 @@ void JokeEngine::RenderImGuizo()
 		}
 		else {
 			ImGuizmo::OPERATION oper{};
+			ImGuizmo::MODE mod = m_LocalGizmo ? ImGuizmo::MODE::LOCAL : ImGuizmo::MODE::WORLD;
 			float sf[3]{};
 			switch (m_GizmoOperator) {
 			case 1:
@@ -336,7 +340,7 @@ void JokeEngine::RenderImGuizo()
 				sf[0] = sf[1] = sf[2] = m_SnapFactor.z;
 				break;
 			}
-			ImGuizmo::Manipulate(reinterpret_cast<float*>(&view), reinterpret_cast<float*>(&proj), oper, ImGuizmo::MODE::WORLD, reinterpret_cast<float*>(&oMatrix),
+			ImGuizmo::Manipulate(reinterpret_cast<float*>(&view), reinterpret_cast<float*>(&proj), oper, mod, reinterpret_cast<float*>(&oMatrix),
 				nullptr, m_UseSnap ? sf : nullptr, nullptr, nullptr);
 			if (ImGuizmo::IsUsing()) {
 				XMMATRIX parentinverse = XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_SelectedObject->GetParentWorldTransform()));
@@ -555,6 +559,7 @@ void JokeEngineDX11::ImGuiInitialize()
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
+	io.Fonts->AddFontFromFileTTF("Resource/JKEngine/NanumSquareR.ttf", 13.f, nullptr, io.Fonts->GetGlyphRangesKorean());
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;

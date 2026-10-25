@@ -134,7 +134,7 @@ void JObject::RenderInspector()
 		strcpy(cname, m_name.c_str());
 
 		if (ImGui::InputText("##InputName", cname, std::size(cname), ImGuiInputTextFlags_EnterReturnsTrue)) {
-			if (IsValidString(cname))
+			if (IsValidString(cname) && not JObjectNameDuplicateManager::DuplicateCheck(cname))
 				m_name = cname;
 		}
 		ImGui::SameLine();
