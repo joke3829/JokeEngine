@@ -8,10 +8,13 @@ constexpr float kTextScale = 0.05f;
 JTextObject::JTextObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name)
 	: JObject(vWorld, vWorldTP, nodeIndex, name)
 {
-	m_Text = L"박준서 엄준식";
-	m_FontName = L"던파 연단된 칼날";
-	m_FontSize = 32.f;
-
+	SetText(L"Text", true);
+	SetFontName(L"Bahnschrift", true);
+	SetFontSize(32.f, true);
+	SetFontWeight(400.f, true);
+	SetFontWidth(100.f, true);
+	SetHorizonAlignment(JText_Alignment::Left, true);
+	SetVerticalAlignment(JText_Alignment::Top, true);
 
 	auto* opt = JEngineDefaultGlobalConfig::GetInstance()->GetConfigFactor();
 	switch (opt->DirectX_Version) {
@@ -42,7 +45,7 @@ void JTextObject::Update(float elapsedTime, XMFLOAT4X4* parent)
 
 	// 여기서 CPUDirty -> IDWrite, Brush 등 최신화
 	if (m_CPUDirty) {
-		m_TextResource->CreateDWriteTextFomat(m_FontName, m_FontCollectionName, m_FontSize, 1000, m_FontWidth);
+		m_TextResource->CreateDWriteTextFomat(m_FontName, m_FontCollectionName, m_FontSize, m_FontWeight, m_FontWidth);
 		float maxwidth = static_cast<float>(kTextTexture2DWidth);
 		float maxheight = static_cast<float>(kTextTexture2DHeight);
 		m_TextResource->CreateDWriteTextLayout(m_Text, maxwidth, maxheight);
@@ -81,10 +84,6 @@ void JTextObject::Update(float elapsedTime, XMFLOAT4X4* parent)
 		textscale.x = m_TextMetrics.Width * kTextScale;
 		textscale.y = m_TextMetrics.Height * kTextScale;
 
-		if (m_HorizonAlignment == JText_Alignment::Center) {
-			textscale.x /= 2;
-			textscale.y /= 2;
-		}
 		XMMATRIX tscale = XMMatrixScaling(textscale.x, textscale.y, 1.f);
 		XMMATRIX result = tscale * realworld;
 		// 연산용
@@ -154,36 +153,120 @@ void JTextObject::ReadyPlanes(std::unordered_map<std::string, std::shared_ptr<JC
 #endif
 }
 
-void JTextObject::SetFontSize(float size)
+void JTextObject::UpdateRenderPlaneIndex()
+{
+	switch (m_HorizonAlignment) {
+	case JText_Alignment::Left:
+		switch (m_VerticalAlignment) {
+		case JText_Alignment::Bottom:
+			m_RenderPlaneIndex = 0x01;
+			break;
+		case JText_Alignment::Top:
+			m_RenderPlaneIndex = 0x04;
+			break;
+		}
+		break;
+	case JText_Alignment::Center:
+		m_RenderPlaneIndex = 0x00;
+		break;
+	case JText_Alignment::Right:
+		switch (m_VerticalAlignment) {
+		case JText_Alignment::Bottom:
+			m_RenderPlaneIndex = 0x02;
+			break;
+		case JText_Alignment::Top:
+			m_RenderPlaneIndex = 0x03;
+			break;
+		}
+		break;
+	}
+}
+
+void JTextObject::SetFontSize(float size, bool edit)
 {
 	if (size < 0) {
-		m_FontSize = 0; 
-		return;
+		size = 0; 
 	}
 	m_FontSize = size;
+	if (edit)
+		m_InitialFontSize = size;
 	MakeDirtyFlag();
 }
 
-void JTextObject::SetFontWeight(float weight)
+void JTextObject::SetFontWeight(float weight, bool edit)
 {
-	if (weight < 1) {
-		m_FontWeight = 1;
-		return;
-	}
-
-	if (weight > 1000) {
-		m_FontWeight = 1000;
-		return;
-	}
+	if (weight < 1) weight = 1;
+	else if (weight > 1000)	weight = 1000;
 
 	m_FontWeight = weight;
+	if (edit) m_InitialFontWeight = weight;
 	MakeDirtyFlag();
 }
 
-void JTextObject::SetFontWidth(float width)
+void JTextObject::SetFontWidth(float width, bool edit)
 {
 	m_FontWidth = width <= 0 ? 1 : width;
+	if (edit) m_InitialFontWeight = m_FontWidth;
 	MakeDirtyFlag();
+}
+
+void JTextObject::SetHorizonAlignment(JText_Alignment align, bool edit)
+{
+	switch (align) {
+	case JText_Alignment::Center: // 한쪽이 center면 나머지도 center여야함
+		m_HorizonAlignment = align;
+		m_VerticalAlignment = align;
+		if (edit) { m_InitialHorizonAlignment = align; m_InitialVerticalAlignment = align; }
+#if DEV_MODE
+		m_Selected_VAlign = 0;
+		m_Selected_HAlign = 1;
+#endif
+		break;
+	case JText_Alignment::Left:
+	case JText_Alignment::Right:
+		m_HorizonAlignment = align;
+		if (edit) m_InitialHorizonAlignment = align;
+#if DEV_MODE
+		m_Selected_HAlign = align;
+#endif
+		break;
+	default:
+#if DEV_MODE
+		spdlog::warn("{}: Invalid align in SetHorizonAlignment", m_name.c_str());
+#endif
+		break;
+	}
+	UpdateRenderPlaneIndex();
+}
+
+void JTextObject::SetVerticalAlignment(JText_Alignment align, bool edit)
+{
+	switch (align) {
+	case JText_Alignment::Center: // 한쪽이 center면 나머지도 center여야함
+		m_HorizonAlignment = align;
+		m_VerticalAlignment = align;
+		if (edit) { m_InitialHorizonAlignment = align; m_InitialVerticalAlignment = align; }
+#if DEV_MODE
+		m_Selected_VAlign = 0;
+		m_Selected_HAlign = 1;
+#endif
+		break;
+	case JText_Alignment::Top:
+	case JText_Alignment::Bottom:
+		m_VerticalAlignment = align;
+		if (edit) m_InitialVerticalAlignment = align;
+#if DEV_MODE
+		if (align == 1) m_Selected_VAlign = align - 1;
+		else m_Selected_VAlign = align - 2;
+#endif
+		break;
+	default:
+#if DEV_MODE
+		spdlog::warn("{}: Invalid align in SetVerticalAlignment", m_name.c_str());
+#endif
+		break;
+	}
+	UpdateRenderPlaneIndex();
 }
 
 void JTextObject::MakeDirtyFlag()
@@ -199,17 +282,82 @@ void JTextObject::RenderInspector()
 {
 	JObject::RenderInspector();
 
+	float cursorx = 94.f;
 	ImGui::SeparatorText("TextOption");
-
+	
+	// fontcollection과 fontname 설정
 	const char* tempitems[] = { "1", "2" };
-	if (ImGui::BeginCombo("FontCollection", tempitems[0])) {
+	ImGui::Text("FontCollection"); ImGui::SameLine();
+	ImGui::SetCursorPosX(cursorx);
+	if (ImGui::BeginCombo("##FontCollection", tempitems[m_Selected_FontCollection])) {
+		for (int i = 0; i < std::size(tempitems); ++i) {
+			bool is_selected = (m_Selected_FontCollection == i);
+			if (ImGui::Selectable(tempitems[i], is_selected))
+				m_Selected_FontCollection = i;
+		}
 		ImGui::EndCombo();
 	}
+
+	// text
 	ImGui::Text("Text"); ImGui::SameLine();
+	ImGui::SetCursorPosX(cursorx);
 	char ctext[128]{};
 	strcpy(ctext, ConvertHelper::WideToUtf8(m_Text).c_str());
 	if (ImGui::InputText("##Text", ctext, std::size(ctext), ImGuiInputTextFlags_EnterReturnsTrue)) {
-		SetText(ConvertHelper::Utf8ToWide(std::string(ctext)).c_str());
+		SetText(ConvertHelper::Utf8ToWide(std::string(ctext)).c_str(), true);
+	}
+
+	// font size
+	ImGui::Separator();
+	ImGui::Text("FontSize"); ImGui::SameLine();
+	ImGui::SetCursorPosX(cursorx);
+	float size = m_FontSize;
+	if (ImGui::DragFloat("##FontSize", &size, 0.05f, 0.f, FLT_MAX, "%.2f", ImGuiSliderFlags_AlwaysClamp))
+		SetFontSize(size, true);
+	// font weight
+	ImGui::Text("FontWeight"); ImGui::SameLine();
+	ImGui::SetCursorPosX(cursorx);
+	float weight = m_FontWeight;
+	if (ImGui::DragFloat("##FontWeight", &weight, 1.0f, 1.f, 1000.f, "%.2f", ImGuiSliderFlags_AlwaysClamp))
+		SetFontWeight(weight, true);
+	// font width
+	ImGui::Text("FontWidth"); ImGui::SameLine();
+	ImGui::SetCursorPosX(cursorx);
+	float width = m_FontWidth;
+	if (ImGui::DragFloat("##FontWidth", &width, 0.05f, 1.f, FLT_MAX, "%.2f", ImGuiSliderFlags_AlwaysClamp))
+		SetFontWidth(width, true);
+	
+	// align
+	ImGui::Separator();
+	{
+		const char* halign[] = { "Left", "Center", "Right" };
+		ImGui::Text("Horizon"); ImGui::SameLine();
+		ImGui::SetCursorPosX(cursorx);
+		if (ImGui::BeginCombo("##Horizon", halign[m_Selected_HAlign])) {
+			for (int i = 0; i < std::size(halign); ++i) {
+				bool is_selected = (m_Selected_HAlign == i);
+				if (ImGui::Selectable(halign[i], is_selected)) {
+					SetHorizonAlignment(JText_Alignment(i), true);
+					m_Selected_HAlign = i;
+				}
+			}
+			ImGui::EndCombo();
+		}
+	}
+	{
+		const char* valign[] = { "Center", "Top", "Bottom" };
+		ImGui::Text("Vertical"); ImGui::SameLine();
+		ImGui::SetCursorPosX(cursorx);
+		if (ImGui::BeginCombo("##Vertical", valign[m_Selected_VAlign])) {
+			for (int i = 0; i < std::size(valign); ++i) {
+				bool is_selected = (m_Selected_VAlign == i);
+				if (ImGui::Selectable(valign[i], is_selected)) {
+					SetVerticalAlignment(JText_Alignment(i == 0 ? i + 1 : i + 2), true);
+					m_Selected_VAlign = i;
+				}
+			}
+			ImGui::EndCombo();
+		}
 	}
 }
 #endif

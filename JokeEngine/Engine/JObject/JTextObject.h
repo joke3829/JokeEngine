@@ -24,26 +24,32 @@ public:
 	JTextObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name = nullptr);
 	~JTextObject();
 
-
 	void Update(float elapsedTime, XMFLOAT4X4* parent = nullptr);
 	void Render(UINT currentFrameIndex);
 
 public:
 	// contentmanager를 받아 plane 준비: 필수
 	void ReadyPlanes(std::unordered_map<std::string, std::shared_ptr<JContent>>& contents);
+	void UpdateRenderPlaneIndex();
 
-	void SetText(const wchar_t* text) { m_Text = text; MakeDirtyFlag(); }
-	void SetFontSize(float size);
-	void SetFontCollectionName(const char* collectionname) { m_FontCollectionName = collectionname; }
-	void SetFontWeight(float weight);
-	void SetFontWidth(float width);
-
+	void SetText(const wchar_t* text, bool edit = false) { m_Text = text; if (edit) m_InitialText = text; MakeDirtyFlag(); }
+	void SetFontName(const wchar_t* fontName, bool edit = false) { m_FontName = fontName; if (edit) m_InitialFontName = fontName; MakeDirtyFlag(); }
+	void SetFontSize(float size, bool edit = false);
+	void SetFontCollectionName(const char* collectionname, bool edit = false) { m_FontCollectionName = collectionname; if (edit) m_InitialFontCollectionName = collectionname; MakeDirtyFlag(); }
+	void SetFontWeight(float weight, bool edit = false);
+	void SetFontWidth(float width, bool edit = false);
+	void SetHorizonAlignment(JText_Alignment align, bool edit = false);
+	void SetVerticalAlignment(JText_Alignment align, bool edit = false);
 
 	void MakeDirtyFlag();
 
 #if DEV_MODE
 public:
 	virtual void RenderInspector();
+protected:
+	unsigned char m_Selected_FontCollection{};
+	unsigned char m_Selected_HAlign{};
+	unsigned char m_Selected_VAlign{};
 #endif
 
 protected:
@@ -56,7 +62,6 @@ protected:
 	float m_FontWeight{ 400.f };		// 폰트 두께 (1~1000, 기본값 400)
 	float m_FontWidth{ 100.f };			// 폰트 너비(간격, > 0, 기본값 100)
 
-
 	// 둘 중 하나가 center면 둘다 center
 	JText_Alignment m_HorizonAlignment = JText_Alignment::Left;	
 	JText_Alignment m_VerticalAlignment = JText_Alignment::Top;
@@ -64,6 +69,14 @@ protected:
 	// Right Bottom -> 2quad
 
 	// Reset용 Initialize요소들 추가하기
+	std::wstring m_InitialText{};
+	std::wstring m_InitialFontName{};
+	std::string m_InitialFontCollectionName{};
+	float m_InitialFontSize{};
+	float m_InitialFontWeight{};
+	float m_InitialFontWidth{};
+	JText_Alignment m_InitialHorizonAlignment;
+	JText_Alignment m_InitialVerticalAlignment;
 
 protected:
 	std::unique_ptr<JTextResource>	m_TextResource;
