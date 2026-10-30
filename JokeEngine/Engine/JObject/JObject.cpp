@@ -126,6 +126,7 @@ void JObject::SetPlayMode(bool mod)
 void JObject::RenderInspector()
 {
 	{	// General
+		float cursorx = 94.f;
 		ImGui::SeparatorText("General");
 		if (m_PlayMode)
 			ImGui::BeginDisabled(true);
@@ -133,6 +134,7 @@ void JObject::RenderInspector()
 		char cname[128]{};
 		strcpy(cname, m_name.c_str());
 
+		ImGui::SetCursorPosX(cursorx);
 		if (ImGui::InputText("##InputName", cname, std::size(cname), ImGuiInputTextFlags_EnterReturnsTrue)) {
 			if (IsValidString(cname) && not JObjectNameDuplicateManager::DuplicateCheck(cname)) {
 				JObjectNameDuplicateManager::DeleteName(m_name); // 목록에서 현 이름을 빼고
@@ -147,6 +149,15 @@ void JObject::RenderInspector()
 			ImGui::TextUnformatted("Rule: Alphanumeric and '_' only. No spaces/special chars.");
 			ImGui::PopTextWrapPos();
 			ImGui::EndTooltip();
+		}
+
+		ImGui::Text("ShaderName"); ImGui::SameLine();
+		ZeroMemory(cname, std::size(cname));
+		strcpy(cname, m_ShaderName.c_str());
+		ImGui::SetCursorPosX(cursorx);
+		if (ImGui::InputText("##InputShaderName", cname, std::size(cname), ImGuiInputTextFlags_EnterReturnsTrue)) {
+			m_ShaderName = cname;
+			g_RendererRefreshFlag = true;
 		}
 		if (m_PlayMode)
 			ImGui::EndDisabled();

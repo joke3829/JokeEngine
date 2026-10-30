@@ -16,6 +16,7 @@ public:
 	virtual void AdvanceBufferIndex();
 
 	virtual void SetScene(std::shared_ptr<JEngineScene> scene) { m_Scene = scene; }
+	virtual void RefreshPSOObject() { SetScene(m_Scene); }
 
 	const XMUINT2& GetTargetSize() { return m_TargetSize; }
 protected:

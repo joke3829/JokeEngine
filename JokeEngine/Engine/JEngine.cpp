@@ -2,6 +2,7 @@
 #include "D3D11/Content/D3D11ContentManager.h"
 #include "D3D11/Scene/D3D11Scene.h"
 #include "D3D11/Renderer/D3D11Renderer.h"
+#include "JObject/JObjectRegistry.h"
 #if DEV_MODE
 #include "Engine/JObject/JCameraObject.h"
 #endif
@@ -80,6 +81,7 @@ void JokeEngine::RenderImGUI()
 	RenderSceneHierarchy();
 	RenderInspector();
 	RenderProjectSettingPopup();
+	RenderCreateWindowPopup();
 }
 
 void JokeEngine::RenderMenubar()
@@ -178,7 +180,8 @@ void JokeEngine::RenderMenubar()
 				}
 				ImGui::Separator();
 				if (ImGui::MenuItem("ObjectWindow")) {
-
+					m_CreateWindowPopup = true;
+					m_SelectedObjectInCreatePopup = 0;
 				}
 				ImGui::EndMenu();
 			}
@@ -241,6 +244,10 @@ void JokeEngine::RenderInspector()
 	if (ImGui::Begin("Inspector")) {
 		if (m_SelectedObject) {
 			m_SelectedObject->RenderInspector();
+			if (g_RendererRefreshFlag) {
+				m_Renderer->RefreshPSOObject();
+				g_RendererRefreshFlag = false;
+			}
 		}
 		else
 			ImGui::Text("None");
@@ -259,6 +266,58 @@ void JokeEngine::RenderProjectSettingPopup()
 
 	if (ImGui::BeginPopupModal("Project Setting", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		if (ImGui::Button("Test", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
+		ImGui::EndPopup();
+	}
+}
+
+void JokeEngine::RenderCreateWindowPopup()
+{
+	if (m_CreateWindowPopup) {
+		ImGui::OpenPopup("Create Window");
+		m_CreateWindowPopup = false;
+	}
+	ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+	auto& names = JObjectRegistry::GetRegisterdObjectNames();
+
+	if (ImGui::BeginPopupModal("Create Window", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		if (ImGui::BeginListBox("##Create Window ListBox")) {
+			static ImGuiTextFilter cfilter;
+			if (ImGui::IsWindowAppearing()) {
+				ImGui::SetKeyboardFocusHere();
+				cfilter.Clear();
+			}
+			ImGui::SetNextItemShortcut(ImGuiMod_Ctrl | ImGuiKey_F);
+			ImGui::SetNextItemWidth(-FLT_MIN);
+			cfilter.DrawWithHint("##cFilter", "Object Name");
+
+			for (int i = 0; i < names.size(); ++i) {
+				const bool is_selected = (m_SelectedObjectInCreatePopup == i);
+				if(cfilter.PassFilter(names[i].c_str()))
+					if(ImGui::Selectable(names[i].c_str(), is_selected))
+						m_SelectedObjectInCreatePopup = i;
+
+				if (is_selected)
+					ImGui::SetItemDefaultFocus();
+			}
+
+			ImGui::EndListBox();
+		}
+
+		// 생성 버튼 눌렀으면
+		if (ImGui::Button("Create", ImVec2(80, 0))) { 
+			// 선택된 Object 이름으로 추가한다.
+			std::shared_ptr<JObject> object = m_Scene->CreateObject(names[m_SelectedObjectInCreatePopup].c_str());
+			const XMFLOAT4X4& w = m_Scene->GetEditorCamera()->GetWorldTransform();
+			XMFLOAT3 dir{ w._31, w._32, w._33 };
+			XMVECTOR vdir = XMVector3Normalize(XMLoadFloat3(&dir));
+			XMFLOAT3 pos{}; XMStoreFloat3(&pos, XMLoadFloat3(&m_Scene->GetEditorCamera()->GetPosition()) + vdir * 10.f);
+			object->SetPosition(pos, true);
+
+
+			ImGui::CloseCurrentPopup(); 
+		} ImGui::SameLine();
+		if (ImGui::Button("Cancel", ImVec2(80, 0))) { ImGui::CloseCurrentPopup(); }
 		ImGui::EndPopup();
 	}
 }

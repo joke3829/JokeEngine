@@ -197,3 +197,10 @@ struct JMouseState {
 	UINT message{};			// WM_Message
 	POINT cursor{};			// 현재 마우스 위치	// client 내 좌표(window 좌상단 0, 0)
 };
+
+
+// 전역 변수 ===================================================================================
+
+#if DEV_MODE
+inline bool g_RendererRefreshFlag{};
+#endif

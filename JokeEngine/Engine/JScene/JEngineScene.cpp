@@ -61,7 +61,7 @@ std::shared_ptr<JObject> JEngineScene::CreateObject(const char* ObjectType)
 	if (not noloop) {
 		for (unsigned int i = 1; i < 0xFFFFFFFF; ++i) {
 			name = ObjectType + std::to_string(i);
-			if (not JObjectNameDuplicateManager::DuplicateCheck(name)) continue;
+			if (JObjectNameDuplicateManager::DuplicateCheck(name)) continue;
 			object = JObjectRegistry::CreateObject(
 				ObjectType,
 				m_WorldMatrices,

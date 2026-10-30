@@ -1,5 +1,7 @@
 #pragma once
 
+// 텍스트가 변할일이 없다면 나중엔 사이즈 받아서 rendertarget 지정하게 하는 기능을 넣어보자
+
 #include "stdafx.h"
 
 struct JTextMetrics {
