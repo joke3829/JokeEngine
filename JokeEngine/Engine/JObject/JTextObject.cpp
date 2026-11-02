@@ -1,6 +1,7 @@
 #include "JTextObject.h"
 #include "Engine/D3D11/GResource/D3D11MeshConstant.h"
 #include "Engine/JokeEngineConfig.h"
+#include "Engine/JContent/JContentManager.h"
 #include "JObjectRegistry.h"
 
 constexpr float kTextScale = 0.05f;
@@ -31,7 +32,10 @@ JTextObject::JTextObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4
 		break;
 	}
 
+	ReadyPlanes(JGlobalContentManager::GetInstance()->GetManager()->GetContentTable());
+
 	// temp
+	SetShaderName("UVTransformShader");
 	m_TextResource->CreateSolidColorBrush(XMFLOAT4(1.f, 1.f, 1.f, 1.f));
 	MakeDirtyFlag();
 }

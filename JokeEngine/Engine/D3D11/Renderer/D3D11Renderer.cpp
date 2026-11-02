@@ -43,6 +43,7 @@ void JEngineRendererDX11::RenderFrame()
 	// Scene Set
 	m_Scene->UpdateBuffers(m_CurrentFrameIndex);
 	m_Scene->SetGPUBuffer(m_CurrentFrameIndex, 1, JS_VS);
+	m_Scene->SetGPUBuffer(m_CurrentFrameIndex, 1, JS_PS);
 
 	// PSO
 	void* rtv[] = { m_RenderTargetView[m_CurrentFrameIndex].Get() };

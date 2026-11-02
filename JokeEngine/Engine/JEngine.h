@@ -72,8 +72,6 @@ protected:
 
 	ComPtr<IDXGISwapChain4>			m_SwapChain{};
 
-	std::shared_ptr<JContentManager>	m_ContentManager{};		
-
 	std::shared_ptr<JEngineRenderer>	m_Renderer{};
 	std::shared_ptr<JEngineScene>		m_Scene{};
 	

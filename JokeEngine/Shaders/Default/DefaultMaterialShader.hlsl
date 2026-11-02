@@ -8,6 +8,7 @@
 struct SceneConstant
 {
     uint camera;
+    float3 cameraPos;
 };
 
 cbuffer cbSceneConstant : register(b1)
@@ -16,6 +17,15 @@ cbuffer cbSceneConstant : register(b1)
 }
 
 sampler g_Sampler : register(s0);
+
+struct cLight
+{
+    float3 color;
+    float3 dir;
+};
+
+// temp
+static const cLight g_Light = { float3(1.f, 0.98, 0.95f) * 0.7f, normalize(float3(-1.f, -1.f, 1.f)) };
 
 DefaultPSInput DefaultVS(DefaultVSInput input)
 {
@@ -50,8 +60,24 @@ float4 DefaultPS(DefaultPSInput input) : SV_Target
     {
         finalColor = g_Material.Albedo;
     }
+    
     if (finalColor.a <= 0.1f)
         discard;
-    return float4(finalColor);
+    
+    float3 VPos = g_SceneConstant.cameraPos;
+    float3 N = normalize(input.Normal);
+    float3 L = normalize(g_Light.dir * -1);
+    float3 V = normalize(VPos - input.PosW);
+    float3 H = normalize(L + V);
+    
+    float NdotL = saturate(dot(N, L));
+    float NdotH = saturate(dot(N, H));
+    
+    
+    float3 realfinalcolor =
+    (float3(finalColor.rgb) * g_Light.color.rgb * NdotL) +
+    (float3(1.f, 1.f, 1.f) * g_Light.color.rgb * pow(NdotH, 16.f) * (NdotL > 0.f)) +
+    (float3(finalColor.rgb) * 0.4f);
+    return float4(realfinalcolor, finalColor.a);
 }
 

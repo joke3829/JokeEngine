@@ -17,3 +17,17 @@ protected:
 
 	std::unordered_map<std::string, std::shared_ptr<JContent>>			m_ContentLookupTable{};
 };
+
+
+class JGlobalContentManager {
+public:
+	static JGlobalContentManager* GetInstance();
+	JContentManager* GetManager();
+private:
+	JGlobalContentManager();
+	~JGlobalContentManager();
+
+	static JGlobalContentManager* m_Instance;
+	
+	std::unique_ptr<JContentManager> m_Manager{};
+};

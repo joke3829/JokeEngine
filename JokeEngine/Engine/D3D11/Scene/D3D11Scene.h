@@ -33,6 +33,7 @@ public:
 protected:
 	struct DefaultSceneConstant {
 		UINT mainCameraIndex = 0;
+		XMFLOAT3 mainCameraPos{};
 	} m_SceneConstant;
 
 	ComPtr<ID3D11Buffer>				m_SceneConstantBuffer[kNumRenderTarget]{};

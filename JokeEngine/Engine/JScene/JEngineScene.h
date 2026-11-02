@@ -28,7 +28,6 @@ public:
 	virtual void WindowMessageProcessor(UINT msg, WPARAM wParam, LPARAM lParam);
 
 	// Scene 기능을 사용하기 전 반드시 설정을 해줘야한다.
-	void SetContentManager(std::shared_ptr<JContentManager>& manager) { m_ContentManager = manager; }
 	void SetInputThread(std::shared_ptr<JInputThread>& input) { m_InputThread = input; }
 
 	// Scene 내 ObjectList 요청
@@ -66,6 +65,5 @@ protected:
 	std::vector<XMFLOAT4X4>						m_CameraMatrices{};
 	std::vector<XMFLOAT4X4>						m_CameraMatricesTP{};	// Transpose
 
-	std::shared_ptr<JContentManager>			m_ContentManager{};
 	std::shared_ptr<JInputThread>				m_InputThread{};
 };

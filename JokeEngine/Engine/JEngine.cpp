@@ -1,5 +1,4 @@
 #include "JEngine.h"
-#include "D3D11/Content/D3D11ContentManager.h"
 #include "D3D11/Scene/D3D11Scene.h"
 #include "D3D11/Renderer/D3D11Renderer.h"
 #include "JObject/JObjectRegistry.h"
@@ -311,10 +310,12 @@ void JokeEngine::RenderCreateWindowPopup()
 			const XMFLOAT4X4& w = m_Scene->GetEditorCamera()->GetWorldTransform();
 			XMFLOAT3 dir{ w._31, w._32, w._33 };
 			XMVECTOR vdir = XMVector3Normalize(XMLoadFloat3(&dir));
-			XMFLOAT3 pos{}; XMStoreFloat3(&pos, XMLoadFloat3(&m_Scene->GetEditorCamera()->GetPosition()) + vdir * 10.f);
+			XMFLOAT3 pos{}; XMStoreFloat3(&pos, XMVectorSet(w._41, w._42, w._43, 1.f) + vdir * 10.f);
 			object->SetPosition(pos, true);
 
+			m_SelectedObject = object.get();
 
+			g_RendererRefreshFlag = true;
 			ImGui::CloseCurrentPopup(); 
 		} ImGui::SameLine();
 		if (ImGui::Button("Cancel", ImVec2(80, 0))) { ImGui::CloseCurrentPopup(); }
@@ -427,15 +428,14 @@ void JokeEngineDX11::Initialize(HWND hWnd, HINSTANCE hInstance)
 	m_GlobalFactor = JD3D11GlobalFactor::GetInstance();
 	auto* config = JEngineDefaultGlobalConfig::GetInstance()->GetConfigFactor();
 
-	JokeEngine::Initialize(hWnd, hInstance);
+	// ContentManager Initialize
+	JGlobalContentManager::GetInstance();
 
-	m_ContentManager = std::make_shared<JContentManagerDX11>();
-	m_ContentManager->ReadyDefaultContent();
+	JokeEngine::Initialize(hWnd, hInstance);
 	
 
 	m_Scene = std::make_shared<JEngineDefaultSceneDX11>();
 	m_Scene->SetName("NewScene");
-	m_Scene->SetContentManager(m_ContentManager);
 	m_Scene->SetInputThread(m_InputThread);
 #if DEV_MODE
 	m_Scene->BuildDefaultEditorScene();

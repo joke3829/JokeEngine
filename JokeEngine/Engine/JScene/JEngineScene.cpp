@@ -147,7 +147,7 @@ void JEngineScene::WindowMessageProcessor(UINT msg, WPARAM wParam, LPARAM lParam
 void JEngineScene::BuildDefaultEditorScene()
 {
 	ClearScene();
-	auto& contents = m_ContentManager->GetContentTable();
+	auto& contents = JGlobalContentManager::GetInstance()->GetManager()->GetContentTable();
 
 	// 1. EditorPlayer 추가
 	{
@@ -236,9 +236,6 @@ void JEngineScene::BuildDefaultEditorScene()
 			spdlog::error("JTextObject 추가 실패");
 		else {
 			m_Objects.back()->SetPosition(5.f, -5.f, 0.f, true);
-			m_Objects.back()->SetShaderName("UVTransformShader");
-			std::shared_ptr<JTextObject> text = std::dynamic_pointer_cast<JTextObject>(m_Objects.back());
-			text->ReadyPlanes(contents);
 		}
 	}
 
