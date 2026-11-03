@@ -242,10 +242,13 @@ void JokeEngine::RenderInspector()
 {
 	if (ImGui::Begin("Inspector")) {
 		if (m_SelectedObject) {
-			m_SelectedObject->RenderInspector();
-			if (g_RendererRefreshFlag) {
-				m_Renderer->RefreshPSOObject();
-				g_RendererRefreshFlag = false;
+			if (m_SelectedObject->RenderInspector()) {
+				auto& q = m_Scene->GetCDQueue();
+				CDObjectInfo info{}; info.name = m_SelectedObject->GetName();
+				q.push(info);
+				info.name = m_SelectedObject->GetShaderName(); info.object = m_SelectedObject;
+				q.push(info);
+				m_Scene->SetDirty();
 			}
 		}
 		else
@@ -315,7 +318,6 @@ void JokeEngine::RenderCreateWindowPopup()
 
 			m_SelectedObject = object;
 
-			g_RendererRefreshFlag = true;
 			ImGui::CloseCurrentPopup(); 
 		} ImGui::SameLine();
 		if (ImGui::Button("Cancel", ImVec2(80, 0))) { ImGui::CloseCurrentPopup(); }

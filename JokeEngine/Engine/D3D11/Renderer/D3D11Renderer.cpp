@@ -32,6 +32,8 @@ void JEngineRendererDX11::ResizeTarget(UINT width, UINT height)
 
 void JEngineRendererDX11::RenderFrame()
 {
+	JEngineRenderer::RenderFrame();
+
 	AdvanceBufferIndex();
 
 	auto* context = JD3D11GlobalFactor::GetInstance()->GetDeviceContext();

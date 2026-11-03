@@ -6,6 +6,11 @@ class JContentManager;
 class JCameraObject;
 class JPlayerObject;
 
+// Renderer가 최신화 할 때 체크하는 정보, object == nullptr일 시 제거 요청
+struct CDObjectInfo {	// CD: Create Delete
+	std::string name{};		// Create -> ShaderName, Delete -> ObjectName
+	JObject* object = nullptr;
+};
 
 class JEngineScene : public JCommon {
 public:
@@ -15,6 +20,8 @@ public:
 	void ClearScene();
 
 	JObject* CreateObject(const char* ObjectType);
+	void DeleteObject(const char* objectname);
+
 	void CreateSceneFromFile() {}
 
 	virtual void SetGPUBuffer(UINT currentBufferIndex, UINT parameter, JShaderStage stage) {}
@@ -32,6 +39,10 @@ public:
 
 	// Scene 내 ObjectList 요청
 	std::vector<std::unique_ptr<JObject>>& GetObjects() { return m_Objects; }
+	std::queue<CDObjectInfo>& GetCDQueue() { return m_CDQueue; }
+
+	bool GetDirty() { return m_bDirty; }
+	void SetDirty(bool dirty = true) { m_bDirty = dirty; }
 
 #if DEV_MODE
 public:
@@ -41,7 +52,7 @@ public:
 	void SetControlEditorScene(bool ces) { m_ControlEditorScene = ces; }
 	void EditorCameraResize(float width, float height);
 	JCameraObject* GetEditorCamera() { return m_EditorCamera; }
-	JCameraObject* GetCurrentMainCamera() { return m_Cameras[m_CurrnetMainCamera]; }
+	JCameraObject* GetCurrentMainCamera() { return m_Cameras[m_CurrentMainCamera]; }
 protected:
 	bool m_PlayMode{};
 	bool m_Pause{};
@@ -55,7 +66,7 @@ protected:
 	std::vector<JPlayerObject*>						m_Players{};
 	// player(character) 목록 추기
 	int												m_CurrentPlayer{ -1 };	// -1일땐 Scene에 Player가 없는걸로
-	int												m_CurrnetMainCamera{};	// 상수버퍼에 넘길 카메라 인덱스(사용할 것)
+	int												m_CurrentMainCamera{ -1 };	// 상수버퍼에 넘길 카메라 인덱스(사용할 것)
 	int												m_InitialCameraIdx{};	// Scene이 시작할 때 사용할 카메라 인덱스
 
 
@@ -66,4 +77,7 @@ protected:
 	std::vector<XMFLOAT4X4>						m_CameraMatricesTP{};	// Transpose
 
 	std::shared_ptr<JInputThread>				m_InputThread{};
+
+	bool										m_bDirty{};
+	std::queue<CDObjectInfo>					m_CDQueue{};
 };

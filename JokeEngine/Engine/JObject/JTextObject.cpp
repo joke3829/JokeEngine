@@ -282,9 +282,9 @@ void JTextObject::MakeDirtyFlag()
 
 
 #if DEV_MODE
-void JTextObject::RenderInspector()
+bool JTextObject::RenderInspector()
 {
-	JObject::RenderInspector();
+	bool dirty = JObject::RenderInspector();
 
 	float cursorx = 94.f;
 	ImGui::SeparatorText("TextOption");
@@ -363,6 +363,7 @@ void JTextObject::RenderInspector()
 			ImGui::EndCombo();
 		}
 	}
+	return dirty;
 }
 #endif
 

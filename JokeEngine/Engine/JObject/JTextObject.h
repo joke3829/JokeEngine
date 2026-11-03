@@ -45,7 +45,7 @@ public:
 
 #if DEV_MODE
 public:
-	virtual void RenderInspector();
+	virtual bool RenderInspector();
 protected:
 	unsigned char m_Selected_FontCollection{};
 	unsigned char m_Selected_HAlign{};

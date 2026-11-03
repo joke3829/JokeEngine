@@ -153,8 +153,8 @@ void JEngineDefaultSceneDX11::SetGPUBuffer(UINT currentBufferIndex, UINT paramet
 void JEngineDefaultSceneDX11::Update(float elapsedTime)
 {
 	JEngineScene::Update(elapsedTime);
-	m_SceneConstant.mainCameraIndex = m_CurrnetMainCamera;
-	auto& camera = m_Cameras[m_CurrnetMainCamera];
+	m_SceneConstant.mainCameraIndex = m_CurrentMainCamera;
+	auto& camera = m_Cameras[m_CurrentMainCamera];
 	m_SceneConstant.mainCameraPos = XMFLOAT3(camera->GetWorldTransform()._41, camera->GetWorldTransform()._42, camera->GetWorldTransform()._43);
 }
 

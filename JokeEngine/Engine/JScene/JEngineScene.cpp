@@ -13,12 +13,7 @@
 
 JEngineScene::JEngineScene()
 {
-#if !DEV_MODE
-	if (CreateObject("JCameraObject")) {
-		std::shared_ptr<JCameraObject> camera = std::dynamic_pointer_cast<JCameraObject>(m_Objects.back());
-		m_Cameras.emplace_back(camera);
-	}
-#endif
+	
 }
 
 void JEngineScene::ClearScene()
@@ -33,7 +28,7 @@ void JEngineScene::ClearScene()
 	m_Players.clear();
 
 	m_CurrentPlayer = -1;
-	m_CurrnetMainCamera = 0;
+	m_CurrentMainCamera = 0;
 	m_InitialCameraIdx = 0;
 
 	m_Objects.clear();
@@ -86,7 +81,54 @@ JObject* JEngineScene::CreateObject(const char* ObjectType)
 	JObjectNameDuplicateManager::AddName(name);
 	JObject* ret = object.get();
 	m_Objects.emplace_back(std::move(object));
+
+	CDObjectInfo info{ ret->GetShaderName(), ret};
+	m_CDQueue.push(info);
+	SetDirty();
 	return ret;
+}
+
+void JEngineScene::DeleteObject(const char* objectname)
+{
+	// 실존하는지 찾고 
+	auto it = std::find_if(m_Objects.begin(), m_Objects.end(), [&](const std::unique_ptr<JObject>& object) {
+		if (object->GetName() == objectname) return true;
+		return false;
+		});
+	if (it == m_Objects.end()) {	// 없다.
+		return;
+	}
+
+	// 제거하면 부모 자식 끊고 node idx 최신화 + 행렬들 + 이게 만약 카메라나 플레이어다 하면 저기서도 빼주고 어후
+	// 그냥 굳이 앞당기지 말까 재 실행 했을 때 파일 읽고 부를 때 알아서 패킹 된다고 가정하면 흠...
+
+	if (JCameraObject* cp = dynamic_cast<JCameraObject*>((*it).get())) {
+		for (int i = 0; i < m_Cameras.size(); ++i) {
+			if (cp == m_Cameras[i]) {
+				m_Cameras.erase(m_Cameras.begin() + i);
+				m_CameraMatrices.erase(m_CameraMatrices.begin() + i);
+				m_CameraMatricesTP.erase(m_CameraMatricesTP.begin() + i);
+				if (m_CurrentMainCamera >= m_Cameras.size()) {
+					m_CurrentMainCamera = 0;
+				}
+			}
+		}
+	}
+	else if (JPlayerObject* pp = dynamic_cast<JPlayerObject*>((*it).get())) {
+		for (int i = 0; i < m_Players.size(); ++i) {
+			if (pp == m_Players[i]) {
+				m_Players.erase(m_Players.begin() + i);
+			}
+		}
+	}
+
+	JObjectNameDuplicateManager::DeleteName((*it)->GetName());
+	(*it)->Delete();
+	m_Objects.erase(it);
+	CDObjectInfo info{};
+	info.name = objectname;
+	m_CDQueue.push(info);
+	SetDirty();
 }
 
 void JEngineScene::Update(float elapsedTime)
@@ -181,7 +223,7 @@ void JEngineScene::BuildDefaultEditorScene()
 
 		m_EditorPlayer->Attach(camera.get());
 		JObjectNameDuplicateManager::AddName("EditorCamera");
-
+		m_CurrentMainCamera = 0;
 		m_Objects.emplace_back(std::move(camera));
 	}
 
@@ -240,6 +282,7 @@ void JEngineScene::BuildDefaultEditorScene()
 		}
 	}
 
+	SetDirty();
 	spdlog::info("DefaultScene Load Complete");
 }
 
@@ -250,10 +293,10 @@ void JEngineScene::SetPlayMode(bool pmode)
 		object->SetPlayMode(m_PlayMode);
 
 	if (m_PlayMode) {
-		m_CurrnetMainCamera += 1;
+		m_CurrentMainCamera += 1;
 	}
 	else
-		m_CurrnetMainCamera = 0;
+		m_CurrentMainCamera = 0;
 }
 
 void JEngineScene::EditorCameraResize(float width, float height)

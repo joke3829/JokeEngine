@@ -125,8 +125,9 @@ void JObject::SetPlayMode(bool mod)
 		child->SetPlayMode(m_PlayMode);
 }
 
-void JObject::RenderInspector()
+bool JObject::RenderInspector()
 {
+	bool dirty{};
 	{	// General
 		float cursorx = 94.f;
 		ImGui::SeparatorText("General");
@@ -159,7 +160,7 @@ void JObject::RenderInspector()
 		ImGui::SetCursorPosX(cursorx);
 		if (ImGui::InputText("##InputShaderName", cname, std::size(cname), ImGuiInputTextFlags_EnterReturnsTrue)) {
 			m_ShaderName = cname;
-			g_RendererRefreshFlag = true;
+			dirty = true;
 		}
 		if (m_PlayMode)
 			ImGui::EndDisabled();
@@ -205,6 +206,7 @@ void JObject::RenderInspector()
 		if (m_PlayMode)
 			ImGui::EndDisabled();
 	}
+	return dirty;
 }
 #endif
 

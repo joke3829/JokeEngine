@@ -19,12 +19,13 @@
 #include <cassert>
 
 #include <string>
-#include <algorithm>
-#include <vector>
 #include <memory>
 #include <fstream>
+#include <algorithm>
+#include <vector>
 #include <set>
 #include <unordered_map>
+#include <queue>
 #include <thread>
 #include <chrono>
 #include <functional>
@@ -200,7 +201,3 @@ struct JMouseState {
 
 
 // 전역 변수 ===================================================================================
-
-#if DEV_MODE
-inline bool g_RendererRefreshFlag{};
-#endif

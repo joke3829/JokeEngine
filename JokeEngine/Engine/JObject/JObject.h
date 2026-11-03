@@ -67,7 +67,7 @@ public:
 #if DEV_MODE
 public:
 	void SetPlayMode(bool mod);
-	virtual void RenderInspector();
+	virtual bool RenderInspector();	// Renderer 업데이트 필요 시 true
 	const XMFLOAT4X4& GetParentWorldTransform() { return m_ParentWorldMatix; }
 protected:
 	XMFLOAT4X4 m_ParentWorldMatix{};
@@ -121,7 +121,7 @@ public:
 			return false; 
 	}
 	
-	static bool DeleteName(std::string& name)
+	static bool DeleteName(const std::string& name)
 	{
 		auto& s = GetNameSet();
 		if (s.contains(name)) {
