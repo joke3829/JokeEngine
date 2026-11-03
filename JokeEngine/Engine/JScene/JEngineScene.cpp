@@ -124,9 +124,10 @@ void JEngineScene::DeleteObject(const char* objectname)
 
 	JObjectNameDuplicateManager::DeleteName((*it)->GetName());
 	(*it)->Delete();
+	std::string tempname = objectname;
 	m_Objects.erase(it);
 	CDObjectInfo info{};
-	info.name = objectname;
+	info.name = tempname;
 	m_CDQueue.push(info);
 	SetDirty();
 }

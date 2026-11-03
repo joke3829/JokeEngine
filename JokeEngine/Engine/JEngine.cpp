@@ -236,6 +236,14 @@ void JokeEngine::RenderSceneHierarchy()
 		}
 	}
 	ImGui::End();
+
+	// 제거
+	if (m_SelectedObject) {
+		if (ImGui::IsKeyPressed(ImGuiKey_Delete, false)) {
+			m_Scene->DeleteObject(m_SelectedObject->GetName().c_str());
+			m_SelectedObject = nullptr;
+		}
+	}
 }
 
 void JokeEngine::RenderInspector()
