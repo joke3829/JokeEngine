@@ -14,7 +14,7 @@ public:
 
 	void ClearScene();
 
-	std::shared_ptr<JObject> CreateObject(const char* ObjectType);
+	JObject* CreateObject(const char* ObjectType);
 	void CreateSceneFromFile() {}
 
 	virtual void SetGPUBuffer(UINT currentBufferIndex, UINT parameter, JShaderStage stage) {}
@@ -31,7 +31,7 @@ public:
 	void SetInputThread(std::shared_ptr<JInputThread>& input) { m_InputThread = input; }
 
 	// Scene 내 ObjectList 요청
-	std::vector<std::shared_ptr<JObject>>& GetObjects() { return m_Objects; }
+	std::vector<std::unique_ptr<JObject>>& GetObjects() { return m_Objects; }
 
 #if DEV_MODE
 public:
@@ -40,19 +40,19 @@ public:
 	void SetPause(bool pause) { m_Pause = pause; }
 	void SetControlEditorScene(bool ces) { m_ControlEditorScene = ces; }
 	void EditorCameraResize(float width, float height);
-	JCameraObject* GetEditorCamera() { return m_EditorCamera.get(); }
-	JCameraObject* GetCurrentMainCamera() { return m_Cameras[m_CurrnetMainCamera].get(); }
+	JCameraObject* GetEditorCamera() { return m_EditorCamera; }
+	JCameraObject* GetCurrentMainCamera() { return m_Cameras[m_CurrnetMainCamera]; }
 protected:
 	bool m_PlayMode{};
 	bool m_Pause{};
 	bool m_ControlEditorScene{};
-	std::shared_ptr<JPlayerObject> m_EditorPlayer{};
-	std::shared_ptr<JCameraObject> m_EditorCamera{};
+	JPlayerObject* m_EditorPlayer{};
+	JCameraObject* m_EditorCamera{};
 #endif
 protected:
-	std::vector<std::shared_ptr<JObject>>			m_Objects;
-	std::vector<std::shared_ptr<JCameraObject>>		m_Cameras{};
-	std::vector<std::shared_ptr<JPlayerObject>>		m_Players{};
+	std::vector<std::unique_ptr<JObject>>			m_Objects;
+	std::vector<JCameraObject*>						m_Cameras{};
+	std::vector<JPlayerObject*>						m_Players{};
 	// player(character) 목록 추기
 	int												m_CurrentPlayer{ -1 };	// -1일땐 Scene에 Player가 없는걸로
 	int												m_CurrnetMainCamera{};	// 상수버퍼에 넘길 카메라 인덱스(사용할 것)

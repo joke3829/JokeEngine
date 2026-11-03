@@ -26,7 +26,7 @@ public:
 
 	virtual void Reset();
 
-	void Attach(std::shared_ptr<JObject> leaf);
+	void Attach(JObject* leaf);
 	void Dettach(std::string& name);
 	void Delete();
 
@@ -62,7 +62,7 @@ public:
 	// Update 이후에 사용해야 올바른 값이 나온다.
 	const XMFLOAT4X4& GetWorldTransform() { return m_WorldTransform[m_NodeIndex]; }
 
-	std::vector<std::shared_ptr<JObject>>& GetLeafObjects() { return m_LeafObjects; }
+	std::vector<JObject*>& GetLeafObjects() { return m_LeafObjects; }
 
 #if DEV_MODE
 public:
@@ -80,7 +80,7 @@ protected:
 protected:
 	bool										m_Active{ true };		// 렌더 여부, 카메라 사용 여부 등, 오브젝트 별로 기능 
 	bool										m_InitialActive{ true };
-	std::vector<std::shared_ptr<JObject>>		m_LeafObjects{};
+	std::vector<JObject*>						m_LeafObjects{};
 	JObject*									m_ParentObject{};		// 트리에 사용, 부모 object의 pointer
 
 	XMFLOAT3									m_Position{};

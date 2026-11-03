@@ -16,7 +16,7 @@ bool JObjectRegistry::Register(const char* ObjectType, CreateFunc func)
     return inserted;
 }
 
-std::shared_ptr<JObject> JObjectRegistry::CreateObject(const char* ObjectType, std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name)
+JObject* JObjectRegistry::CreateObject(const char* ObjectType, std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name)
 {
     auto& map = GetMap();
     if (not map.contains(ObjectType)) {

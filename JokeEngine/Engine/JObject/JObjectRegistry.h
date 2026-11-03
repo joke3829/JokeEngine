@@ -5,10 +5,10 @@
 
 class JObjectRegistry {
 public:
-	using CreateFunc = std::function<std::shared_ptr<JObject>(std::vector<XMFLOAT4X4>&, std::vector<XMFLOAT4X4>&, UINT, const char*)>;
+	using CreateFunc = std::function<JObject*(std::vector<XMFLOAT4X4>&, std::vector<XMFLOAT4X4>&, UINT, const char*)>;
 
 	static bool Register(const char* ObjectType, CreateFunc func);
-	static std::shared_ptr<JObject> CreateObject(const char* ObjectType, std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP,
+	static JObject* CreateObject(const char* ObjectType, std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP,
 		UINT nodeIndex, const char* name);
 
 	static const std::vector<std::string>& GetRegisterdObjectNames();
@@ -38,6 +38,6 @@ private:
 			[](std::vector<XMFLOAT4X4>& a,									\
 			   std::vector<XMFLOAT4X4>& b,									\
 			   UINT index, const char* name)								\
-				-> std::shared_ptr<JObject> {								\
-				 return std::make_shared<ClassName>(a, b, index, name);		\
+				-> JObject* {												\
+				 return new ClassName(a, b, index, name);					\
 			   });

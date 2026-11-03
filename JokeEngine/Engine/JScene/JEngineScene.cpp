@@ -40,20 +40,20 @@ void JEngineScene::ClearScene()
 	JObjectNameDuplicateManager::Clear();
 }
 
-std::shared_ptr<JObject> JEngineScene::CreateObject(const char* ObjectType)
+JObject* JEngineScene::CreateObject(const char* ObjectType)
 {
 	m_WorldMatrices.emplace_back();
 	m_WorldMatricesTP.emplace_back();
 	std::string name{};
-	std::shared_ptr<JObject> object;
+	std::unique_ptr<JObject> object;
 	bool noloop = false;
 	if (not JObjectNameDuplicateManager::DuplicateCheck(ObjectType)) {
-		object = JObjectRegistry::CreateObject(
+		object.reset(JObjectRegistry::CreateObject(
 			ObjectType,
 			m_WorldMatrices,
 			m_WorldMatricesTP,
 			static_cast<UINT>(m_WorldMatrices.size() - 1),
-			ObjectType);
+			ObjectType));
 		noloop = true;
 		name = ObjectType;
 	}
@@ -62,12 +62,12 @@ std::shared_ptr<JObject> JEngineScene::CreateObject(const char* ObjectType)
 		for (unsigned int i = 1; i < 0xFFFFFFFF; ++i) {
 			name = ObjectType + std::to_string(i);
 			if (JObjectNameDuplicateManager::DuplicateCheck(name)) continue;
-			object = JObjectRegistry::CreateObject(
+			object.reset(JObjectRegistry::CreateObject(
 				ObjectType,
 				m_WorldMatrices,
 				m_WorldMatricesTP,
 				static_cast<UINT>(m_WorldMatrices.size() - 1),
-				name.c_str());
+				name.c_str()));
 			breakloop = true;
 			break;
 		}
@@ -80,12 +80,13 @@ std::shared_ptr<JObject> JEngineScene::CreateObject(const char* ObjectType)
 		else
 			spdlog::error("{0}(num)가 너무 많습니다. {0}(num) 일부의 이름을 변경 후 다시 시도해주세요.", ObjectType);
 #endif
-		return object;
+		return nullptr;
 	}
 
 	JObjectNameDuplicateManager::AddName(name);
-	m_Objects.emplace_back(object);
-	return object;
+	JObject* ret = object.get();
+	m_Objects.emplace_back(std::move(object));
+	return ret;
 }
 
 void JEngineScene::Update(float elapsedTime)
@@ -153,7 +154,7 @@ void JEngineScene::BuildDefaultEditorScene()
 	{
 		m_WorldMatrices.emplace_back();
 		m_WorldMatricesTP.emplace_back();
-		std::shared_ptr<JEditorPlayerObject> eplayer = std::make_shared<JEditorPlayerObject>(
+		std::unique_ptr<JEditorPlayerObject> eplayer = std::make_unique<JEditorPlayerObject>(
 			m_WorldMatrices,
 			m_WorldMatricesTP,
 			static_cast<UINT>(m_WorldMatrices.size() - 1),
@@ -161,34 +162,34 @@ void JEngineScene::BuildDefaultEditorScene()
 		);
 		eplayer->SetRotation(45.f, -45.f, 0.f, true);
 		eplayer->SetPosition(15.f, 15.f, -15.f, true);
-		m_EditorPlayer = eplayer;
+		m_EditorPlayer = eplayer.get();
 
-		m_Objects.emplace_back(eplayer);
+		m_Objects.emplace_back(std::move(eplayer));
 		JObjectNameDuplicateManager::AddName("EditorPlayer");
 
 		// Camera 추가 예제
 		m_WorldMatrices.emplace_back();
 		m_WorldMatricesTP.emplace_back();
-		std::shared_ptr<JCameraObject> camera = std::make_shared<JCameraObject>(
+		std::unique_ptr<JCameraObject> camera = std::make_unique<JCameraObject>(
 			m_WorldMatrices,
 			m_WorldMatricesTP,
 			static_cast<UINT>(m_WorldMatrices.size() - 1),
 			"EditorCamera"
 		);
-		m_EditorCamera = camera;
-		m_Cameras.emplace_back(camera);
+		m_EditorCamera = camera.get();
+		m_Cameras.emplace_back(m_EditorCamera);
 
-		eplayer->Attach(camera);
+		m_EditorPlayer->Attach(camera.get());
 		JObjectNameDuplicateManager::AddName("EditorCamera");
 
-		m_Objects.emplace_back(camera);
+		m_Objects.emplace_back(std::move(camera));
 	}
 
 	{	// StaticMesh 추가 예제
 		if (not CreateObject("JStaticMeshObject"))
 			spdlog::error("JStaticMeshObject 추가 실패");
 		else {
-			std::shared_ptr<JStaticMeshObject> meshobject = std::dynamic_pointer_cast<JStaticMeshObject>(m_Objects.back());
+			JStaticMeshObject* meshobject = dynamic_cast<JStaticMeshObject*>(m_Objects.back().get());
 			meshobject->AddMaterial(contents["DefaultMaterial"]);
 			meshobject->SetShaderName("DefaultShader");
 			meshobject->SetStaticMesh(contents["DefaultCube"]);
@@ -200,7 +201,7 @@ void JEngineScene::BuildDefaultEditorScene()
 		if (not CreateObject("JSpriteAnimationObject"))
 			spdlog::error("JSpriteAnimationObject 추가 실패");
 		else {
-			std::shared_ptr<JSpriteAnimationObject> spriteobject = std::dynamic_pointer_cast<JSpriteAnimationObject>(m_Objects.back());
+			JSpriteAnimationObject* spriteobject = dynamic_cast<JSpriteAnimationObject*>(m_Objects.back().get());
 			spriteobject->SetStaticMesh(contents["DefaultPlaneq1"]);
 			spriteobject->SetSpriteSet(contents["TestSprite"]);
 			spriteobject->AddMaterial(contents["DefaultSpriteMaterial"]);
@@ -215,7 +216,7 @@ void JEngineScene::BuildDefaultEditorScene()
 		if(not CreateObject("JPlayerObject"))
 			spdlog::error("JPlayerObject 추가 실패");
 		else {
-			std::shared_ptr<JPlayerObject> player = std::dynamic_pointer_cast<JPlayerObject>(m_Objects.back());
+			JPlayerObject* player = dynamic_cast<JPlayerObject*>(m_Objects.back().get());
 			player->SetPosition(0.f, 0.f, -15.f, true);
 			m_Players.emplace_back(player);
 			m_CurrentPlayer = 0;
@@ -224,7 +225,7 @@ void JEngineScene::BuildDefaultEditorScene()
 				spdlog::error("JCameraObject 추가 실패");
 			}
 			else {
-				std::shared_ptr<JCameraObject> camera = std::dynamic_pointer_cast<JCameraObject>(m_Objects.back());
+				JCameraObject* camera = dynamic_cast<JCameraObject*>(m_Objects.back().get());
 				m_Cameras.emplace_back(camera);
 				player->Attach(camera);
 			}

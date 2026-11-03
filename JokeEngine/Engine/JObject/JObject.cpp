@@ -26,7 +26,7 @@ void JObject::Reset()
 	m_Scale = m_InitialScale;
 }
 
-void JObject::Attach(std::shared_ptr<JObject> leaf)
+void JObject::Attach(JObject* leaf)
 {
 	leaf->SetParent(this);
 	m_LeafObjects.emplace_back(leaf);
@@ -37,6 +37,7 @@ void JObject::Dettach(std::string& name)
 {
 	for (unsigned int i = 0; i < m_LeafObjects.size(); ++i) {
 		if (m_LeafObjects[i]->GetName() == name) {
+			m_LeafObjects[i]->SetParent(nullptr);
 			m_LeafObjects.erase(m_LeafObjects.begin() + i);
 			break;
 		}
@@ -47,7 +48,8 @@ void JObject::Dettach(std::string& name)
 void JObject::Delete()
 {
 	// 내 부모에게서 날 떼어내고
-	m_ParentObject->Dettach(m_name);
+	if(m_ParentObject)
+		m_ParentObject->Dettach(m_name);
 
 	// 내 자식의 부모를 지운다.
 	for (auto& leaf : m_LeafObjects)

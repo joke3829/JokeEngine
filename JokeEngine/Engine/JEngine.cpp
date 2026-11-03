@@ -200,15 +200,15 @@ void JokeEngine::RenderSceneHierarchy()
 		ImGuiTreeNodeFlags_DefaultOpen |
 		ImGuiTreeNodeFlags_SpanFullWidth;
 
-	auto DrawHierarchy = [&](auto& self, std::shared_ptr<JObject>& object) -> void{
+	auto DrawHierarchy = [&](auto& self, JObject* object) -> void{
 		ImGuiTreeNodeFlags node_flag = flags;
-		if (object.get() == m_SelectedObject)
+		if (object == m_SelectedObject)
 			node_flag |= ImGuiTreeNodeFlags_Selected;
 		if (object->GetLeafObjects().size() == 0) {
 			node_flag |= ImGuiTreeNodeFlags_Leaf;
 			if (ImGui::TreeNodeEx(object->GetName().c_str(), node_flag))
 				if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) {
-					m_SelectedObject = object.get();
+					m_SelectedObject = object;
 				}
 				ImGui::TreePop();
 			return;
@@ -216,7 +216,7 @@ void JokeEngine::RenderSceneHierarchy()
 		else {
 			if (ImGui::TreeNodeEx(object->GetName().c_str(), node_flag)) {
 				if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) {
-					m_SelectedObject = object.get();
+					m_SelectedObject = object;
 				}
 				for (auto& child : object->GetLeafObjects())
 					self(self, child);
@@ -230,7 +230,7 @@ void JokeEngine::RenderSceneHierarchy()
 		if (ImGui::TreeNodeEx(m_Scene->GetName().c_str(), flags)) {
 			for (auto& object : objects) {
 				if(not object->IsHasParent())
-					DrawHierarchy(DrawHierarchy, object);
+					DrawHierarchy(DrawHierarchy, object.get());
 			}
 			ImGui::TreePop();
 		}
@@ -306,14 +306,14 @@ void JokeEngine::RenderCreateWindowPopup()
 		// 생성 버튼 눌렀으면
 		if (ImGui::Button("Create", ImVec2(80, 0))) { 
 			// 선택된 Object 이름으로 추가한다.
-			std::shared_ptr<JObject> object = m_Scene->CreateObject(names[m_SelectedObjectInCreatePopup].c_str());
+			JObject* object = m_Scene->CreateObject(names[m_SelectedObjectInCreatePopup].c_str());
 			const XMFLOAT4X4& w = m_Scene->GetEditorCamera()->GetWorldTransform();
 			XMFLOAT3 dir{ w._31, w._32, w._33 };
 			XMVECTOR vdir = XMVector3Normalize(XMLoadFloat3(&dir));
 			XMFLOAT3 pos{}; XMStoreFloat3(&pos, XMVectorSet(w._41, w._42, w._43, 1.f) + vdir * 10.f);
 			object->SetPosition(pos, true);
 
-			m_SelectedObject = object.get();
+			m_SelectedObject = object;
 
 			g_RendererRefreshFlag = true;
 			ImGui::CloseCurrentPopup(); 
