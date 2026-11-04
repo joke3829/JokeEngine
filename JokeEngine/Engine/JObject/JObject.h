@@ -28,6 +28,7 @@ public:
 
 	void Attach(JObject* leaf);
 	void Dettach(std::string& name);
+	void MoveOut();				// 부모에게서 떨어져 나오기
 	void Delete();
 
 	virtual void Update(float elapsedTime, XMFLOAT4X4* parent = nullptr);

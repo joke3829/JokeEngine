@@ -44,12 +44,18 @@ void JObject::Dettach(std::string& name)
 	}
 }
 
+void JObject::MoveOut()
+{
+	if (m_ParentObject)
+		m_ParentObject->Dettach(m_name);
+	m_ParentObject = nullptr;
+}
+
 // 내가 Scene에서 사라질 때 해줘야하는 작업 (소멸자와 비슷하나 다르다)
 void JObject::Delete()
 {
 	// 내 부모에게서 날 떼어내고
-	if(m_ParentObject)
-		m_ParentObject->Dettach(m_name);
+	MoveOut();
 
 	// 내 자식의 부모를 지운다.
 	for (auto& leaf : m_LeafObjects)
@@ -200,9 +206,9 @@ BYTE JObject::RenderInspector()
 		ImGui::DragFloat3("##Position", reinterpret_cast<float*>(&position), 0.05f, 0.f, 0.f, "%.3f", ImGuiSliderFlags_ColorMarkers); ImGui::SameLine();
 		resetbutton("##resetposition", position, XMFLOAT3(0.f, 0.f, 0.f));
 
-		SetScale(scale, true);
-		SetRotation(rotation, true);
-		SetPosition(position, true);
+		SetScale(scale, !m_PlayMode);
+		SetRotation(rotation, !m_PlayMode);
+		SetPosition(position, !m_PlayMode);
 
 		if (m_PlayMode)
 			ImGui::EndDisabled();

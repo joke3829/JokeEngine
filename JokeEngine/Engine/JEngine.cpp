@@ -193,6 +193,12 @@ void JokeEngine::RenderSceneHierarchy()
 {
 	auto& objects = m_Scene->GetObjects();
 
+	struct AttachCommand {
+		std::string me{};
+		std::string dest{};
+		bool use{};
+	}AttCmd{};
+
 	ImGuiTreeNodeFlags flags =
 		ImGuiTreeNodeFlags_OpenOnArrow |
 		ImGuiTreeNodeFlags_OpenOnDoubleClick |
@@ -208,17 +214,22 @@ void JokeEngine::RenderSceneHierarchy()
 		bool isOpen = ImGui::TreeNodeEx(object->GetName().c_str(), node_flag);
 		if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) 
 			m_SelectedObject = object;
-
-		if (ImGui::BeginDragDropSource()) {
-			ImGui::SetDragDropPayload("HIERARCHY_DRAG", object, sizeof(object));
-			ImGui::Text(object->GetName().c_str());
-			ImGui::EndDragDropSource();
+		
+		if (not m_PlayMode) {
+			if (ImGui::BeginDragDropSource()) {
+				ImGui::SetDragDropPayload("HIERARCHY_DRAG", &object, sizeof(JObject*));
+				ImGui::Text(object->GetName().c_str());
+				ImGui::EndDragDropSource();
+			}
 		}
 
 		if (ImGui::BeginDragDropTarget()) {
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("HIERARCHY_DRAG"))
 			{
-				
+				JObject* po = *static_cast<JObject* const*>(payload->Data);
+				AttCmd.use = true;
+				AttCmd.me = po->GetName();
+				AttCmd.dest = object->GetName();
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -239,11 +250,29 @@ void JokeEngine::RenderSceneHierarchy()
 			}
 			ImGui::TreePop();
 		}
+
+		ImGuiWindow* window = ImGui::GetCurrentWindow();
+		if (ImGui::BeginDragDropTargetCustom(window->InnerRect, ImGui::GetID("##HIERARCHY_DRAG_FULL_TARGET"))) {
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("HIERARCHY_DRAG")) {
+				JObject* po = *static_cast<JObject* const*>(payload->Data);
+				AttCmd.use = true;
+				AttCmd.me = po->GetName();
+				AttCmd.dest = "";
+			}
+			ImGui::EndDragDropTarget();
+		}
 	}
 	ImGui::End();
 
+	if (AttCmd.use) {
+		objects[AttCmd.me]->MoveOut();
+		if(AttCmd.dest != "")
+			objects[AttCmd.dest]->Attach(objects[AttCmd.me].get());
+	}
+
+
 	// 제거
-	if (m_SelectedObject && not m_PlayMode && not ImGui::GetIO().WantTextInput) {
+	if (m_SelectedObject && not m_PlayMode && not ImGui::GetIO().WantTextInput && not ImGui::GetDragDropPayload()) {
 		if (ImGui::IsKeyPressed(ImGuiKey_Delete, false)) {
 			m_Scene->DeleteObject(m_SelectedObject->GetName().c_str());
 			m_SelectedObject = nullptr;
