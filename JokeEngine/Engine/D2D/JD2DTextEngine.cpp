@@ -36,6 +36,25 @@ void JD2DTextEngine::AddRTForD3D11Texture2D(const std::string& name, ID3D11Textu
 #endif
 }
 
+void JD2DTextEngine::RenameInRTTable(const std::string& oldname, const std::string& newname)
+{
+	if (oldname == newname) return;					// 새로운 이름이 같은가?
+	if (m_RTTable.contains(newname)) return;		// 새 이름이 이미 있는가?
+
+	auto item = m_RTTable.extract(oldname);
+	if (item.empty()) return;		// oldname을 가진 객체 없음
+
+	item.key() = newname;
+	m_RTTable.insert(std::move(item));
+}
+
+void JD2DTextEngine::DeleteInRTTable(const std::string& name)
+{
+	if (not m_RTTable.contains(name)) return;	// 없음
+
+	m_RTTable.erase(name);
+}
+
 void JD2DTextEngine::RenderText(std::string& name, IDWriteTextLayout* layout, ID2D1Brush* brush)
 {
 	if (!m_RTTable.contains(name))

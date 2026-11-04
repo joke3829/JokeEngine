@@ -125,9 +125,9 @@ void JObject::SetPlayMode(bool mod)
 		child->SetPlayMode(m_PlayMode);
 }
 
-bool JObject::RenderInspector()
+BYTE JObject::RenderInspector()
 {
-	bool dirty{};
+	BYTE dirty{};
 	{	// General
 		float cursorx = 94.f;
 		ImGui::SeparatorText("General");
@@ -143,6 +143,7 @@ bool JObject::RenderInspector()
 				JObjectNameDuplicateManager::DeleteName(m_name); // 목록에서 현 이름을 빼고
 				JObjectNameDuplicateManager::AddName(cname);	// 새 이름을 넣는다
 				m_name = cname;
+				dirty |= 0b00000001;
 			}
 		}
 		ImGui::SameLine();
@@ -160,7 +161,7 @@ bool JObject::RenderInspector()
 		ImGui::SetCursorPosX(cursorx);
 		if (ImGui::InputText("##InputShaderName", cname, std::size(cname), ImGuiInputTextFlags_EnterReturnsTrue)) {
 			m_ShaderName = cname;
-			dirty = true;
+			dirty |= 0b00000010;
 		}
 		if (m_PlayMode)
 			ImGui::EndDisabled();

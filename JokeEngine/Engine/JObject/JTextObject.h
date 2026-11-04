@@ -45,7 +45,7 @@ public:
 
 #if DEV_MODE
 public:
-	virtual bool RenderInspector();
+	virtual BYTE RenderInspector();
 protected:
 	unsigned char m_Selected_FontCollection{};
 	unsigned char m_Selected_HAlign{};
@@ -55,10 +55,10 @@ protected:
 protected:
 
 
+	float m_FontSize;
 	std::wstring m_Text;
 	std::wstring m_FontName;
 	std::string m_FontCollectionName{};
-	float m_FontSize;
 	float m_FontWeight{ 400.f };		// 폰트 두께 (1~1000, 기본값 400)
 	float m_FontWidth{ 100.f };			// 폰트 너비(간격, > 0, 기본값 100)
 

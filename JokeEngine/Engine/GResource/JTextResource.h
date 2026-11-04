@@ -15,6 +15,7 @@ struct JTextMetrics {
 
 class JTextResource {
 public:
+	virtual ~JTextResource() {}
 
 	virtual void Update(float elapsedTime) {};
 	virtual void UpdateBuffer(UINT currentFrameIndex) {}
@@ -27,7 +28,7 @@ public:
 	virtual void CreateSolidColorBrush(D2D1::ColorF color = D2D1::ColorF::White) {}
 	virtual void SetTextColor() {}
 
-	void SetName(const char* name) { m_name = name; }
+	virtual void SetName(const char* name) { m_name = name; }
 	virtual JTextMetrics GetMetrics() = 0;
 	virtual JTextMetrics GetMetricsWithUVMatrixUpdate() = 0;
 

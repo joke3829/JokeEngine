@@ -1,6 +1,16 @@
 #include "DWriteTextResource.h"
 
 
+JTextResourceD2D::~JTextResourceD2D()
+{
+	auto p = JD2DTextEngine::GetInstance();
+
+	for (UINT i = 0; i < kNumRenderTarget; ++i) {
+		m_ResourceNames[i] = m_name + "_" + std::to_string(i);
+		p->DeleteInRTTable(m_ResourceNames[i]);
+	}
+}
+
 void JTextResourceD2D::UpdateBuffer(UINT currentFrameIndex)
 {
 	auto* p = JD2DTextEngine::GetInstance();
@@ -29,6 +39,19 @@ void JTextResourceD2D::CreateSolidColorBrush(D2D1::ColorF color)
 	auto* e = JD2DTextEngine::GetInstance();
 	for (int i = 0; i < kNumRenderTarget; ++i)
 		m_Brush[i] = e->CreateSolidColorBrush(m_ResourceNames[i], color);
+}
+
+void JTextResourceD2D::SetName(const char* name)
+{
+	auto p = JD2DTextEngine::GetInstance();
+
+	for (UINT i = 0; i < kNumRenderTarget; ++i) {
+		std::string newResourceName = std::string(name) + "_" + std::to_string(i);
+		p->RenameInRTTable(m_ResourceNames[i], newResourceName);
+		m_ResourceNames[i] = newResourceName;
+	}
+
+	m_name = name;
 }
 
 JTextMetrics JTextResourceD2D::GetMetrics()

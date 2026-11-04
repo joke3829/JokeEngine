@@ -9,6 +9,7 @@ constexpr UINT kTextTexture2DHeight = 96;
 
 class JTextResourceD2D : public JTextResource {
 public:
+	virtual ~JTextResourceD2D();
 
 	virtual void Update(float elapsedTime) {};
 	virtual void UpdateBuffer(UINT currentFrameIndex);
@@ -21,6 +22,7 @@ public:
 	void CreateSolidColorBrush(XMFLOAT4 color = XMFLOAT4(1.f, 1.f, 1.f, 1.f));
 	void CreateSolidColorBrush(D2D1::ColorF color = D2D1::ColorF::White);
 
+	void SetName(const char* name);
 	JTextMetrics GetMetrics();
 
 protected:

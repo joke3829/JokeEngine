@@ -67,7 +67,7 @@ public:
 #if DEV_MODE
 public:
 	void SetPlayMode(bool mod);
-	virtual bool RenderInspector();	// Renderer 업데이트 필요 시 true
+	virtual BYTE RenderInspector();	// - - - - - - /렌더러 최신화/ /이름 변경/
 	const XMFLOAT4X4& GetParentWorldTransform() { return m_ParentWorldMatix; }
 protected:
 	XMFLOAT4X4 m_ParentWorldMatix{};

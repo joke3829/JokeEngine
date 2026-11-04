@@ -40,7 +40,10 @@ JTextObject::JTextObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4
 	MakeDirtyFlag();
 }
 
-JTextObject::~JTextObject() = default;
+JTextObject::~JTextObject()
+{
+
+}
 
 void JTextObject::Update(float elapsedTime, XMFLOAT4X4* parent)
 {
@@ -282,9 +285,11 @@ void JTextObject::MakeDirtyFlag()
 
 
 #if DEV_MODE
-bool JTextObject::RenderInspector()
+BYTE JTextObject::RenderInspector()
 {
-	bool dirty = JObject::RenderInspector();
+	BYTE dirty = JObject::RenderInspector();
+
+	if (dirty & 0b00000001) m_TextResource->SetName(m_name.c_str());
 
 	float cursorx = 94.f;
 	ImGui::SeparatorText("TextOption");

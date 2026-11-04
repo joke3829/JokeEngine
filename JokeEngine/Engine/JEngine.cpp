@@ -200,28 +200,33 @@ void JokeEngine::RenderSceneHierarchy()
 		ImGuiTreeNodeFlags_DefaultOpen |
 		ImGuiTreeNodeFlags_SpanFullWidth;
 
-	auto DrawHierarchy = [&](auto& self, JObject* object) -> void{
+	auto DrawHierarchy = [&](auto& self, JObject* object) -> void {
 		ImGuiTreeNodeFlags node_flag = flags;
-		if (object == m_SelectedObject)
-			node_flag |= ImGuiTreeNodeFlags_Selected;
-		if (object->GetLeafObjects().size() == 0) {
-			node_flag |= ImGuiTreeNodeFlags_Leaf;
-			if (ImGui::TreeNodeEx(object->GetName().c_str(), node_flag))
-				if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) {
-					m_SelectedObject = object;
-				}
-				ImGui::TreePop();
-			return;
+		if (object == m_SelectedObject) node_flag |= ImGuiTreeNodeFlags_Selected;
+		if (object->GetLeafObjects().size() == 0) node_flag |= ImGuiTreeNodeFlags_Leaf;
+
+		bool isOpen = ImGui::TreeNodeEx(object->GetName().c_str(), node_flag);
+		if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) 
+			m_SelectedObject = object;
+
+		if (ImGui::BeginDragDropSource()) {
+			ImGui::SetDragDropPayload("HIERARCHY_DRAG", object, sizeof(object));
+			ImGui::Text(object->GetName().c_str());
+			ImGui::EndDragDropSource();
 		}
-		else {
-			if (ImGui::TreeNodeEx(object->GetName().c_str(), node_flag)) {
-				if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) {
-					m_SelectedObject = object;
-				}
-				for (auto& child : object->GetLeafObjects())
-					self(self, child);
-				ImGui::TreePop();
+
+		if (ImGui::BeginDragDropTarget()) {
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("HIERARCHY_DRAG"))
+			{
+				
 			}
+			ImGui::EndDragDropTarget();
+		}
+
+		if (isOpen){
+			for (auto& child : object->GetLeafObjects())
+				self(self, child);
+			ImGui::TreePop();
 		}
 		};
 	if (ImGui::Begin("Hierarchy")) {
@@ -238,7 +243,7 @@ void JokeEngine::RenderSceneHierarchy()
 	ImGui::End();
 
 	// 제거
-	if (m_SelectedObject) {
+	if (m_SelectedObject && not m_PlayMode && not ImGui::GetIO().WantTextInput) {
 		if (ImGui::IsKeyPressed(ImGuiKey_Delete, false)) {
 			m_Scene->DeleteObject(m_SelectedObject->GetName().c_str());
 			m_SelectedObject = nullptr;
@@ -250,7 +255,17 @@ void JokeEngine::RenderInspector()
 {
 	if (ImGui::Begin("Inspector")) {
 		if (m_SelectedObject) {
-			if (m_SelectedObject->RenderInspector()) {
+			std::string oldName = m_SelectedObject->GetName();
+			BYTE ret = m_SelectedObject->RenderInspector();
+			if (ret & 0b00000001) {	// 이름 바뀜, 옛날 이름 빼고 새 이름 넣어야함
+				auto& q = m_Scene->GetCDQueue();
+				CDObjectInfo info{}; info.name = oldName;
+				q.push(info);
+				info.name = m_SelectedObject->GetShaderName(); info.object = m_SelectedObject;
+				q.push(info);
+				m_Scene->SetDirty();
+			}
+			if (ret & 0b00000010) {
 				auto& q = m_Scene->GetCDQueue();
 				CDObjectInfo info{}; info.name = m_SelectedObject->GetName();
 				q.push(info);
