@@ -80,7 +80,7 @@ JObject* JEngineScene::CreateObject(const char* ObjectType)
 
 	JObjectNameDuplicateManager::AddName(name);
 	JObject* ret = object.get();
-	m_Objects.emplace_back(std::move(object));
+	m_Objects.try_emplace(object->GetName(), std::move(object));
 
 	CDObjectInfo info{ ret->GetShaderName(), ret};
 	m_CDQueue.push(info);
@@ -91,18 +91,10 @@ JObject* JEngineScene::CreateObject(const char* ObjectType)
 void JEngineScene::DeleteObject(const char* objectname)
 {
 	// 실존하는지 찾고 
-	auto it = std::find_if(m_Objects.begin(), m_Objects.end(), [&](const std::unique_ptr<JObject>& object) {
-		if (object->GetName() == objectname) return true;
-		return false;
-		});
-	if (it == m_Objects.end()) {	// 없다.
-		return;
-	}
+	if (not m_Objects.contains(objectname)) return;
 
-	// 제거하면 부모 자식 끊고 node idx 최신화 + 행렬들 + 이게 만약 카메라나 플레이어다 하면 저기서도 빼주고 어후
-	// 그냥 굳이 앞당기지 말까 재 실행 했을 때 파일 읽고 부를 때 알아서 패킹 된다고 가정하면 흠...
 
-	if (JCameraObject* cp = dynamic_cast<JCameraObject*>((*it).get())) {
+	if (JCameraObject* cp = dynamic_cast<JCameraObject*>(m_Objects[objectname].get())) {
 		for (int i = 0; i < m_Cameras.size(); ++i) {
 			if (cp == m_Cameras[i]) {
 				m_Cameras.erase(m_Cameras.begin() + i);
@@ -114,7 +106,7 @@ void JEngineScene::DeleteObject(const char* objectname)
 			}
 		}
 	}
-	else if (JPlayerObject* pp = dynamic_cast<JPlayerObject*>((*it).get())) {
+	else if (JPlayerObject* pp = dynamic_cast<JPlayerObject*>(m_Objects[objectname].get())) {
 		for (int i = 0; i < m_Players.size(); ++i) {
 			if (pp == m_Players[i]) {
 				m_Players.erase(m_Players.begin() + i);
@@ -122,14 +114,26 @@ void JEngineScene::DeleteObject(const char* objectname)
 		}
 	}
 
-	JObjectNameDuplicateManager::DeleteName((*it)->GetName());
-	(*it)->Delete();
-	std::string tempname = objectname;
-	m_Objects.erase(it);
+	JObjectNameDuplicateManager::DeleteName(objectname);
+	std::string tempname = objectname;	// dangling pointer 
+	m_Objects[objectname]->Delete();
+	m_Objects.erase(objectname);
 	CDObjectInfo info{};
 	info.name = tempname;
 	m_CDQueue.push(info);
 	SetDirty();
+}
+
+void JEngineScene::RenameObject(const char* oldName, const char* newName)
+{
+	if (not strcmp(oldName, newName)) return;
+	if (m_Objects.contains(newName)) return;
+
+	auto item = m_Objects.extract(oldName);
+	if (item.empty()) return;
+
+	item.key() = newName;
+	m_Objects.insert(std::move(item));
 }
 
 void JEngineScene::Update(float elapsedTime)
@@ -160,14 +164,14 @@ void JEngineScene::Update(float elapsedTime)
 #endif
 
 	for (auto& object : m_Objects)
-		if(not object->IsHasParent())
-			object->Update(elapsedTime);
+		if(not object.second->IsHasParent())
+			object.second->Update(elapsedTime);
 }
 
 void JEngineScene::Reset()
 {
 	for (auto& object : m_Objects)
-		object->Reset();
+		object.second->Reset();
 }
 
 void JEngineScene::WindowMessageProcessor(UINT msg, WPARAM wParam, LPARAM lParam)
@@ -207,7 +211,7 @@ void JEngineScene::BuildDefaultEditorScene()
 		eplayer->SetPosition(15.f, 15.f, -15.f, true);
 		m_EditorPlayer = eplayer.get();
 
-		m_Objects.emplace_back(std::move(eplayer));
+		m_Objects.try_emplace(eplayer->GetName(), std::move(eplayer));
 		JObjectNameDuplicateManager::AddName("EditorPlayer");
 
 		// Camera 추가 예제
@@ -225,14 +229,14 @@ void JEngineScene::BuildDefaultEditorScene()
 		m_EditorPlayer->Attach(camera.get());
 		JObjectNameDuplicateManager::AddName("EditorCamera");
 		m_CurrentMainCamera = 0;
-		m_Objects.emplace_back(std::move(camera));
+		m_Objects.try_emplace(camera->GetName(), std::move(camera));
 	}
 
 	{	// StaticMesh 추가 예제
 		if (not CreateObject("JStaticMeshObject"))
 			spdlog::error("JStaticMeshObject 추가 실패");
 		else {
-			JStaticMeshObject* meshobject = dynamic_cast<JStaticMeshObject*>(m_Objects.back().get());
+			JStaticMeshObject* meshobject = dynamic_cast<JStaticMeshObject*>(m_Objects["JStaticMeshObject"].get());
 			meshobject->AddMaterial(contents["DefaultMaterial"]);
 			meshobject->SetShaderName("DefaultShader");
 			meshobject->SetStaticMesh(contents["DefaultCube"]);
@@ -244,7 +248,7 @@ void JEngineScene::BuildDefaultEditorScene()
 		if (not CreateObject("JSpriteAnimationObject"))
 			spdlog::error("JSpriteAnimationObject 추가 실패");
 		else {
-			JSpriteAnimationObject* spriteobject = dynamic_cast<JSpriteAnimationObject*>(m_Objects.back().get());
+			JSpriteAnimationObject* spriteobject = dynamic_cast<JSpriteAnimationObject*>(m_Objects["JSpriteAnimationObject"].get());
 			spriteobject->SetStaticMesh(contents["DefaultPlaneq1"]);
 			spriteobject->SetSpriteSet(contents["TestSprite"]);
 			spriteobject->AddMaterial(contents["DefaultSpriteMaterial"]);
@@ -259,7 +263,7 @@ void JEngineScene::BuildDefaultEditorScene()
 		if(not CreateObject("JPlayerObject"))
 			spdlog::error("JPlayerObject 추가 실패");
 		else {
-			JPlayerObject* player = dynamic_cast<JPlayerObject*>(m_Objects.back().get());
+			JPlayerObject* player = dynamic_cast<JPlayerObject*>(m_Objects["JPlayerObject"].get());
 			player->SetPosition(0.f, 0.f, -15.f, true);
 			m_Players.emplace_back(player);
 			m_CurrentPlayer = 0;
@@ -268,7 +272,7 @@ void JEngineScene::BuildDefaultEditorScene()
 				spdlog::error("JCameraObject 추가 실패");
 			}
 			else {
-				JCameraObject* camera = dynamic_cast<JCameraObject*>(m_Objects.back().get());
+				JCameraObject* camera = dynamic_cast<JCameraObject*>(m_Objects["JCameraObject"].get());
 				m_Cameras.emplace_back(camera);
 				player->Attach(camera);
 			}
@@ -279,7 +283,7 @@ void JEngineScene::BuildDefaultEditorScene()
 		if (not CreateObject("JTextObject"))
 			spdlog::error("JTextObject 추가 실패");
 		else {
-			m_Objects.back()->SetPosition(5.f, -5.f, 0.f, true);
+			m_Objects["JTextObject"]->SetPosition(5.f, -5.f, 0.f, true);
 		}
 	}
 
@@ -291,7 +295,7 @@ void JEngineScene::SetPlayMode(bool pmode)
 {
 	m_PlayMode = pmode;
 	for (auto& object : m_Objects)
-		object->SetPlayMode(m_PlayMode);
+		object.second->SetPlayMode(m_PlayMode);
 
 	if (m_PlayMode) {
 		m_CurrentMainCamera += 1;

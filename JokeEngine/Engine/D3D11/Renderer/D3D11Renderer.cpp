@@ -70,8 +70,8 @@ void JEngineRendererDX11::SetScene(std::shared_ptr<JEngineScene> scene)
 		shader.second->ClearObject();
 	
 	for (auto& object : scene->GetObjects()) {
-		if (m_PSOMap.contains(object->GetShaderName()))
-			m_PSOMap[object->GetShaderName()]->AddObject(object.get());
+		if (m_PSOMap.contains(object.second->GetShaderName()))
+			m_PSOMap[object.second->GetShaderName()]->AddObject(object.second.get());
 	}
 }
 

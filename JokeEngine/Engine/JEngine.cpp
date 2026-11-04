@@ -234,8 +234,8 @@ void JokeEngine::RenderSceneHierarchy()
 			m_SelectedObject = nullptr;
 		if (ImGui::TreeNodeEx(m_Scene->GetName().c_str(), flags)) {
 			for (auto& object : objects) {
-				if(not object->IsHasParent())
-					DrawHierarchy(DrawHierarchy, object.get());
+				if(not object.second->IsHasParent())
+					DrawHierarchy(DrawHierarchy, object.second.get());
 			}
 			ImGui::TreePop();
 		}
@@ -258,6 +258,9 @@ void JokeEngine::RenderInspector()
 			std::string oldName = m_SelectedObject->GetName();
 			BYTE ret = m_SelectedObject->RenderInspector();
 			if (ret & 0b00000001) {	// 이름 바뀜, 옛날 이름 빼고 새 이름 넣어야함
+				// m_Objects의 키값도 바꿔야함
+				m_Scene->RenameObject(oldName.c_str(), m_SelectedObject->GetName().c_str());
+
 				auto& q = m_Scene->GetCDQueue();
 				CDObjectInfo info{}; info.name = oldName;
 				q.push(info);

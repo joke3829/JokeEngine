@@ -21,6 +21,7 @@ public:
 
 	JObject* CreateObject(const char* ObjectType);
 	void DeleteObject(const char* objectname);
+	void RenameObject(const char* oldName, const char* newName);
 
 	void CreateSceneFromFile() {}
 
@@ -38,7 +39,7 @@ public:
 	void SetInputThread(std::shared_ptr<JInputThread>& input) { m_InputThread = input; }
 
 	// Scene 내 ObjectList 요청
-	std::vector<std::unique_ptr<JObject>>& GetObjects() { return m_Objects; }
+	std::unordered_map<std::string, std::unique_ptr<JObject>>& GetObjects() { return m_Objects; }
 	std::queue<CDObjectInfo>& GetCDQueue() { return m_CDQueue; }
 
 	bool GetDirty() { return m_bDirty; }
@@ -61,7 +62,7 @@ protected:
 	JCameraObject* m_EditorCamera{};
 #endif
 protected:
-	std::vector<std::unique_ptr<JObject>>			m_Objects;
+	std::unordered_map<std::string, std::unique_ptr<JObject>>			m_Objects;
 	std::vector<JCameraObject*>						m_Cameras{};
 	std::vector<JPlayerObject*>						m_Players{};
 	// player(character) 목록 추기
