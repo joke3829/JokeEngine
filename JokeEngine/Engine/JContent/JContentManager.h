@@ -12,6 +12,9 @@ public:
 	void AddContent(std::shared_ptr<JContent> content);
 
 	std::unordered_map<std::string, std::shared_ptr<JContent>>& GetContentTable() { return m_ContentLookupTable; }
+#if DEV_MODE 
+	void RenderImGuiContents();
+#endif
 protected:
 
 

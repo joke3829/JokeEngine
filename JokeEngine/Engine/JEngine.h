@@ -37,6 +37,7 @@ protected:
 	void DockingLayoutSetup();
 	void RenderImGUI();
 	void RenderMenubar();			
+	void RenderContentManager();
 	void RenderSceneHierarchy();
 	void RenderInspector();			// scene::object가 해줄것
 	void RenderProjectSettingPopup();
@@ -53,6 +54,7 @@ protected:
 	bool m_ControlEditorScene{ false };	// 우클릭으로 Scene window를 잡고 있나를 판단
 	bool m_ProjectSettingPopup{ false };
 	bool m_CreateWindowPopup{ false };
+	bool m_ShowContentManager{ false };
 	unsigned short m_SelectedObjectInCreatePopup{};
 
 	ImVec2 m_OldEditorSceneSP{}; // GetCursorScreenPos

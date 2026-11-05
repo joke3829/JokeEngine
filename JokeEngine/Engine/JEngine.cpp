@@ -61,7 +61,11 @@ void JokeEngine::DockingLayoutSetup()
 		ImGui::DockBuilderSplitNode(Right, ImGuiDir_Down, 0.7f, &RightDown, &RightUp);
 		ImGuiID LeftUp = 0;
 		ImGui::DockBuilderSplitNode(ViewportScreen, ImGuiDir_Up, 0.06f, &LeftUp, &ViewportScreen);
+		ImGuiID LeftDown = 0;
+		ImGui::DockBuilderSplitNode(ViewportScreen, ImGuiDir_Down, 0.3f, &LeftDown, &ViewportScreen);
 		ImGui::DockBuilderDockWindow("Scene", ViewportScreen);
+		ImGui::DockBuilderDockWindow("Content", LeftDown);
+		ImGui::DockBuilderDockWindow("Shader", LeftDown);
 		ImGui::DockBuilderDockWindow("Hierarchy", RightUp);
 		ImGui::DockBuilderDockWindow("Inspector", RightDown);
 		ImGui::DockBuilderDockWindow("Tools", LeftUp);
@@ -77,6 +81,7 @@ void JokeEngine::RenderImGUI()
 	DockingLayoutSetup();
 	RenderToolBar();
 	RenderSceneImage();
+	RenderContentManager();
 	RenderSceneHierarchy();
 	RenderInspector();
 	RenderProjectSettingPopup();
@@ -189,6 +194,39 @@ void JokeEngine::RenderMenubar()
 	}
 }
 
+void JokeEngine::RenderContentManager()
+{
+	if (m_PlayMode) m_ShowContentManager = false;
+	if (not m_PlayMode && ImGui::IsKeyDown(ImGuiKey_LeftCtrl) && ImGui::IsKeyPressed(ImGuiKey_Space, false))
+		m_ShowContentManager = !m_ShowContentManager;
+	
+	if (m_ShowContentManager) {
+		ImGuiWindowFlags flag{};
+		flag |= ImGuiWindowFlags_NoCollapse;
+		flag |= ImGuiWindowFlags_MenuBar;
+
+		if (ImGui::Begin("Content", &m_ShowContentManager, flag)) {
+			// menubar
+			if (ImGui::BeginMenuBar()) {
+				if (ImGui::BeginMenu("Asset")) {
+					ImGui::EndMenu();
+				}
+				ImGui::EndMenuBar();
+			}
+
+			// contents
+			JGlobalContentManager::GetInstance()->GetManager()->RenderImGuiContents();
+		}
+		ImGui::End();
+
+		if (ImGui::Begin("Shader", &m_ShowContentManager, flag)) {
+
+		}
+		ImGui::End();
+	}
+
+}
+
 void JokeEngine::RenderSceneHierarchy()
 {
 	auto& objects = m_Scene->GetObjects();
@@ -212,7 +250,7 @@ void JokeEngine::RenderSceneHierarchy()
 		if (object->GetLeafObjects().size() == 0) node_flag |= ImGuiTreeNodeFlags_Leaf;
 
 		bool isOpen = ImGui::TreeNodeEx(object->GetName().c_str(), node_flag);
-		if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) 
+		if ((ImGui::IsItemClicked(ImGuiMouseButton_Left) || ImGui::IsItemClicked(ImGuiMouseButton_Right)) && !ImGui::IsItemToggledOpen())
 			m_SelectedObject = object;
 		
 		if (not m_PlayMode) {
@@ -262,7 +300,21 @@ void JokeEngine::RenderSceneHierarchy()
 			ImGui::EndDragDropTarget();
 		}
 	}
+
+	bool delete_trigger{};
+	if (m_SelectedObject) {
+		if (ImGui::BeginPopupContextWindow()) {
+			ImGui::Text(m_SelectedObject->GetName().c_str());
+			ImGui::Separator();
+			if (ImGui::MenuItem("Delete", "Del", false)) {
+				delete_trigger = true;
+			}
+			ImGui::EndPopup();
+		}
+	}
 	ImGui::End();
+
+	
 
 	if (AttCmd.use) {
 		objects[AttCmd.me]->MoveOut();
@@ -270,10 +322,12 @@ void JokeEngine::RenderSceneHierarchy()
 			objects[AttCmd.dest]->Attach(objects[AttCmd.me].get());
 	}
 
+	
+
 
 	// 제거
 	if (m_SelectedObject && not m_PlayMode && not ImGui::GetIO().WantTextInput && not ImGui::GetDragDropPayload()) {
-		if (ImGui::IsKeyPressed(ImGuiKey_Delete, false)) {
+		if (ImGui::IsKeyPressed(ImGuiKey_Delete, false) || delete_trigger) {
 			m_Scene->DeleteObject(m_SelectedObject->GetName().c_str());
 			m_SelectedObject = nullptr;
 		}

@@ -9,6 +9,13 @@ void JContentManager::AddContent(std::shared_ptr<JContent> content)
 	m_ContentLookupTable.insert({ name, content });
 }
 
+#if DEV_MODE
+void JContentManager::RenderImGuiContents()
+{
+	// 가진 Content + filter 이용해서... 결국 디렉토리가 필터긴한데
+}
+#endif
+
 JGlobalContentManager* JGlobalContentManager::m_Instance = nullptr;
 
 JGlobalContentManager* JGlobalContentManager::GetInstance()
