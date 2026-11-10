@@ -25,6 +25,10 @@ public:
 	virtual void Render(UINT i) {}
 
 	const std::vector<std::vector<UINT>>& GetIndices() { return m_vIndices; }
+#if DEV_MODE
+public:
+	virtual void RenderGUI(ImVec2 startPos, const char* dragPayload = nullptr, void* imageref = nullptr);
+#endif
 protected:
 	virtual void LoadFromFile(const char* name) {}
 

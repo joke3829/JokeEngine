@@ -79,9 +79,9 @@ void JStaticMeshObject::AddMaterial(std::shared_ptr<JContent> material, int inde
 	}
 }
 
-void JStaticMeshObject::SetStaticMesh(std::shared_ptr<JContent> mesh)
+void JStaticMeshObject::SetStaticMesh(JContent* mesh)
 {
-	std::shared_ptr<JStaticMesh> temp = std::dynamic_pointer_cast<JStaticMesh>(mesh);
+	JStaticMesh* temp = dynamic_cast<JStaticMesh*>(mesh);
 	if (!temp) {
 #if DEV_MODE
 		spdlog::error("{0} StaticMeshObject에서 잘못된 SetStaticMesh를 호출했습니다.", m_name.c_str());
@@ -90,6 +90,29 @@ void JStaticMeshObject::SetStaticMesh(std::shared_ptr<JContent> mesh)
 	}
 	m_StaticMesh = temp;
 }
+
+
+#if DEV_MODE
+BYTE JStaticMeshObject::RenderInspector()
+{
+	BYTE ret = JObject::RenderInspector();
+
+	ImGui::SeparatorText("StaticMesh");
+	ImGui::Button("MeshTestButton", ImVec2(90.f, 90.f));
+
+	if (ImGui::BeginDragDropTarget()) {
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DRAG_CONTENT_MESH")) {
+			JContent* pcon = *static_cast<JContent* const*>(payload->Data);
+			JStaticMesh* pmesh = dynamic_cast<JStaticMesh*>(pcon);
+			if (pmesh)
+				m_StaticMesh = pmesh;
+		}
+		ImGui::EndDragDropTarget();
+	}
+
+	return ret;
+}
+#endif
 
 
 REGISTER_OBJECT(JStaticMeshObject)

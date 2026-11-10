@@ -244,3 +244,11 @@ JStaticMesh::JStaticMesh(XMFLOAT3 center, float width, float height, JSMPlane qu
     m_TexCoord1.emplace_back(XMFLOAT2());
 }
 
+
+
+#if DEV_MODE
+void JStaticMesh::RenderGUI(ImVec2 startPos, const char* dragPayload, void* imageref)
+{
+    JContent::RenderGUI(startPos, "DRAG_CONTENT_MESH");
+}
+#endif 

@@ -301,17 +301,17 @@ void JokeEngine::RenderSceneHierarchy()
 		}
 	}
 
-	bool delete_trigger{};
-	if (m_SelectedObject) {
-		if (ImGui::BeginPopupContextWindow()) {
-			ImGui::Text(m_SelectedObject->GetName().c_str());
-			ImGui::Separator();
-			if (ImGui::MenuItem("Delete", "Del", false)) {
-				delete_trigger = true;
-			}
-			ImGui::EndPopup();
-		}
-	}
+	//bool delete_trigger{};
+	//if (m_SelectedObject) {
+	//	if (ImGui::BeginPopupContextWindow()) {
+	//		ImGui::Text(m_SelectedObject->GetName().c_str());
+	//		ImGui::Separator();
+	//		if (ImGui::MenuItem("Delete", "Del", false)) {
+	//			delete_trigger = true;
+	//		}
+	//		ImGui::EndPopup();
+	//	}
+	//}
 	ImGui::End();
 
 	
@@ -327,7 +327,7 @@ void JokeEngine::RenderSceneHierarchy()
 
 	// 제거
 	if (m_SelectedObject && not m_PlayMode && not ImGui::GetIO().WantTextInput && not ImGui::GetDragDropPayload()) {
-		if (ImGui::IsKeyPressed(ImGuiKey_Delete, false) || delete_trigger) {
+		if (ImGui::IsKeyPressed(ImGuiKey_Delete, false)) {
 			m_Scene->DeleteObject(m_SelectedObject->GetName().c_str());
 			m_SelectedObject = nullptr;
 		}

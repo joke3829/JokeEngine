@@ -19,12 +19,17 @@ public:
 public:
 	void AddMaterial(std::shared_ptr<JContent> material, int index = -1);
 
-	void SetStaticMesh(std::shared_ptr<JContent> mesh);
+	void SetStaticMesh(JContent* mesh);
+
+#if DEV_MODE
+public:
+	virtual BYTE RenderInspector();
+#endif
 protected:
 	// 메시 상수 버퍼가 필요한데
 	std::unique_ptr<JMeshConstant>					m_MeshCB{};
 
 	std::vector<std::shared_ptr<JMaterial>>			m_Materials{};
 
-	std::shared_ptr<JStaticMesh>					m_StaticMesh{};
+	JStaticMesh*					m_StaticMesh{};
 };

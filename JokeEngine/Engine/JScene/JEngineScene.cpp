@@ -239,7 +239,7 @@ void JEngineScene::BuildDefaultEditorScene()
 			JStaticMeshObject* meshobject = dynamic_cast<JStaticMeshObject*>(m_Objects["JStaticMeshObject"].get());
 			meshobject->AddMaterial(contents["DefaultMaterial"]);
 			meshobject->SetShaderName("DefaultShader");
-			meshobject->SetStaticMesh(contents["DefaultCube"]);
+			meshobject->SetStaticMesh(contents["DefaultCube"].get());
 		}
 	}
 
@@ -249,7 +249,7 @@ void JEngineScene::BuildDefaultEditorScene()
 			spdlog::error("JSpriteAnimationObject 추가 실패");
 		else {
 			JSpriteAnimationObject* spriteobject = dynamic_cast<JSpriteAnimationObject*>(m_Objects["JSpriteAnimationObject"].get());
-			spriteobject->SetStaticMesh(contents["DefaultPlaneq1"]);
+			spriteobject->SetStaticMesh(contents["DefaultPlaneq1"].get());
 			spriteobject->SetSpriteSet(contents["TestSprite"]);
 			spriteobject->AddMaterial(contents["DefaultSpriteMaterial"]);
 			spriteobject->SetShaderName("UVTransformShader");

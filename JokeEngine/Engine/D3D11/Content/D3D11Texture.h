@@ -15,6 +15,10 @@ public:
 	ID3D11Texture2D* GetTexture2D() { return m_Texture.Get(); }
 	ID3D11ShaderResourceView* GetSRV() { return m_SRV.Get(); }
 
+#if DEV_MODE
+public:
+	void RenderGUI(ImVec2 startPos, const char* dragPayload = nullptr, void* imageref = nullptr);
+#endif
 protected:
 	ComPtr<ID3D11Texture2D>				m_Texture{};
 	ComPtr<ID3D11ShaderResourceView>	m_SRV{};
