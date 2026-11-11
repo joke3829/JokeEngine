@@ -17,7 +17,7 @@ public:
 	void UpdateBuffer(UINT currentFrameIndex);
 	void SetGPUBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage = JS_NONE);
 	
-	void SetTextureNull(std::shared_ptr<JContent>& nulltexture);
+	void SetMissingTexture(std::shared_ptr<JContent>& MissingTexture);
 	void SetTexture(std::shared_ptr<JContent>& texture, TextureOrder order);
 private:
 	ComPtr<ID3D11Buffer>						m_MaterialConstantBuffer[kNumRenderTarget]{};

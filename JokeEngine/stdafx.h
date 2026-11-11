@@ -21,6 +21,7 @@
 #include <string>
 #include <memory>
 #include <fstream>
+#include <filesystem>
 #include <algorithm>
 #include <vector>
 #include <set>

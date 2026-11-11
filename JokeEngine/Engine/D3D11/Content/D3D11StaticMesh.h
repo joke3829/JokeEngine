@@ -4,7 +4,8 @@
 
 class JStaticMeshDX11 : public JStaticMesh {
 public:
-	JStaticMeshDX11(const char* name = nullptr, bool bloadFromFile = false);
+	JStaticMeshDX11(const char* name) : JStaticMesh(name) {}
+	JStaticMeshDX11(std::filesystem::path name) : JStaticMesh(name) {}
 	JStaticMeshDX11(XMFLOAT3 center = XMFLOAT3(0.f, 0.f, 0.f), XMFLOAT3 extent = XMFLOAT3(5.f, 5.f, 5.f), const char* name = nullptr);
 	JStaticMeshDX11(XMFLOAT3 center = XMFLOAT3(0.f, 0.f, 0.f), float radius = 5.f, UINT sliceCount = 20, UINT stackCount = 20, int sorry = 0, const char* name = nullptr);
 	JStaticMeshDX11(XMFLOAT3 center = XMFLOAT3(0.f, 0.f, 0.f), float width = 1.f, float height = 1.f, JSMPlane quad = quad_no, const char* name = nullptr);

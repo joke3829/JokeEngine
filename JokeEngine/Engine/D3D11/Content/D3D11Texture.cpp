@@ -1,40 +1,7 @@
 #include "D3D11Texture.h"
 #include "Engine/D3D11/D3D11GlobalFactor.h"
 
-JTextureDX11::JTextureDX11(const char* name)
-	: JTexture(name)
-{
-
-}
-
-JTextureDX11::JTextureDX11(const wchar_t* filepath, const char* name)
-	: JTexture(filepath, name)
-{
-	LoadTextureFromFile(filepath);
-}
-
-void JTextureDX11::LoadTextureFromFile(const wchar_t* filepath)
-{
-	auto path = std::filesystem::path(filepath);
-	auto ext = path.extension();
-
-	auto* device = JD3D11GlobalFactor::GetInstance()->GetDevice();
-	auto* context = JD3D11GlobalFactor::GetInstance()->GetDeviceContext();
-	if (ext == ".dds") {
-		ID3D11Resource** temp = reinterpret_cast<ID3D11Resource**>(m_Texture.ReleaseAndGetAddressOf());
-		ThrowIfFailed(DirectX::CreateDDSTextureFromFile(
-			device,
-			filepath,
-			temp,
-			m_SRV.ReleaseAndGetAddressOf()
-		));
-	}
-	else {
-
-	}
-}
-
-void JTextureDX11::MakeNullTexture()
+void JTextureDX11::MakeMissingTexture()
 {
 	auto* device = JD3D11GlobalFactor::GetInstance()->GetDevice();
 
@@ -82,9 +49,32 @@ void JTextureDX11::MakeNullTexture()
 	ThrowIfFailed(device->CreateShaderResourceView(m_Texture.Get(), nullptr, m_SRV.ReleaseAndGetAddressOf()));
 }
 
+
+void JTextureDX11::LoadFromFile()
+{
+	auto ext = m_FullFilePath.extension();
+
+	auto* device = JD3D11GlobalFactor::GetInstance()->GetDevice();
+	auto* context = JD3D11GlobalFactor::GetInstance()->GetDeviceContext();
+	if (ext == ".dds") {
+		ID3D11Resource** temp = reinterpret_cast<ID3D11Resource**>(m_Texture.ReleaseAndGetAddressOf());
+		ThrowIfFailed(DirectX::CreateDDSTextureFromFile(
+			device,
+			m_FullFilePath.wstring().c_str(),
+			temp,
+			m_SRV.ReleaseAndGetAddressOf()
+		));
+	}
+	else { // WIC
+
+	}
+}
+
 #if DEV_MODE
 void JTextureDX11::RenderGUI(ImVec2 startPos, const char* dragPayload, void* imageref)
 {
 	JContent::RenderGUI(startPos, "DRAG_CONTENT_TEXTURE", m_SRV.Get());
 }
 #endif
+
+

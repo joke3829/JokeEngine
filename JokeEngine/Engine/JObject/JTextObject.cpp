@@ -119,35 +119,35 @@ void JTextObject::Render(UINT currentFrameIndex)
 	m_PlaneMeshes[m_RenderPlaneIndex]->Render((UINT)0);
 }
 
-void JTextObject::ReadyPlanes(std::unordered_map<std::string, std::shared_ptr<JContent>>& contents)
+void JTextObject::ReadyPlanes(std::unordered_map<std::filesystem::path, std::shared_ptr<JContent>>& contents)
 {
 	bool bError{};
 	{
-		std::shared_ptr<JStaticMesh> mesh = std::dynamic_pointer_cast<JStaticMesh>(contents["DefaultPlane"]);
+		std::shared_ptr<JStaticMesh> mesh = std::dynamic_pointer_cast<JStaticMesh>(contents["Resource/JKEngine/Meshes/DefaultPlane"]);
 		if (mesh)
 			m_PlaneMeshes.emplace_back(mesh);
 		else bError = true;
 	}
 	{
-		std::shared_ptr<JStaticMesh> mesh = std::dynamic_pointer_cast<JStaticMesh>(contents["DefaultPlaneq1"]);
+		std::shared_ptr<JStaticMesh> mesh = std::dynamic_pointer_cast<JStaticMesh>(contents["Resource/JKEngine/Meshes/DefaultPlaneq1"]);
 		if (mesh)
 			m_PlaneMeshes.emplace_back(mesh);
 		else bError = true;
 	}
 	{
-		std::shared_ptr<JStaticMesh> mesh = std::dynamic_pointer_cast<JStaticMesh>(contents["DefaultPlaneq2"]);
+		std::shared_ptr<JStaticMesh> mesh = std::dynamic_pointer_cast<JStaticMesh>(contents["Resource/JKEngine/Meshes/DefaultPlaneq2"]);
 		if (mesh)
 			m_PlaneMeshes.emplace_back(mesh);
 		else bError = true;
 	}
 	{
-		std::shared_ptr<JStaticMesh> mesh = std::dynamic_pointer_cast<JStaticMesh>(contents["DefaultPlaneq3"]);
+		std::shared_ptr<JStaticMesh> mesh = std::dynamic_pointer_cast<JStaticMesh>(contents["Resource/JKEngine/Meshes/DefaultPlaneq3"]);
 		if (mesh)
 			m_PlaneMeshes.emplace_back(mesh);
 		else bError = true;
 	}
 	{
-		std::shared_ptr<JStaticMesh> mesh = std::dynamic_pointer_cast<JStaticMesh>(contents["DefaultPlaneq4"]);
+		std::shared_ptr<JStaticMesh> mesh = std::dynamic_pointer_cast<JStaticMesh>(contents["Resource/JKEngine/Meshes/DefaultPlaneq4"]);
 		if (mesh)
 			m_PlaneMeshes.emplace_back(mesh);
 		else bError = true;

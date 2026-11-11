@@ -29,7 +29,7 @@ public:
 
 public:
 	// contentmanager를 받아 plane 준비: 필수
-	void ReadyPlanes(std::unordered_map<std::string, std::shared_ptr<JContent>>& contents);
+	void ReadyPlanes(std::unordered_map<std::filesystem::path, std::shared_ptr<JContent>>& contents);
 	void UpdateRenderPlaneIndex();
 
 	void SetText(const wchar_t* text, bool edit = false) { m_Text = text; if (edit) m_InitialText = text; MakeDirtyFlag(); }

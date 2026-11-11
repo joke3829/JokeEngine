@@ -1,11 +1,6 @@
 
 #include "JStaticMesh.h"
 
-JStaticMesh::JStaticMesh(const char* name, bool bloadFromFile)
-	: JContent(name)
-{
-
-}
 
 // 박스 생성자, 
 JStaticMesh::JStaticMesh(XMFLOAT3 center, XMFLOAT3 extent, const char* name)

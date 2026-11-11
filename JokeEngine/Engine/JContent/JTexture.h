@@ -4,10 +4,12 @@
 
 class JTexture : public JContent{
 public:
-	JTexture(const char* name = "NullTexture");
-	JTexture(const wchar_t* filepath, const char* name = nullptr);	// name이 없으면 filepath가 곧 이름
+	JTexture(const char* name) : JContent(name) {}
+	JTexture(std::filesystem::path name) : JContent(name) {}
 
 	virtual void LoadTextureFromFile(const wchar_t* filepath) {}
-	virtual void MakeNullTexture() {}
+	virtual void MakeMissingTexture() {}
 
+protected:
+	virtual void CreateContentFile() { MakeMissingTexture(); }
 };

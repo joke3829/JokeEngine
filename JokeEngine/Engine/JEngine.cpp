@@ -214,8 +214,66 @@ void JokeEngine::RenderContentManager()
 				ImGui::EndMenuBar();
 			}
 
+			ImGui::Text(m_ContentManagerFilePath.string().c_str());
 			// contents
-			JGlobalContentManager::GetInstance()->GetManager()->RenderImGuiContents();
+
+			{// icon 렌더링
+				// 1. 현재 내 경로에 상위가 있다면 ... 버튼 만들기
+				auto p = JGlobalContentManager::GetInstance()->GetManager();
+				size_t count = p->GetNumContents();
+				ImVec2 windowSize = ImGui::GetContentRegionAvail();
+				ImVec2 startcursorpos = ImGui::GetCursorPos();
+
+				bool bRoot{ true };
+				if (m_ContentManagerFilePath != "Resource") { bRoot = false; ++count; }
+				std::vector<std::filesystem::path> folders{};
+				for (const auto& folder : std::filesystem::directory_iterator(m_ContentManagerFilePath)) {
+					if (folder.is_directory()) 
+						folders.emplace_back(folder.path().filename());
+				}
+				count += folders.size();
+
+				int col = static_cast<int>(windowSize.x / 115);
+				if (col <= 1) col = 1;
+				int row = (count % col) ? (count / col) + 1 : count / col;
+
+				int curRow{};
+				int curCol{};
+				ImVec2 curPos;
+
+				auto RenderFolder = [&](ImVec2 startPos, const char* name, void* textureref = nullptr)
+					{
+						ImVec2 ButtonPos = startPos;
+						ButtonPos.x += 10;
+						ImGui::SetCursorPos(ButtonPos);
+						ImGui::ImageButton(name, textureref, ImVec2(90.f, 90.f));
+						if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && ImGui::IsItemHovered()) {
+							if (not strcmp(name, ".."))
+								m_ContentManagerFilePath = m_ContentManagerFilePath.parent_path();
+							else
+								m_ContentManagerFilePath = m_ContentManagerFilePath / name;
+						}
+						ImVec2 TextPos = startPos; TextPos.y += 96; TextPos.x += 5.5f;
+						ImGui::SetCursorPos(TextPos);
+						ImGui::TextAligned(0.5f, 110, name);
+					};
+				// 2. 이동할 수 있는 디렉토리가 있다면 그 디렉토리로 가는 버튼 만들기
+				if (not bRoot) { // 어차피 0번째임
+					RenderFolder(startcursorpos, "..");
+					++curCol;
+				}
+
+				for (auto& path : folders) {
+					if (curCol >= col) { curCol = 0; ++curRow; }
+					curPos.x = startcursorpos.x + (static_cast<float>(curCol) * 115);
+					curPos.y = startcursorpos.y + (static_cast<float>(curRow) * 115);
+					RenderFolder(curPos, path.string().c_str());
+					++curCol;
+				}
+				
+				// 3. 현 디렉터리의 컨텐츠들 그리기
+				p->RenderImGuiContents(startcursorpos, row, col, curRow, curCol, m_ContentManagerFilePath);
+			}
 		}
 		ImGui::End();
 
@@ -729,7 +787,8 @@ void JokeEngineDX11::ImGuiInitialize()
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
-	io.Fonts->AddFontFromFileTTF("Resource/JKEngine/NanumSquareR.ttf", 13.f, nullptr, io.Fonts->GetGlyphRangesKorean());
+	// Font 변경
+	io.Fonts->AddFontFromFileTTF("Resource/JKEngine/Font/NanumSquareR.ttf", 13.f, nullptr, io.Fonts->GetGlyphRangesKorean());
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;

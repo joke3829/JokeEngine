@@ -4,10 +4,27 @@
 size_t g_numNoNameContent{};
 
 JContent::JContent(const char* name)
-	: JCommon(name)
 {
-	if (!name) m_name = "Content" + std::to_string(g_numNoNameContent++);
-	else m_name = name;
+	if (!name)
+		m_FullFilePath = "Resource/Content" + std::to_string(g_numNoNameContent++);
+	else
+		m_FullFilePath = name;
+
+	m_name = m_FullFilePath.filename().string();
+}
+
+JContent::JContent(std::filesystem::path filepath)
+{
+	m_FullFilePath = filepath;
+	m_name = m_FullFilePath.filename().string();
+}
+
+void JContent::Initialize()
+{
+	if (std::filesystem::exists(m_FullFilePath))
+		LoadFromFile();
+	else
+		CreateContentFile();
 }
 
 #if DEV_MODE 

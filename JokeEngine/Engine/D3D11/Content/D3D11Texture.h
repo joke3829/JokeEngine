@@ -6,11 +6,8 @@
 
 class JTextureDX11 : public JTexture {
 public:
-	JTextureDX11(const char* name = "NullTexture");
-	JTextureDX11(const wchar_t* filepath, const char* name = nullptr);
-
-	void LoadTextureFromFile(const wchar_t* filepath);
-	void MakeNullTexture();
+	JTextureDX11(const char* name = "MissingTexture.png") : JTexture(name) {};
+	JTextureDX11(std::filesystem::path name) : JTexture(name) {};
 
 	ID3D11Texture2D* GetTexture2D() { return m_Texture.Get(); }
 	ID3D11ShaderResourceView* GetSRV() { return m_SRV.Get(); }
@@ -20,6 +17,11 @@ public:
 	void RenderGUI(ImVec2 startPos, const char* dragPayload = nullptr, void* imageref = nullptr);
 #endif
 protected:
+	void MakeMissingTexture();
+
+	// 있다면 그걸 Load하라
+	void LoadFromFile();
+
 	ComPtr<ID3D11Texture2D>				m_Texture{};
 	ComPtr<ID3D11ShaderResourceView>	m_SRV{};
 };

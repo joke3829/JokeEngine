@@ -1,7 +1,9 @@
 #pragma once
 #include "JContent.h"
 
-
+// 마테리얼은 이걸로 고정한다. 사용자가 슬롯에 꼭 맞는 텍스쳐를 낄 필요는 없다.
+// 자신만의 슬롯으로 넣는다면 셰이더 단계에서 사용하도록 하자
+// 그리고 roughness metallic으로 바꿀거임
 struct cbSimpleMaterial {
 	XMFLOAT4 Albedo{ 1.f, 1.f, 1.f, 1.f };
 	XMFLOAT4 Specular{ 1.f, 1.f, 1.f, 1.f };
@@ -25,7 +27,7 @@ public:
 	virtual void UpdateBuffer(UINT currentFrameIndex) {}
 	virtual void SetGPUBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage = JS_NONE) {}
 
-	virtual void SetTextureNull(std::shared_ptr<JContent>& nulltexture) {}
+	virtual void SetMissingTexture(std::shared_ptr<JContent>& MissingTexture) {}
 	virtual void SetTexture(std::shared_ptr<JContent>& texture, TextureOrder order) {}
 };
 

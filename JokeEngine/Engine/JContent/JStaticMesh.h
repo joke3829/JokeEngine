@@ -12,7 +12,8 @@ enum JSMPlane : unsigned char {
 
 class JStaticMesh : public JContent {
 public:
-	JStaticMesh(const char* name = nullptr, bool bloadFromFile = false);
+	JStaticMesh(const char* name) : JContent(name) {}
+	JStaticMesh(std::filesystem::path name) :JContent(name) {}
 	JStaticMesh(XMFLOAT3 center = XMFLOAT3(0.f, 0.f, 0.f), XMFLOAT3 extent = XMFLOAT3(5.f, 5.f, 5.f), const char* name = nullptr);
 	JStaticMesh(XMFLOAT3 center = XMFLOAT3(0.f, 0.f, 0.f), float radius = 5.f, UINT sliceCount = 20, UINT stackCount = 20, int sorry = 0, const char* name = nullptr);
 	JStaticMesh(XMFLOAT3 center = XMFLOAT3(0.f, 0.f, 0.f), float width = 1.f, float height = 1.f, JSMPlane quad = quad_no, const char* name = nullptr);

@@ -11,14 +11,16 @@ public:
 	virtual void AddContentFromFile(const char* filename) {}	// 하나의 특정 파일만 로드 할 때
 	void AddContent(std::shared_ptr<JContent> content);
 
-	std::unordered_map<std::string, std::shared_ptr<JContent>>& GetContentTable() { return m_ContentLookupTable; }
+	size_t GetNumContents() { return m_ContentLookupTable.size(); }
+
+	std::unordered_map<std::filesystem::path, std::shared_ptr<JContent>>& GetContentTable() { return m_ContentLookupTable; }
 #if DEV_MODE 
-	void RenderImGuiContents();
+	void RenderImGuiContents(ImVec2 startCursorPos, int row, int col, int curRow, int curCol, const std::filesystem::path& parent);
 #endif
 protected:
 
-
-	std::unordered_map<std::string, std::shared_ptr<JContent>>			m_ContentLookupTable{};
+	// key: FullPath -> 확장자 명까지, value: 실제 Content
+	std::unordered_map<std::filesystem::path, std::shared_ptr<JContent>>			m_ContentLookupTable{};
 };
 
 

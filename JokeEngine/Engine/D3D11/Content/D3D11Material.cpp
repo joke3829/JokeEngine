@@ -92,12 +92,12 @@ void JMaterialDX11::SetGPUBuffer(UINT currentFrameIndex, UINT parameter, JShader
 	}
 }
 
-void JMaterialDX11::SetTextureNull(std::shared_ptr<JContent>& nulltexture)
+void JMaterialDX11::SetMissingTexture(std::shared_ptr<JContent>& MissingTexture)
 {
-	auto texDx11 = std::dynamic_pointer_cast<JTextureDX11>(nulltexture);
+	auto texDx11 = std::dynamic_pointer_cast<JTextureDX11>(MissingTexture);
 	if (!texDx11) {
 #if DEV_MODE
-		spdlog::error("{0} material에서 잘못된 texture를 이용한 SetTextureNull을 호출했습니다.", m_name.c_str());
+		spdlog::error("{0} material에서 잘못된 texture를 이용한 SetMissingTexture을 호출했습니다.", m_name.c_str());
 #endif
 		return;
 	}

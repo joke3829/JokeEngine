@@ -3,11 +3,6 @@
 
 
 
-JStaticMeshDX11::JStaticMeshDX11(const char* name, bool bloadFromFile)
-	: JStaticMesh(name, bloadFromFile)
-{
-}
-
 JStaticMeshDX11::JStaticMeshDX11(XMFLOAT3 center, XMFLOAT3 extent, const char* name)
 	: JStaticMesh(center, extent, name)
 {

@@ -4,38 +4,26 @@
 
 void JContentManager::AddContent(std::shared_ptr<JContent> content) 
 {
-	const std::string& name = content->GetName();
-	
-	m_ContentLookupTable.insert({ name, content });
+	m_ContentLookupTable.insert({ content->GetFullFilePath(), content});
 }
 
 #if DEV_MODE
-void JContentManager::RenderImGuiContents()
+void JContentManager::RenderImGuiContents(ImVec2 startCursorPos, int row, int col, int curRow, int curCol, const std::filesystem::path& parent)
 {
-	
-
-	size_t count = m_ContentLookupTable.size();
-	ImVec2 windowSize = ImGui::GetContentRegionAvail();
-	ImVec2 startcursorpos = ImGui::GetCursorPos();
-
-	// 115로 일단 잡아보기
-	int col = static_cast<int>(windowSize.x / 115);
-	if (col <= 1) col = 1;
-	int row = (count % col) ? (count / col) + 1 : count / col;
-
-	float stride{};
-	int curRow{};
-	int curCol{};
+	int srow = curRow;
+	int scol = curCol;
 	ImVec2 curPos;
 
 	
 	// icon은 한 항목당 110*110 간격은 5~20
 	for (auto& p : m_ContentLookupTable) {
-		if (curCol >= col) { curCol = 0; ++curRow; }
-		curPos.x = startcursorpos.x + (static_cast<float>(curCol) * 115);
-		curPos.y = startcursorpos.y + (static_cast<float>(curRow) * 115);
-		p.second->RenderGUI(curPos);
-		++curCol;
+		if (scol >= col) { scol = 0; ++srow; }
+		if (p.second->GetFullFilePath().parent_path() == parent) {
+			curPos.x = startCursorPos.x + (static_cast<float>(scol) * 115);
+			curPos.y = startCursorPos.y + (static_cast<float>(srow) * 115);
+			p.second->RenderGUI(curPos);
+			++scol;
+		}
 	}
 }
 #endif
