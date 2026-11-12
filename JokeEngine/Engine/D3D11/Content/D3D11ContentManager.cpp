@@ -77,6 +77,22 @@ void JContentManagerDX11::ReadyDefaultContent()
 		if (not inserted) ShowInsertedFailed(texture->GetFullFilePath().string(), "ContentManager");
 #endif
 	}
+	{	// Folder Texture
+		std::shared_ptr<JTextureDX11> texture = std::make_shared<JTextureDX11>("Resource/JKEngine/Textures/Folder.dds");
+		texture->Initialize();
+		auto [iter, inserted] = m_ContentLookupTable.try_emplace(texture->GetFullFilePath(), texture);
+#if DEV_MODE
+		if (not inserted) ShowInsertedFailed(texture->GetFullFilePath().string(), "ContentManager");
+#endif
+	}
+	{	// MeshFile Texture
+		std::shared_ptr<JTextureDX11> texture = std::make_shared<JTextureDX11>("Resource/JKEngine/Textures/StaticMeshFile.dds");
+		texture->Initialize();
+		auto [iter, inserted] = m_ContentLookupTable.try_emplace(texture->GetFullFilePath(), texture);
+#if DEV_MODE
+		if (not inserted) ShowInsertedFailed(texture->GetFullFilePath().string(), "ContentManager");
+#endif
+	}
 	{
 		std::shared_ptr<JTextureDX11> texture = std::make_shared<JTextureDX11>("Resource/test.dds");
 		texture->Initialize();

@@ -15,6 +15,7 @@ public:
 #if DEV_MODE
 public:
 	void RenderGUI(ImVec2 startPos, void* imageref = nullptr);
+	void* GetDedicatedFactor() { return m_SRV.Get(); }
 #endif
 protected:
 	void MakeMissingTexture();

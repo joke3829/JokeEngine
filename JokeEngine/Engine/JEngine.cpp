@@ -205,6 +205,8 @@ void JokeEngine::RenderContentManager()
 		flag |= ImGuiWindowFlags_NoCollapse;
 		flag |= ImGuiWindowFlags_MenuBar;
 
+		auto& contents = JGlobalContentManager::GetInstance()->GetManager()->GetContentTable();
+
 		if (ImGui::Begin("Content", &m_ShowContentManager, flag)) {
 			// menubar
 			if (ImGui::BeginMenuBar()) {
@@ -246,6 +248,7 @@ void JokeEngine::RenderContentManager()
 						ImVec2 ButtonPos = startPos;
 						ButtonPos.x += 10;
 						ImGui::SetCursorPos(ButtonPos);
+
 						ImGui::ImageButton(name, textureref, ImVec2(90.f, 90.f));
 						if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && ImGui::IsItemHovered()) {
 							if (not strcmp(name, ".."))
@@ -259,7 +262,7 @@ void JokeEngine::RenderContentManager()
 					};
 				// 2. 이동할 수 있는 디렉토리가 있다면 그 디렉토리로 가는 버튼 만들기
 				if (not bRoot) { // 어차피 0번째임
-					RenderFolder(startcursorpos, "..");
+					RenderFolder(startcursorpos, "..", contents["Resource/JKEngine/Textures/Folder.dds"]->GetDedicatedFactor());
 					++curCol;
 				}
 
@@ -267,7 +270,7 @@ void JokeEngine::RenderContentManager()
 					if (curCol >= col) { curCol = 0; ++curRow; }
 					curPos.x = startcursorpos.x + (static_cast<float>(curCol) * 115);
 					curPos.y = startcursorpos.y + (static_cast<float>(curRow) * 115);
-					RenderFolder(curPos, path.string().c_str());
+					RenderFolder(curPos, path.string().c_str(), contents["Resource/JKEngine/Textures/Folder.dds"]->GetDedicatedFactor());
 					++curCol;
 				}
 				

@@ -30,6 +30,7 @@ public:
 	virtual void RenderGUI(ImVec2 startPos, void* imageref = nullptr);
 	void RenderGeneralInspect();
 	virtual void RenderDetailPanel() { RenderGeneralInspect(); }
+	virtual void* GetDedicatedFactor() { return nullptr; }
 protected:
 	bool m_ShowDetailGui{};
 #endif

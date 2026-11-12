@@ -1,5 +1,6 @@
 
 #include "JStaticMesh.h"
+#include "JContentManager.h"
 
 
 // 박스 생성자, 
@@ -242,8 +243,8 @@ JStaticMesh::JStaticMesh(XMFLOAT3 center, float width, float height, JSMPlane qu
 
 
 #if DEV_MODE
-void JStaticMesh::RenderGUI(ImVec2 startPos, const char* dragPayload, void* imageref)
+void JStaticMesh::RenderGUI(ImVec2 startPos, void* imageref)
 {
-    JContent::RenderGUI(startPos);
+    JContent::RenderGUI(startPos, JGlobalContentManager::GetInstance()->GetManager()->GetContentTable()["Resource/JKEngine/Textures/StaticMeshFile.dds"]->GetDedicatedFactor());
 }
 #endif 

@@ -94,6 +94,7 @@ void JStaticMeshObject::SetStaticMesh(JContent* mesh)
 
 
 #if DEV_MODE
+#include "Engine/JContent/JContentManager.h"
 bool JStaticMeshObject::RenderInspector()
 {
 	bool ret = JObject::RenderInspector();
@@ -109,7 +110,8 @@ bool JStaticMeshObject::RenderInspector()
 		ImVec2 rectmax{ curScreenPos.x + avail.x, curScreenPos.y + 62.f };
 		dl->AddRectFilled(curScreenPos, rectmax, IM_COL32(45, 50, 60, 255));
 		ImGui::SetCursorPos(ImVec2(curPos.x + 3.f, curPos.y + 3.f));
-		void* imageref = nullptr;
+		void* imageref = (m_StaticMesh) ? JGlobalContentManager::GetInstance()->GetManager()->GetContentTable()["Resource/JKEngine/Textures/StaticMeshFile.dds"]->GetDedicatedFactor()
+			: nullptr;
 		ImGui::ImageButton("MeshSelectButton", imageref, ImVec2(50.f, 50.f));
 		if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right, false)) m_StaticMesh = nullptr;
 		if (ImGui::BeginDragDropTarget()) {
