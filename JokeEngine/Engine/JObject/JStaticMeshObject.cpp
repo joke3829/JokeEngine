@@ -51,15 +51,16 @@ void JStaticMeshObject::Render(UINT currentFrameIndex)
 	m_MeshCB->SetGPUBuffer(currentFrameIndex, 0, JS_VS);
 
 	auto& indices = m_StaticMesh->GetIndices();
+	size_t materialsize = m_Materials.size();
+	size_t mati{};
 
-	for (size_t i = 0; i < indices.size(); ++i) {
-		m_Materials[i]->UpdateBuffer(currentFrameIndex);
-		m_Materials[i]->SetGPUBuffer(currentFrameIndex, 2, JS_PS);
+	for (size_t i = 0; i < indices.size() && materialsize > 0; ++i) {
+		mati = (i >= materialsize) ? materialsize - 1 : i;
+		m_Materials[mati]->UpdateBuffer(currentFrameIndex);
+		m_Materials[mati]->SetGPUBuffer(currentFrameIndex, 2, JS_PS);
 		m_StaticMesh->Render(i);
 	}
 
-	// 이거 애매함, Shader가 가 이 메시를 콕 집고 있을거기에 이것만 호출해야함,
-	//JObject::Render();
 }
 
 void JStaticMeshObject::AddMaterial(std::shared_ptr<JContent> material, int index)
@@ -97,17 +98,46 @@ bool JStaticMeshObject::RenderInspector()
 {
 	bool ret = JObject::RenderInspector();
 
-	ImGui::SeparatorText("StaticMesh");
-	ImGui::Button("MeshTestButton", ImVec2(90.f, 90.f));
+	ImVec2 avail = ImGui::GetContentRegionAvail();
+	ImDrawList* dl = ImGui::GetWindowDrawList();
 
-	if (ImGui::BeginDragDropTarget()) {
-		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DRAG_CONTENT_MESH")) {
-			JContent* pcon = *static_cast<JContent* const*>(payload->Data);
-			JStaticMesh* pmesh = dynamic_cast<JStaticMesh*>(pcon);
-			if (pmesh)
-				m_StaticMesh = pmesh;
+	ImGui::SeparatorText("StaticMesh");
+	ImGui::Text("Mesh");
+	{	// Mesh
+		ImVec2 curScreenPos = ImGui::GetCursorScreenPos();
+		ImVec2 curPos = ImGui::GetCursorPos();
+		ImVec2 rectmax{ curScreenPos.x + avail.x, curScreenPos.y + 62.f };
+		dl->AddRectFilled(curScreenPos, rectmax, IM_COL32(45, 50, 60, 255));
+		ImGui::SetCursorPos(ImVec2(curPos.x + 3.f, curPos.y + 3.f));
+		void* imageref = nullptr;
+		ImGui::ImageButton("MeshSelectButton", imageref, ImVec2(50.f, 50.f));
+		if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right, false)) m_StaticMesh = nullptr;
+		if (ImGui::BeginDragDropTarget()) {
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DRAG_CONTENT_BROWSER")) {
+				JContent* pcon = *static_cast<JContent* const*>(payload->Data);
+				JStaticMesh* pmesh = dynamic_cast<JStaticMesh*>(pcon);
+				if (pmesh)
+					m_StaticMesh = pmesh;
+			}
+			ImGui::EndDragDropTarget();
 		}
-		ImGui::EndDragDropTarget();
+		ImGui::SetCursorPos(ImVec2(curPos.x + 65.f, curPos.y + 6.f));
+		if (m_StaticMesh) {
+			ImGui::TextAligned(0.0f, avail.x - 65.f, m_StaticMesh->GetName().c_str());
+			dl->AddLineH(curScreenPos.x + 65, curScreenPos.x + avail.x - 3.f, curScreenPos.y + 25.f, IM_COL32(255, 255, 255, 255), 0.5f);
+			ImGui::SetCursorPos(ImVec2(curPos.x + 65.f, curPos.y + 33.f));
+			ImGui::Text("FilePath:");
+			ImGui::SetCursorPos(ImVec2(curPos.x + 65.f, curPos.y + 47.f));
+			ImGui::TextAligned(0.0f, avail.x - 65.f, m_StaticMesh->GetFullFilePath().string().c_str());
+		}
+		else {
+			ImGui::Text("No Mesh");
+		}
+		ImGui::SetCursorPos(ImVec2(curPos.x, curPos.y + 70.f));
+	}
+	{	// Material
+		ImGui::Separator();
+		ImGui::Text("Materials");
 	}
 
 	return ret;

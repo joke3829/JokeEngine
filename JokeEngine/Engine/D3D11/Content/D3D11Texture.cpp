@@ -71,9 +71,9 @@ void JTextureDX11::LoadFromFile()
 }
 
 #if DEV_MODE
-void JTextureDX11::RenderGUI(ImVec2 startPos, const char* dragPayload, void* imageref)
+void JTextureDX11::RenderGUI(ImVec2 startPos, void* imageref)
 {
-	JContent::RenderGUI(startPos, "DRAG_CONTENT_TEXTURE", m_SRV.Get());
+	JContent::RenderGUI(startPos, m_SRV.Get());
 }
 #endif
 

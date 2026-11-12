@@ -14,7 +14,7 @@ public:
 
 #if DEV_MODE
 public:
-	void RenderGUI(ImVec2 startPos, const char* dragPayload = nullptr, void* imageref = nullptr);
+	void RenderGUI(ImVec2 startPos, void* imageref = nullptr);
 #endif
 protected:
 	void MakeMissingTexture();

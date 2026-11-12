@@ -28,20 +28,18 @@ void JContent::Initialize()
 }
 
 #if DEV_MODE 
-void JContent::RenderGUI(ImVec2 startPos, const char* dragPayload, void* imageref)
+void JContent::RenderGUI(ImVec2 startPos, void* imageref)
 {
 	// 110 by 110이니까 버튼 90 90 중상단에 하고 이름 하단 중앙 110 * 20
 	ImVec2 ButtonPos = startPos;
 	ButtonPos.x += 10;
 	ImGui::SetCursorPos(ButtonPos);
 	ImGui::ImageButton(m_name.c_str(), imageref, ImVec2(90.f, 90.f));
-	if (dragPayload) {
-		if (ImGui::BeginDragDropSource()) {
-			JContent* self = this;
-			ImGui::SetDragDropPayload(dragPayload, &self, sizeof(JContent*));
-			ImGui::Text(m_name.c_str());
-			ImGui::EndDragDropSource();
-		}
+	if (ImGui::BeginDragDropSource()) {
+		JContent* self = this;
+		ImGui::SetDragDropPayload("DRAG_CONTENT_BROWSER", &self, sizeof(JContent*));
+		ImGui::Text(m_name.c_str());
+		ImGui::EndDragDropSource();
 	}
 	if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && ImGui::IsItemHovered()) {
 		m_ShowDetailGui = true;

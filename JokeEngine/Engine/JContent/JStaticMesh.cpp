@@ -244,6 +244,6 @@ JStaticMesh::JStaticMesh(XMFLOAT3 center, float width, float height, JSMPlane qu
 #if DEV_MODE
 void JStaticMesh::RenderGUI(ImVec2 startPos, const char* dragPayload, void* imageref)
 {
-    JContent::RenderGUI(startPos, "DRAG_CONTENT_MESH");
+    JContent::RenderGUI(startPos);
 }
 #endif 

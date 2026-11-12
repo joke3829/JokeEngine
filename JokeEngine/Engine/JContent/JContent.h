@@ -27,7 +27,7 @@ public:
 	virtual void Render(UINT currentFrameIndex) {}
 #if DEV_MODE
 public:
-	virtual void RenderGUI(ImVec2 startPos, const char* dragPayload = nullptr, void* imageref = nullptr);
+	virtual void RenderGUI(ImVec2 startPos, void* imageref = nullptr);
 	void RenderGeneralInspect();
 	virtual void RenderDetailPanel() { RenderGeneralInspect(); }
 protected:
