@@ -290,8 +290,8 @@ void JokeEngine::RenderSceneHierarchy()
 	auto& objects = m_Scene->GetObjects();
 
 	struct AttachCommand {
-		std::string me{};
-		std::string dest{};
+		UINT me{};
+		UINT dest{0xFFFFFFFF};
 		bool use{};
 	}AttCmd{};
 
@@ -307,7 +307,8 @@ void JokeEngine::RenderSceneHierarchy()
 		if (object == m_SelectedObject) node_flag |= ImGuiTreeNodeFlags_Selected;
 		if (object->GetLeafObjects().size() == 0) node_flag |= ImGuiTreeNodeFlags_Leaf;
 
-		bool isOpen = ImGui::TreeNodeEx(object->GetName().c_str(), node_flag);
+		std::string guiid = object->GetName() + "##" + std::to_string(object->GetUID());
+		bool isOpen = ImGui::TreeNodeEx(guiid.c_str(), node_flag);
 		if ((ImGui::IsItemClicked(ImGuiMouseButton_Left) || ImGui::IsItemClicked(ImGuiMouseButton_Right)) && !ImGui::IsItemToggledOpen())
 			m_SelectedObject = object;
 		
@@ -324,8 +325,8 @@ void JokeEngine::RenderSceneHierarchy()
 			{
 				JObject* po = *static_cast<JObject* const*>(payload->Data);
 				AttCmd.use = true;
-				AttCmd.me = po->GetName();
-				AttCmd.dest = object->GetName();
+				AttCmd.me = po->GetUID();
+				AttCmd.dest = object->GetUID();
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -352,8 +353,7 @@ void JokeEngine::RenderSceneHierarchy()
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("HIERARCHY_DRAG")) {
 				JObject* po = *static_cast<JObject* const*>(payload->Data);
 				AttCmd.use = true;
-				AttCmd.me = po->GetName();
-				AttCmd.dest = "";
+				AttCmd.me = po->GetUID();
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -376,7 +376,7 @@ void JokeEngine::RenderSceneHierarchy()
 
 	if (AttCmd.use) {
 		objects[AttCmd.me]->MoveOut();
-		if(AttCmd.dest != "")
+		if(AttCmd.dest != 0xFFFFFFFF)
 			objects[AttCmd.dest]->Attach(objects[AttCmd.me].get());
 	}
 
@@ -386,7 +386,7 @@ void JokeEngine::RenderSceneHierarchy()
 	// 제거
 	if (m_SelectedObject && not m_PlayMode && not ImGui::GetIO().WantTextInput && not ImGui::GetDragDropPayload()) {
 		if (ImGui::IsKeyPressed(ImGuiKey_Delete, false)) {
-			m_Scene->DeleteObject(m_SelectedObject->GetName().c_str());
+			m_Scene->DeleteObject(m_SelectedObject->GetUID());
 			m_SelectedObject = nullptr;
 		}
 	}
@@ -396,24 +396,13 @@ void JokeEngine::RenderInspector()
 {
 	if (ImGui::Begin("Inspector")) {
 		if (m_SelectedObject) {
-			std::string oldName = m_SelectedObject->GetName();
-			BYTE ret = m_SelectedObject->RenderInspector();
-			if (ret & 0b00000001) {	// 이름 바뀜, 옛날 이름 빼고 새 이름 넣어야함
-				// m_Objects의 키값도 바꿔야함
-				m_Scene->RenameObject(oldName.c_str(), m_SelectedObject->GetName().c_str());
-
+			std::string oldShaderName = m_SelectedObject->GetShaderName();
+			bool ret = m_SelectedObject->RenderInspector();
+			if (ret) {
 				auto& q = m_Scene->GetCDQueue();
-				CDObjectInfo info{}; info.name = oldName;
+				CDObjectInfo info{}; info.shadername = oldShaderName; info.uid = m_SelectedObject->GetUID();
 				q.push(info);
-				info.name = m_SelectedObject->GetShaderName(); info.object = m_SelectedObject;
-				q.push(info);
-				m_Scene->SetDirty();
-			}
-			if (ret & 0b00000010) {
-				auto& q = m_Scene->GetCDQueue();
-				CDObjectInfo info{}; info.name = m_SelectedObject->GetName();
-				q.push(info);
-				info.name = m_SelectedObject->GetShaderName(); info.object = m_SelectedObject;
+				info.shadername = m_SelectedObject->GetShaderName(); info.object = m_SelectedObject;
 				q.push(info);
 				m_Scene->SetDirty();
 			}

@@ -2,10 +2,9 @@
 #include "Engine/D3D11/D3D11GlobalFactor.h"
 
 
-JTextResourceDX11::JTextResourceDX11(const char* name)
+JTextResourceDX11::JTextResourceDX11(UINT uid)
+	: JTextResourceD2D(uid)
 {
-	m_name = name;
-
 	ReadyDX11Resource();
 }
 
@@ -52,7 +51,7 @@ void JTextResourceDX11::SetGPUBuffer(UINT currentFrameIndex, UINT parameter, JSh
 		break;
 	default:
 #if defined(_DEBUG) || defined(DEBUG)
-		spdlog::error("[DX11] {0}에서 잘못된 SetGPUBuffer를 호출했습니다.", m_name.c_str());
+		spdlog::error("[DX11] OwnerUID:{} - 잘못된 SetGPUBuffer를 호출했습니다.", m_OwnerUID);
 #endif
 		assert(0);
 	}
@@ -87,6 +86,8 @@ void JTextResourceDX11::ReadyDX11Resource()
 	auto* device = JD3D11GlobalFactor::GetInstance()->GetDevice();
 	auto* d2d = JD2DTextEngine::GetInstance();
 	{
+		ID3D11Texture2D* res[kNumRenderTarget]{};
+
 		D3D11_BUFFER_DESC bdesc{
 			.ByteWidth = sizeof(cbUV),
 			.Usage = D3D11_USAGE_DYNAMIC,
@@ -110,9 +111,10 @@ void JTextResourceDX11::ReadyDX11Resource()
 			ThrowIfFailed(device->CreateTexture2D(&tdesc, nullptr, m_TextureRT[i].ReleaseAndGetAddressOf()));
 			ThrowIfFailed(device->CreateShaderResourceView(m_TextureRT[i].Get(), nullptr, m_TextureRTSRV[i].ReleaseAndGetAddressOf()));
 
-			m_ResourceNames[i] = m_name + "_" + std::to_string(i);
-			d2d->AddRTForD3D11Texture2D(m_ResourceNames[i], m_TextureRT[i].Get());
+			res[i] = m_TextureRT[i].Get();
 		}
+
+		d2d->AddRTsForD3D11Texture2D(m_OwnerUID, res);
 	}
 
 }

@@ -15,6 +15,7 @@ struct JTextMetrics {
 
 class JTextResource {
 public:
+	JTextResource(UINT uid) : m_OwnerUID{ uid } {}
 	virtual ~JTextResource() {}
 
 	virtual void Update(float elapsedTime) {};
@@ -28,12 +29,9 @@ public:
 	virtual void CreateSolidColorBrush(D2D1::ColorF color = D2D1::ColorF::White) {}
 	virtual void SetTextColor() {}
 
-	virtual void SetName(const char* name) { m_name = name; }
 	virtual JTextMetrics GetMetrics() = 0;
 	virtual JTextMetrics GetMetricsWithUVMatrixUpdate() = 0;
 
-	const std::string& GetName() { return m_name; }
-	
 protected:
-	std::string m_name{};
+	UINT m_OwnerUID{};
 };

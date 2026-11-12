@@ -2,15 +2,15 @@
 #include "Engine/JShader/JEngineShader.h"
 #include "JObjectRegistry.h"
 
-JObject::JObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name)
-	: m_WorldTransform{ vWorld }, m_NodeIndex{ nodeIndex }, m_WorldTransformTP{ vWorldTP }
+JObject::JObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT uid, const char* name)
+	: m_WorldTransform{ vWorld }, m_UID{ uid }, m_WorldTransformTP{ vWorldTP }
 {
 	if (name) m_name = name;
 	else m_name = "JObject";
 
-	if (nodeIndex >= m_WorldTransform.size()) {
+	if (uid >= m_WorldTransform.size()) {
 #if DEV_MODE
-		spdlog::error("'{0}' Invalid NodeIndex", m_name.c_str());
+		spdlog::error("'{0}' Invalid uid", m_name.c_str());
 #endif
 		assert(0);
 	}
@@ -33,10 +33,10 @@ void JObject::Attach(JObject* leaf)
 }
 
 // 내 자식에서 떼어내는것, Scene에서 삭제가 아니다.
-void JObject::Dettach(std::string& name)
+void JObject::Dettach(UINT uid)
 {
 	for (unsigned int i = 0; i < m_LeafObjects.size(); ++i) {
-		if (m_LeafObjects[i]->GetName() == name) {
+		if (m_LeafObjects[i]->GetUID() == uid) {
 			m_LeafObjects[i]->SetParent(nullptr);
 			m_LeafObjects.erase(m_LeafObjects.begin() + i);
 			break;
@@ -47,7 +47,7 @@ void JObject::Dettach(std::string& name)
 void JObject::MoveOut()
 {
 	if (m_ParentObject)
-		m_ParentObject->Dettach(m_name);
+		m_ParentObject->Dettach(m_UID);
 	m_ParentObject = nullptr;
 }
 
@@ -76,11 +76,11 @@ void JObject::Update(float elapsedTime, XMFLOAT4X4* parent)
 #endif
 
 	XMMATRIX world = XMLoadFloat4x4(&m_LocalTransform) * parentMatrix;
-	XMStoreFloat4x4(&m_WorldTransform[m_NodeIndex], world);
-	XMStoreFloat4x4(&m_WorldTransformTP[m_NodeIndex], XMMatrixTranspose(world));
+	XMStoreFloat4x4(&m_WorldTransform[m_UID], world);
+	XMStoreFloat4x4(&m_WorldTransformTP[m_UID], XMMatrixTranspose(world));
 
 	for (auto& child : m_LeafObjects) {
-		child->Update(elapsedTime, &m_WorldTransform[m_NodeIndex]);
+		child->Update(elapsedTime, &m_WorldTransform[m_UID]);
 	}
 }
 
@@ -131,9 +131,9 @@ void JObject::SetPlayMode(bool mod)
 		child->SetPlayMode(m_PlayMode);
 }
 
-BYTE JObject::RenderInspector()
+bool JObject::RenderInspector()
 {
-	BYTE dirty{};
+	bool dirty{};
 	{	// General
 		float cursorx = 94.f;
 		ImGui::SeparatorText("General");
@@ -145,11 +145,8 @@ BYTE JObject::RenderInspector()
 
 		ImGui::SetCursorPosX(cursorx);
 		if (ImGui::InputText("##InputName", cname, std::size(cname), ImGuiInputTextFlags_EnterReturnsTrue)) {
-			if (IsValidString(cname) && not JObjectNameDuplicateManager::DuplicateCheck(cname)) {
-				JObjectNameDuplicateManager::DeleteName(m_name); // 목록에서 현 이름을 빼고
-				JObjectNameDuplicateManager::AddName(cname);	// 새 이름을 넣는다
+			if (IsValidString(cname)) {
 				m_name = cname;
-				dirty |= 0b00000001;
 			}
 		}
 		ImGui::SameLine();
@@ -167,7 +164,7 @@ BYTE JObject::RenderInspector()
 		ImGui::SetCursorPosX(cursorx);
 		if (ImGui::InputText("##InputShaderName", cname, std::size(cname), ImGuiInputTextFlags_EnterReturnsTrue)) {
 			m_ShaderName = cname;
-			dirty |= 0b00000010;
+			dirty = true;
 		}
 		if (m_PlayMode)
 			ImGui::EndDisabled();

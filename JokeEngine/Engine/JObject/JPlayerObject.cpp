@@ -1,8 +1,8 @@
 #include "JPlayerObject.h"
 #include "JObjectRegistry.h"
 
-JPlayerObject::JPlayerObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name)
-	: JObject(vWorld, vWorldTP, nodeIndex, name)
+JPlayerObject::JPlayerObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT uid, const char* name)
+	: JObject(vWorld, vWorldTP, uid, name)
 {
 
 }

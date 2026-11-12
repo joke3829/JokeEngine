@@ -24,13 +24,12 @@ void JEngineRenderer::RenderFrame()
 		auto& q = m_Scene->GetCDQueue();
 		while (not q.empty()) {
 			auto& info = q.front();
-			if (info.object) {	// 추가
-				if (m_PSOMap.contains(info.name))
-					m_PSOMap[info.name]->AddObject(info.object);	// 방어 없음, 이름 중복 시 안들어감
-			}
-			else {		// 제거
-				for (auto& [a, b] : m_PSOMap) {
-					b->DeleteObject(info.name);
+			if (m_PSOMap.contains(info.shadername)) {
+				if (info.object) {	// 추가
+					m_PSOMap[info.shadername]->AddObject(info.uid, info.object);	// 방어 없음
+				}
+				else {		// 제거
+					m_PSOMap[info.shadername]->DeleteObject(info.uid);
 				}
 			}
 			q.pop();

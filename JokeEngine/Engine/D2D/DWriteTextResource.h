@@ -9,6 +9,7 @@ constexpr UINT kTextTexture2DHeight = 96;
 
 class JTextResourceD2D : public JTextResource {
 public:
+	JTextResourceD2D(UINT uid) : JTextResource(uid) {}
 	virtual ~JTextResourceD2D();
 
 	virtual void Update(float elapsedTime) {};
@@ -22,7 +23,6 @@ public:
 	void CreateSolidColorBrush(XMFLOAT4 color = XMFLOAT4(1.f, 1.f, 1.f, 1.f));
 	void CreateSolidColorBrush(D2D1::ColorF color = D2D1::ColorF::White);
 
-	void SetName(const char* name);
 	JTextMetrics GetMetrics();
 
 protected:
@@ -30,6 +30,4 @@ protected:
 	ComPtr<IDWriteTextLayout> m_TextLayout{};
 
 	ComPtr<ID2D1Brush> m_Brush[kNumRenderTarget]{};
-	// 상속 받은 DX12, DX11 생성자에서 만듬 -> 여기 생성자로 하는걸로 바꾸기 고려
-	std::string m_ResourceNames[kNumRenderTarget]{};
 };

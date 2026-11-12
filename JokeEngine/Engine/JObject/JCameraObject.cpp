@@ -2,8 +2,8 @@
 #include "Engine/JokeEngineConfig.h"
 #include "JObjectRegistry.h"
 
-JCameraObject::JCameraObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name)
-	: JObject(vWorld, vWorldTP, nodeIndex, name)
+JCameraObject::JCameraObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT uid, const char* name)
+	: JObject(vWorld, vWorldTP, uid, name)
 {
 	auto* o = JEngineDefaultGlobalConfig::GetInstance()->GetConfigFactor();
 	float width = static_cast<float>(o->WindowsWidth);
@@ -20,7 +20,7 @@ JCameraObject::JCameraObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOA
 XMFLOAT4X4 JCameraObject::GetViewMatrix()
 {
 	// 오차가 누적될 수 있다는데 일단은 지켜보기
-	XMMATRIX world = XMLoadFloat4x4(&m_WorldTransform[m_NodeIndex]);
+	XMMATRIX world = XMLoadFloat4x4(&m_WorldTransform[m_UID]);
 	XMVECTOR UP = XMVector3Normalize(world.r[1]);
 	XMVECTOR LOOK = XMVector3Normalize(world.r[2]);
 	XMVECTOR EYE = world.r[3];

@@ -9,57 +9,43 @@ JD2DTextEngine* JD2DTextEngine::GetInstance()
 	return m_Instance;
 }
 
-void JD2DTextEngine::AddRTForD3D11Texture2D(const std::string& name, ID3D11Texture2D* texture2d)
+void JD2DTextEngine::AddRTsForD3D11Texture2D(UINT uid, ID3D11Texture2D** texture2d)
 {
-	ComPtr<ID2D1RenderTarget> rt{};
+	for (UINT i = 0; i < kNumRenderTarget; ++i) {
+		UINT id = (uid * kNumRenderTarget) + i;
+		ComPtr<ID2D1RenderTarget> rt{};
+		ComPtr<IDXGISurface> dxgisurface{};
+		ThrowIfFailed(texture2d[i]->QueryInterface(IID_PPV_ARGS(dxgisurface.ReleaseAndGetAddressOf())));
 
-	if (!texture2d) {
+
+		D2D1_RENDER_TARGET_PROPERTIES properties{
+			.type = D2D1_RENDER_TARGET_TYPE_DEFAULT,
+			.pixelFormat = D2D1::PixelFormat(DXGI_FORMAT_UNKNOWN, D2D1_ALPHA_MODE_PREMULTIPLIED),
+		};
+		ThrowIfFailed(m_D2DFactory->CreateDxgiSurfaceRenderTarget(dxgisurface.Get(), properties, rt.ReleaseAndGetAddressOf()));
+
+		auto [iter, inserted] = m_RTTable.try_emplace(id, rt);
 #if DEV_MODE
-		spdlog::error("{0} 가 AddRTForD3D11Texture2D를 호출할 nullptr를 전달했습니다.", name.c_str());
+		if (not inserted)
+			spdlog::error("D2DEngine: {} - AddRTsForD3D11Texture2D Failed", uid);
 #endif
-		return;
 	}
-
-	ComPtr<IDXGISurface> dxgisurface{};
-	ThrowIfFailed(texture2d->QueryInterface(IID_PPV_ARGS(dxgisurface.ReleaseAndGetAddressOf())));
-
-
-	D2D1_RENDER_TARGET_PROPERTIES properties{
-		.type = D2D1_RENDER_TARGET_TYPE_DEFAULT,
-		.pixelFormat = D2D1::PixelFormat(DXGI_FORMAT_UNKNOWN, D2D1_ALPHA_MODE_PREMULTIPLIED),
-	};
-	ThrowIfFailed(m_D2DFactory->CreateDxgiSurfaceRenderTarget(dxgisurface.Get(), properties, rt.ReleaseAndGetAddressOf()));
-
-	auto [iter, inserted] = m_RTTable.try_emplace(name, rt);
-#if DEV_MODE
-	if (not inserted) ShowInsertedFailed(name, "JD2DTextEngine");
-#endif
 }
 
-void JD2DTextEngine::RenameInRTTable(const std::string& oldname, const std::string& newname)
+void JD2DTextEngine::DeleteInRTTable(UINT uid)
 {
-	if (oldname == newname) return;					// 새로운 이름이 같은가?
-	if (m_RTTable.contains(newname)) return;		// 새 이름이 이미 있는가?
-
-	auto item = m_RTTable.extract(oldname);
-	if (item.empty()) return;		// oldname을 가진 객체 없음
-
-	item.key() = newname;
-	m_RTTable.insert(std::move(item));
+	for (UINT i = 0; i < kNumRenderTarget; ++i) {
+		UINT id = (uid * kNumRenderTarget) + i;
+		if (m_RTTable.contains(id)) m_RTTable.erase(id);
+	}
 }
 
-void JD2DTextEngine::DeleteInRTTable(const std::string& name)
+void JD2DTextEngine::RenderText(UINT uid, UINT currentFrameIndex, IDWriteTextLayout* layout, ID2D1Brush* brush)
 {
-	if (not m_RTTable.contains(name)) return;	// 없음
-
-	m_RTTable.erase(name);
-}
-
-void JD2DTextEngine::RenderText(std::string& name, IDWriteTextLayout* layout, ID2D1Brush* brush)
-{
-	if (!m_RTTable.contains(name))
+	UINT id = (uid * kNumRenderTarget) + currentFrameIndex;
+	if (!m_RTTable.contains(id))
 		return;
-	ComPtr<ID2D1RenderTarget>& rt = m_RTTable[name];
+	ComPtr<ID2D1RenderTarget>& rt = m_RTTable[id];
 	rt->BeginDraw();
 	rt->Clear(D2D1::ColorF(0.f, 0.f, 0.f, 0.f));
 	D2D1_POINT_2F origin{};
@@ -87,30 +73,28 @@ void JD2DTextEngine::CreateTextLayout(ComPtr<IDWriteTextLayout>& layout, ComPtr<
 }
 
 
-ComPtr<ID2D1SolidColorBrush> JD2DTextEngine::CreateSolidColorBrush(std::string& name, XMFLOAT4 color)
+void JD2DTextEngine::CreateSolidColorBrush(ComPtr<ID2D1Brush>* brushes, UINT uid, XMFLOAT4 color)
 {
-	ComPtr<ID2D1SolidColorBrush> brush;
-	if (!m_RTTable.contains(name)) {
-#if DEV_MODE
-		spdlog::error("{0} 의 이름을 가진 RT가 없습니다. D2DTextEngine", name.c_str());
-#endif 
-		return brush;
+	for (UINT i = 0; i < kNumRenderTarget; ++i) {
+		UINT id = (uid * kNumRenderTarget) + i;
+		ComPtr<ID2D1SolidColorBrush> brush;
+		if (m_RTTable.contains(id)) {
+			ThrowIfFailed(m_RTTable[id]->CreateSolidColorBrush(D2D1::ColorF(color.x, color.y, color.z, color.w), brush.ReleaseAndGetAddressOf()));
+			brushes[i] = brush;
+		}
 	}
-	ThrowIfFailed(m_RTTable[name]->CreateSolidColorBrush(D2D1::ColorF(color.x, color.y, color.z, color.w), brush.ReleaseAndGetAddressOf()));
-	return brush;
 }
 
-ComPtr<ID2D1SolidColorBrush> JD2DTextEngine::CreateSolidColorBrush(std::string& name, D2D1::ColorF color)
+void JD2DTextEngine::CreateSolidColorBrush(ComPtr<ID2D1Brush>* brushes, UINT uid, D2D1::ColorF color)
 {
-	ComPtr<ID2D1SolidColorBrush> brush;
-	if (!m_RTTable.contains(name)) {
-#if DEV_MODE
-		spdlog::error("{0} 의 이름을 가진 RT가 없습니다. D2DTextEngine", name.c_str());
-#endif 
-		return brush;
+	for (UINT i = 0; i < kNumRenderTarget; ++i) {
+		UINT id = (uid * kNumRenderTarget) + i;
+		ComPtr<ID2D1SolidColorBrush> brush;
+		if (m_RTTable.contains(id)) {
+			ThrowIfFailed(m_RTTable[id]->CreateSolidColorBrush(color, brush.ReleaseAndGetAddressOf()));
+			brushes[i] = brush;
+		}
 	}
-	ThrowIfFailed(m_RTTable[name]->CreateSolidColorBrush(color, brush.ReleaseAndGetAddressOf()));
-	return brush;
 }
 
 JD2DTextEngine::JD2DTextEngine()

@@ -8,7 +8,7 @@ class JSpriteMeshConstant;
 // Mesh는 반드시 Plane을 줘야 함
 class JSpriteAnimationObject : public JStaticMeshObject {
 public:
-	JSpriteAnimationObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name = nullptr);
+	JSpriteAnimationObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT uid, const char* name = nullptr);
 	~JSpriteAnimationObject();
 
 	void Reset();

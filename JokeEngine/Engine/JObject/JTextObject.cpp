@@ -6,8 +6,8 @@
 
 constexpr float kTextScale = 0.05f;
 
-JTextObject::JTextObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name)
-	: JObject(vWorld, vWorldTP, nodeIndex, name)
+JTextObject::JTextObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT uid, const char* name)
+	: JObject(vWorld, vWorldTP, uid, name)
 {
 	SetText(L"Text", true);
 	SetFontName(L"Bahnschrift", true);
@@ -22,8 +22,8 @@ JTextObject::JTextObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4
 	case 11:
 		m_MeshCB = std::make_unique<JMeshConstantDX11>();
 		m_MeshCB->m_CBMesh.bSkinning = false;
-		m_MeshCB->m_CBMesh.nodeIndex = nodeIndex;
-		m_TextResource = std::make_unique<JTextResourceDX11>(name);
+		m_MeshCB->m_CBMesh.nodeIndex = uid;
+		m_TextResource = std::make_unique<JTextResourceDX11>(uid);
 		break;
 	case 12:
 		break;
@@ -94,11 +94,11 @@ void JTextObject::Update(float elapsedTime, XMFLOAT4X4* parent)
 		XMMATRIX tscale = XMMatrixScaling(textscale.x, textscale.y, 1.f);
 		XMMATRIX result = tscale * realworld;
 		// 연산용
-		XMStoreFloat4x4(&m_WorldTransform[m_NodeIndex], realworld);
+		XMStoreFloat4x4(&m_WorldTransform[m_UID], realworld);
 		// 아래는 렌더링용
-		XMStoreFloat4x4(&m_WorldTransformTP[m_NodeIndex], XMMatrixTranspose(result));
+		XMStoreFloat4x4(&m_WorldTransformTP[m_UID], XMMatrixTranspose(result));
 	}
-	m_MeshCB->m_CBMesh.nodeIndex = m_NodeIndex;
+	m_MeshCB->m_CBMesh.nodeIndex = m_UID;
 }
 
 void JTextObject::Render(UINT currentFrameIndex)
@@ -285,11 +285,9 @@ void JTextObject::MakeDirtyFlag()
 
 
 #if DEV_MODE
-BYTE JTextObject::RenderInspector()
+bool JTextObject::RenderInspector()
 {
-	BYTE dirty = JObject::RenderInspector();
-
-	if (dirty & 0b00000001) m_TextResource->SetName(m_name.c_str());
+	bool dirty = JObject::RenderInspector();
 
 	float cursorx = 94.f;
 	ImGui::SeparatorText("TextOption");

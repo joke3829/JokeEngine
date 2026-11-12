@@ -21,7 +21,7 @@ enum JText_Alignment : unsigned char {
 
 class JTextObject : public JObject {
 public:
-	JTextObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name = nullptr);
+	JTextObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT uid, const char* name = nullptr);
 	~JTextObject();
 
 	void Update(float elapsedTime, XMFLOAT4X4* parent = nullptr);
@@ -45,7 +45,7 @@ public:
 
 #if DEV_MODE
 public:
-	virtual BYTE RenderInspector();
+	virtual bool RenderInspector();
 protected:
 	unsigned char m_Selected_FontCollection{};
 	unsigned char m_Selected_HAlign{};

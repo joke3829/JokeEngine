@@ -5,7 +5,7 @@
 
 class JTextResourceDX11 : public JTextResourceD2D {
 public:
-	JTextResourceDX11(const char* name);
+	JTextResourceDX11(UINT uid);
 
 	void Update(float elapsedTime);
 	void UpdateBuffer(UINT currentFrameIndex);

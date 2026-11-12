@@ -1,8 +1,8 @@
 #include "JEditorPlayer.h"
 
 #if DEV_MODE
-JEditorPlayerObject::JEditorPlayerObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name)
-	: JPlayerObject(vWorld, vWorldTP, nodeIndex, name)
+JEditorPlayerObject::JEditorPlayerObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT uid, const char* name)
+	: JPlayerObject(vWorld, vWorldTP, uid, name)
 {
 
 }

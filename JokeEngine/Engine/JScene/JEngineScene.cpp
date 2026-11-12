@@ -32,7 +32,6 @@ void JEngineScene::ClearScene()
 	m_InitialCameraIdx = 0;
 
 	m_Objects.clear();
-	JObjectNameDuplicateManager::Clear();
 }
 
 JObject* JEngineScene::CreateObject(const char* ObjectType)
@@ -41,60 +40,38 @@ JObject* JEngineScene::CreateObject(const char* ObjectType)
 	m_WorldMatricesTP.emplace_back();
 	std::string name{};
 	std::unique_ptr<JObject> object;
-	bool noloop = false;
-	if (not JObjectNameDuplicateManager::DuplicateCheck(ObjectType)) {
-		object.reset(JObjectRegistry::CreateObject(
-			ObjectType,
-			m_WorldMatrices,
-			m_WorldMatricesTP,
-			static_cast<UINT>(m_WorldMatrices.size() - 1),
-			ObjectType));
-		noloop = true;
-		name = ObjectType;
-	}
-	bool breakloop = false;
-	if (not noloop) {
-		for (unsigned int i = 1; i < 0xFFFFFFFF; ++i) {
-			name = ObjectType + std::to_string(i);
-			if (JObjectNameDuplicateManager::DuplicateCheck(name)) continue;
-			object.reset(JObjectRegistry::CreateObject(
-				ObjectType,
-				m_WorldMatrices,
-				m_WorldMatricesTP,
-				static_cast<UINT>(m_WorldMatrices.size() - 1),
-				name.c_str()));
-			breakloop = true;
-			break;
-		}
-	}
+	object.reset(JObjectRegistry::CreateObject(
+		ObjectType,
+		m_WorldMatrices,
+		m_WorldMatricesTP,
+		static_cast<UINT>(m_WorldMatrices.size() - 1),
+		ObjectType));
+
 
 	if (!object) {
 #if DEV_MODE
-		if (breakloop)
-			spdlog::error("{} Create Failed.", ObjectType);
-		else
-			spdlog::error("{0}(num)가 너무 많습니다. {0}(num) 일부의 이름을 변경 후 다시 시도해주세요.", ObjectType);
+		spdlog::error("{} Create Failed.", ObjectType);
 #endif
 		return nullptr;
 	}
 
-	JObjectNameDuplicateManager::AddName(name);
 	JObject* ret = object.get();
-	m_Objects.try_emplace(object->GetName(), std::move(object));
+	m_Objects.try_emplace(object->GetUID(), std::move(object));
 
-	CDObjectInfo info{ ret->GetShaderName(), ret};
+	// 추가 요청
+	CDObjectInfo info{ ret->GetShaderName(), ret->GetUID(), ret};
 	m_CDQueue.push(info);
 	SetDirty();
 	return ret;
 }
 
-void JEngineScene::DeleteObject(const char* objectname)
+void JEngineScene::DeleteObject(UINT uid)
 {
 	// 실존하는지 찾고 
-	if (not m_Objects.contains(objectname)) return;
+	if (not m_Objects.contains(uid)) return;
+	auto& obj = m_Objects[uid];
 
-
-	if (JCameraObject* cp = dynamic_cast<JCameraObject*>(m_Objects[objectname].get())) {
+	if (JCameraObject* cp = dynamic_cast<JCameraObject*>(m_Objects[uid].get())) {
 		for (int i = 0; i < m_Cameras.size(); ++i) {
 			if (cp == m_Cameras[i]) {
 				m_Cameras.erase(m_Cameras.begin() + i);
@@ -106,7 +83,7 @@ void JEngineScene::DeleteObject(const char* objectname)
 			}
 		}
 	}
-	else if (JPlayerObject* pp = dynamic_cast<JPlayerObject*>(m_Objects[objectname].get())) {
+	else if (JPlayerObject* pp = dynamic_cast<JPlayerObject*>(m_Objects[uid].get())) {
 		for (int i = 0; i < m_Players.size(); ++i) {
 			if (pp == m_Players[i]) {
 				m_Players.erase(m_Players.begin() + i);
@@ -114,26 +91,14 @@ void JEngineScene::DeleteObject(const char* objectname)
 		}
 	}
 
-	JObjectNameDuplicateManager::DeleteName(objectname);
-	std::string tempname = objectname;	// dangling pointer 
-	m_Objects[objectname]->Delete();
-	m_Objects.erase(objectname);
 	CDObjectInfo info{};
-	info.name = tempname;
+	info.shadername = obj->GetShaderName();
+	info.uid = obj->GetUID();
 	m_CDQueue.push(info);
+	obj->Delete();
+	m_Objects.erase(info.uid);
+
 	SetDirty();
-}
-
-void JEngineScene::RenameObject(const char* oldName, const char* newName)
-{
-	if (not strcmp(oldName, newName)) return;
-	if (m_Objects.contains(newName)) return;
-
-	auto item = m_Objects.extract(oldName);
-	if (item.empty()) return;
-
-	item.key() = newName;
-	m_Objects.insert(std::move(item));
 }
 
 void JEngineScene::Update(float elapsedTime)
@@ -211,8 +176,7 @@ void JEngineScene::BuildDefaultEditorScene()
 		eplayer->SetPosition(15.f, 15.f, -15.f, true);
 		m_EditorPlayer = eplayer.get();
 
-		m_Objects.try_emplace(eplayer->GetName(), std::move(eplayer));
-		JObjectNameDuplicateManager::AddName("EditorPlayer");
+		m_Objects.try_emplace(eplayer->GetUID(), std::move(eplayer));
 
 		// Camera 추가 예제
 		m_WorldMatrices.emplace_back();
@@ -227,16 +191,15 @@ void JEngineScene::BuildDefaultEditorScene()
 		m_Cameras.emplace_back(m_EditorCamera);
 
 		m_EditorPlayer->Attach(camera.get());
-		JObjectNameDuplicateManager::AddName("EditorCamera");
 		m_CurrentMainCamera = 0;
-		m_Objects.try_emplace(camera->GetName(), std::move(camera));
+		m_Objects.try_emplace(camera->GetUID(), std::move(camera));
 	}
 
 	{	// StaticMesh 추가 예제
 		if (not CreateObject("JStaticMeshObject"))
 			spdlog::error("JStaticMeshObject 추가 실패");
 		else {
-			JStaticMeshObject* meshobject = dynamic_cast<JStaticMeshObject*>(m_Objects["JStaticMeshObject"].get());
+			JStaticMeshObject* meshobject = dynamic_cast<JStaticMeshObject*>(m_Objects[m_WorldMatrices.size() - 1].get());
 			meshobject->AddMaterial(contents["Resource/JKEngine/Materials/DefaultMaterial"]);
 			meshobject->SetShaderName("DefaultShader");
 			meshobject->SetStaticMesh(contents["Resource/JKEngine/Meshes/DefaultCube"].get());
@@ -248,7 +211,7 @@ void JEngineScene::BuildDefaultEditorScene()
 		if (not CreateObject("JSpriteAnimationObject"))
 			spdlog::error("JSpriteAnimationObject 추가 실패");
 		else {
-			JSpriteAnimationObject* spriteobject = dynamic_cast<JSpriteAnimationObject*>(m_Objects["JSpriteAnimationObject"].get());
+			JSpriteAnimationObject* spriteobject = dynamic_cast<JSpriteAnimationObject*>(m_Objects[m_WorldMatrices.size() - 1].get());
 			spriteobject->SetStaticMesh(contents["Resource/JKEngine/Meshes/DefaultPlaneq1"].get());
 			spriteobject->SetSpriteSet(contents["Resource/SpriteAnimation/TestSprite"]);
 			spriteobject->AddMaterial(contents["Resource/JKEngine/Materials/DefaultSpriteMaterial"]);
@@ -263,7 +226,7 @@ void JEngineScene::BuildDefaultEditorScene()
 		if(not CreateObject("JPlayerObject"))
 			spdlog::error("JPlayerObject 추가 실패");
 		else {
-			JPlayerObject* player = dynamic_cast<JPlayerObject*>(m_Objects["JPlayerObject"].get());
+			JPlayerObject* player = dynamic_cast<JPlayerObject*>(m_Objects[m_WorldMatrices.size() - 1].get());
 			player->SetPosition(0.f, 0.f, -15.f, true);
 			m_Players.emplace_back(player);
 			m_CurrentPlayer = 0;
@@ -272,7 +235,7 @@ void JEngineScene::BuildDefaultEditorScene()
 				spdlog::error("JCameraObject 추가 실패");
 			}
 			else {
-				JCameraObject* camera = dynamic_cast<JCameraObject*>(m_Objects["JCameraObject"].get());
+				JCameraObject* camera = dynamic_cast<JCameraObject*>(m_Objects[m_WorldMatrices.size() - 1].get());
 				m_Cameras.emplace_back(camera);
 				player->Attach(camera);
 			}
@@ -283,7 +246,7 @@ void JEngineScene::BuildDefaultEditorScene()
 		if (not CreateObject("JTextObject"))
 			spdlog::error("JTextObject 추가 실패");
 		else {
-			m_Objects["JTextObject"]->SetPosition(5.f, -5.f, 0.f, true);
+			m_Objects[m_WorldMatrices.size() - 1]->SetPosition(5.f, -5.f, 0.f, true);
 		}
 	}
 

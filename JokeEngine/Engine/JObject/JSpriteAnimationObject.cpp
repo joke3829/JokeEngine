@@ -7,8 +7,8 @@
 #include "Engine/JContent/JSpriteAnimationSet.h"
 #include "JObjectRegistry.h"
 
-JSpriteAnimationObject::JSpriteAnimationObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name)
-	: JStaticMeshObject(vWorld, vWorldTP, nodeIndex, name)
+JSpriteAnimationObject::JSpriteAnimationObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT uid, const char* name)
+	: JStaticMeshObject(vWorld, vWorldTP, uid, name)
 {
 	auto* opt = JEngineDefaultGlobalConfig::GetInstance()->GetConfigFactor();
 	switch (opt->DirectX_Version) {
@@ -44,7 +44,7 @@ void JSpriteAnimationObject::Update(float elapsedTime, XMFLOAT4X4* parent)
 {
 	m_ElapsedTime += elapsedTime;
 	
-	m_MeshCB->m_CBMesh.nodeIndex = m_NodeIndex;
+	m_MeshCB->m_CBMesh.nodeIndex = m_UID;
 	if (m_SpriteSet) {
 		const JSAnimData& data = m_SpriteSet->GetKeyFrameData(m_CurrentAnimation.first, m_ElapsedTime);
 		m_CurrentAnimation.second = data.materialIndex;

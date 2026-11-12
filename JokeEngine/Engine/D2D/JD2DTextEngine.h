@@ -6,20 +6,19 @@ class JD2DTextEngine {
 public:
 	static JD2DTextEngine* GetInstance();
 
-	void AddRTForD3D11Texture2D(const std::string& name, ID3D11Texture2D* texture2d);
-	void AddRTForD3D12Resource() {}
+	void AddRTsForD3D11Texture2D(UINT uid, ID3D11Texture2D** texture2d);
+	void AddRTsForD3D12Resource() {}
 
-	void RenameInRTTable(const std::string& oldname, const std::string& newname);
-	void DeleteInRTTable(const std::string& name);
+	void DeleteInRTTable(UINT uid);
 
 
-	void RenderText(std::string& name, IDWriteTextLayout* layout, ID2D1Brush* brush);
+	void RenderText(UINT uid, UINT currentFrameIndex, IDWriteTextLayout* layout, ID2D1Brush* brush);
 
 	void CreateTextFormat(ComPtr<IDWriteTextFormat3>& format, std::wstring& fontname, std::string& fontcollection, float fontsize, float fontweight, float fontwidth);
 	void CreateTextLayout(ComPtr<IDWriteTextLayout>& layout, ComPtr<IDWriteTextFormat3>& format, std::wstring& text, float maxwidth, float maxheight);
 
-	ComPtr<ID2D1SolidColorBrush> CreateSolidColorBrush(std::string& name, XMFLOAT4 color = XMFLOAT4(1.f, 1.f, 1.f, 1.f));
-	ComPtr<ID2D1SolidColorBrush> CreateSolidColorBrush(std::string& name, D2D1::ColorF color = D2D1::ColorF::White);
+	void CreateSolidColorBrush(ComPtr<ID2D1Brush>* brushes, UINT uid, XMFLOAT4 color = XMFLOAT4(1.f, 1.f, 1.f, 1.f));
+	void CreateSolidColorBrush(ComPtr<ID2D1Brush>* brushes, UINT uid, D2D1::ColorF color = D2D1::ColorF::White);
 
 
 protected:
@@ -31,5 +30,5 @@ protected:
 	ComPtr<IDWriteFactory8> m_DWriteFactory{};
 	ComPtr<ID2D1Factory8> m_D2DFactory{};
 
-	std::unordered_map<std::string, ComPtr<ID2D1RenderTarget>> m_RTTable{};
+	std::unordered_map<UINT, ComPtr<ID2D1RenderTarget>> m_RTTable{};
 };

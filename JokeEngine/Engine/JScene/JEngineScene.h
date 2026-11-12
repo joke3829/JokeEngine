@@ -8,7 +8,8 @@ class JPlayerObject;
 
 // Renderer가 최신화 할 때 체크하는 정보, object == nullptr일 시 제거 요청
 struct CDObjectInfo {	// CD: Create Delete
-	std::string name{};		// Create -> ShaderName, Delete -> ObjectName
+	std::string shadername{};
+	UINT uid{};				// 제거할 uid
 	JObject* object = nullptr;
 };
 
@@ -20,8 +21,7 @@ public:
 	void ClearScene();
 
 	JObject* CreateObject(const char* ObjectType);
-	void DeleteObject(const char* objectname);
-	void RenameObject(const char* oldName, const char* newName);
+	void DeleteObject(UINT uid);
 
 	void CreateSceneFromFile() {}
 
@@ -39,7 +39,7 @@ public:
 	void SetInputThread(std::shared_ptr<JInputThread>& input) { m_InputThread = input; }
 
 	// Scene 내 ObjectList 요청
-	std::unordered_map<std::string, std::unique_ptr<JObject>>& GetObjects() { return m_Objects; }
+	std::unordered_map<UINT, std::unique_ptr<JObject>>& GetObjects() { return m_Objects; }
 	std::queue<CDObjectInfo>& GetCDQueue() { return m_CDQueue; }
 
 	bool GetDirty() { return m_bDirty; }
@@ -62,7 +62,8 @@ protected:
 	JCameraObject* m_EditorCamera{};
 #endif
 protected:
-	std::unordered_map<std::string, std::unique_ptr<JObject>>			m_Objects;
+	// first: uid -> m_WorldMatrices.size()
+	std::unordered_map<UINT, std::unique_ptr<JObject>>			m_Objects;
 	std::vector<JCameraObject*>						m_Cameras{};
 	std::vector<JPlayerObject*>						m_Players{};
 	// player(character) 목록 추기

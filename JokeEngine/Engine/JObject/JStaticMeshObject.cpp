@@ -7,15 +7,15 @@
 
 
 
-JStaticMeshObject::JStaticMeshObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name)
-	: JObject(vWorld, vWorldTP, nodeIndex, name)
+JStaticMeshObject::JStaticMeshObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT uid, const char* name)
+	: JObject(vWorld, vWorldTP, uid, name)
 {
 	auto* opt = JEngineDefaultGlobalConfig::GetInstance()->GetConfigFactor();
 	switch (opt->DirectX_Version) {
 	case 11:
 		m_MeshCB = std::make_unique<JMeshConstantDX11>();
 		m_MeshCB->m_CBMesh.bSkinning = false;
-		m_MeshCB->m_CBMesh.nodeIndex = nodeIndex;
+		m_MeshCB->m_CBMesh.nodeIndex = uid;
 		break;
 	case 12:
 		break;
@@ -35,7 +35,7 @@ JStaticMeshObject::~JStaticMeshObject()
 
 void JStaticMeshObject::Update(float elapsedTime, XMFLOAT4X4* parent)
 {
-	m_MeshCB->m_CBMesh.nodeIndex = m_NodeIndex;
+	m_MeshCB->m_CBMesh.nodeIndex = m_UID;
 	m_MeshCB->Update(elapsedTime);
 	for (auto& p : m_Materials)
 		p->Update(elapsedTime);
@@ -93,9 +93,9 @@ void JStaticMeshObject::SetStaticMesh(JContent* mesh)
 
 
 #if DEV_MODE
-BYTE JStaticMeshObject::RenderInspector()
+bool JStaticMeshObject::RenderInspector()
 {
-	BYTE ret = JObject::RenderInspector();
+	bool ret = JObject::RenderInspector();
 
 	ImGui::SeparatorText("StaticMesh");
 	ImGui::Button("MeshTestButton", ImVec2(90.f, 90.f));

@@ -9,7 +9,7 @@ class JMeshConstant;
 
 class JStaticMeshObject : public JObject {
 public:
-	JStaticMeshObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name = nullptr);
+	JStaticMeshObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT uid, const char* name = nullptr);
 	virtual ~JStaticMeshObject();
 
 	virtual void Update(float elapsedTime, XMFLOAT4X4* parent = nullptr);
@@ -23,7 +23,7 @@ public:
 
 #if DEV_MODE
 public:
-	virtual BYTE RenderInspector();
+	virtual bool RenderInspector();
 #endif
 protected:
 	// 메시 상수 버퍼가 필요한데

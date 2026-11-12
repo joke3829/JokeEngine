@@ -21,13 +21,13 @@ class JEngineShader;
 
 class JObject : public JCommon {
 public:
-	JObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT nodeIndex, const char* name = nullptr);
+	JObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT uid, const char* name = nullptr);
 	virtual ~JObject() {}
 
 	virtual void Reset();
 
 	void Attach(JObject* leaf);
-	void Dettach(std::string& name);
+	void Dettach(UINT uid);
 	void MoveOut();				// 부모에게서 떨어져 나오기
 	void Delete();
 
@@ -42,6 +42,8 @@ public:
 	void SetShaderName(const char* name) { m_ShaderName = name; }
 	const std::string& GetShaderName() { return m_ShaderName; }
 	
+	const UINT& GetUID() { return m_UID; }
+
 	void SetActiveState(bool active, bool edit = false) { m_Active = active; if (edit) m_InitialActive = active; }
 	bool GetActiveState() { return m_Active; }
 
@@ -61,14 +63,14 @@ public:
 	const XMFLOAT3& GetScale() { return m_Scale; }
 
 	// Update 이후에 사용해야 올바른 값이 나온다.
-	const XMFLOAT4X4& GetWorldTransform() { return m_WorldTransform[m_NodeIndex]; }
+	const XMFLOAT4X4& GetWorldTransform() { return m_WorldTransform[m_UID]; }
 
 	std::vector<JObject*>& GetLeafObjects() { return m_LeafObjects; }
 
 #if DEV_MODE
 public:
 	void SetPlayMode(bool mod);
-	virtual BYTE RenderInspector();	// - - - - - - /렌더러 최신화/ /이름 변경/
+	virtual bool RenderInspector();	// true: need renderer update
 	const XMFLOAT4X4& GetParentWorldTransform() { return m_ParentWorldMatix; }
 protected:
 	XMFLOAT4X4 m_ParentWorldMatix{};
@@ -96,49 +98,10 @@ protected:
 	XMFLOAT3									m_InitialScale{ 1.f, 1.f, 1.f };
 
 	XMFLOAT4X4									m_LocalTransform{};
-	std::vector<XMFLOAT4X4>&					m_WorldTransform;				// 이것에[m_NodeIndex]가 m_WorldTransform
+	std::vector<XMFLOAT4X4>&					m_WorldTransform;				// 이것에[m_UID]가 m_WorldTransform
 	std::vector<XMFLOAT4X4>&					m_WorldTransformTP;				// Transpose WorldMatrix
-	UINT										m_NodeIndex{};					// node id로도 사용
+	UINT										m_UID{};						// node id로도 사용 == nodeindex
 	
 	std::string									m_ShaderName{};	// 이 오브젝트를 렌더링 할 때 사용할 Shader(매핑 할 때 사용)
 
-};
-
-
-
-class JObjectNameDuplicateManager {
-public:
-	static bool AddName(const char* name) { auto [it, inserted] = GetNameSet().insert(name); return inserted; }
-	static bool AddName(std::string& name) { auto [it, inserted] = GetNameSet().insert(name); return inserted; }
-
-	static bool DeleteName(const char* name) 
-	{ 
-		auto& s = GetNameSet(); 
-		if (s.contains(name)) { 
-			s.erase(std::string(name)); 
-			return true; 
-		} 
-		else 
-			return false; 
-	}
-	
-	static bool DeleteName(const std::string& name)
-	{
-		auto& s = GetNameSet();
-		if (s.contains(name)) {
-			s.erase(name);
-			return true;
-		}
-		else
-			return false;
-	}
-
-	static void Clear() { GetNameSet().clear(); }
-
-	static size_t GetNumNames() { return GetNameSet().size(); }
-
-	static bool DuplicateCheck(const char* name) { return GetNameSet().contains(name); }
-	static bool DuplicateCheck(std::string& name){ return GetNameSet().contains(name); }
-
-	static std::set<std::string>& GetNameSet() { static std::set<std::string> names; return names; }
 };
