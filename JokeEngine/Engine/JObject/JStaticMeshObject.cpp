@@ -132,42 +132,7 @@ bool JStaticMeshObject::RenderInspector()
 		ImGui::BeginDisabled(true);
 
 	ImGui::SeparatorText("StaticMesh");
-	ImGui::Text("Mesh");
-	{	// Mesh
-		ImVec2 curScreenPos = ImGui::GetCursorScreenPos();
-		ImVec2 curPos = ImGui::GetCursorPos();
-		ImVec2 rectmax{ curScreenPos.x + avail.x, curScreenPos.y + 62.f };
-		dl->AddRectFilled(curScreenPos, rectmax, IM_COL32(45, 50, 60, 255));
-		ImGui::SetCursorPos(ImVec2(curPos.x + 3.f, curPos.y + 3.f));
-		void* imageref = (m_StaticMesh) ? JGlobalContentManager::GetInstance()->GetManager()->GetContentTable()["Resource/JKEngine/Textures/StaticMeshFile.dds"]->GetDedicatedFactor()
-			: nullptr;
-		ImGui::ImageButton("MeshSelectButton", imageref, ImVec2(50.f, 50.f));
-		if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right, false)) m_StaticMesh = nullptr;
-		if (ImGui::BeginDragDropTarget()) {
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DRAG_CONTENT_BROWSER")) {
-				JContent* pcon = *static_cast<JContent* const*>(payload->Data);
-				JStaticMesh* pmesh = dynamic_cast<JStaticMesh*>(pcon);
-				if (pmesh)
-					m_StaticMesh = pmesh;
-			}
-			ImGui::EndDragDropTarget();
-		}
-		ImGui::SetCursorPos(ImVec2(curPos.x + 65.f, curPos.y + 6.f));
-		if (m_StaticMesh) {
-			ImGui::TextAligned(0.0f, avail.x - 65.f, m_StaticMesh->GetName().c_str());
-			dl->AddLineH(curScreenPos.x + 65, curScreenPos.x + avail.x - 3.f, curScreenPos.y + 25.f, IM_COL32(255, 255, 255, 255), 0.5f);
-			ImGui::SetCursorPos(ImVec2(curPos.x + 65.f, curPos.y + 33.f));
-			ImGui::Text("FilePath:");
-			ImGui::SetCursorPos(ImVec2(curPos.x + 65.f, curPos.y + 47.f));
-			ImGui::TextAligned(0.0f, avail.x - 65.f, m_StaticMesh->GetFullFilePath().string().c_str());
-		}
-		else {
-			ImGui::Text("No Mesh");
-		}
-		ImGui::SetCursorPos(ImVec2(curPos.x, curPos.y + 70.f));
-	}
 	{	// Material
-		ImGui::Separator();
 		ImGui::Text("Materials");
 		ImVec2 curPos = ImGui::GetCursorPos();
 		ImGui::SetCursorPos(ImVec2(curPos.x + avail.x - 43.f, curPos.y));
@@ -205,6 +170,41 @@ bool JStaticMeshObject::RenderInspector()
 			else {
 				ImGui::Text("No Material");
 			}
+		}
+		ImGui::SetCursorScreenPos(ImVec2(curScreenPos.x, curScreenPos.y + rectY + 6.f));
+	}
+	{	// Mesh
+		ImGui::Separator();
+		ImGui::Text("Mesh");
+		ImVec2 curScreenPos = ImGui::GetCursorScreenPos();
+		ImVec2 curPos = ImGui::GetCursorPos();
+		ImVec2 rectmax{ curScreenPos.x + avail.x, curScreenPos.y + 62.f };
+		dl->AddRectFilled(curScreenPos, rectmax, IM_COL32(45, 50, 60, 255));
+		ImGui::SetCursorPos(ImVec2(curPos.x + 3.f, curPos.y + 3.f));
+		void* imageref = (m_StaticMesh) ? JGlobalContentManager::GetInstance()->GetManager()->GetContentTable()["Resource/JKEngine/Textures/StaticMeshFile.dds"]->GetDedicatedFactor()
+			: nullptr;
+		ImGui::ImageButton("MeshSelectButton", imageref, ImVec2(50.f, 50.f));
+		if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right, false)) m_StaticMesh = nullptr;
+		if (ImGui::BeginDragDropTarget()) {
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DRAG_CONTENT_BROWSER")) {
+				JContent* pcon = *static_cast<JContent* const*>(payload->Data);
+				JStaticMesh* pmesh = dynamic_cast<JStaticMesh*>(pcon);
+				if (pmesh)
+					m_StaticMesh = pmesh;
+			}
+			ImGui::EndDragDropTarget();
+		}
+		ImGui::SetCursorPos(ImVec2(curPos.x + 65.f, curPos.y + 6.f));
+		if (m_StaticMesh) {
+			ImGui::TextAligned(0.0f, avail.x - 65.f, m_StaticMesh->GetName().c_str());
+			dl->AddLineH(curScreenPos.x + 65, curScreenPos.x + avail.x - 3.f, curScreenPos.y + 25.f, IM_COL32(255, 255, 255, 255), 0.5f);
+			ImGui::SetCursorPos(ImVec2(curPos.x + 65.f, curPos.y + 33.f));
+			ImGui::Text("FilePath:");
+			ImGui::SetCursorPos(ImVec2(curPos.x + 65.f, curPos.y + 47.f));
+			ImGui::TextAligned(0.0f, avail.x - 65.f, m_StaticMesh->GetFullFilePath().string().c_str());
+		}
+		else {
+			ImGui::Text("No Mesh");
 		}
 	}
 
