@@ -200,7 +200,7 @@ void JEngineScene::BuildDefaultEditorScene()
 			spdlog::error("JStaticMeshObject 추가 실패");
 		else {
 			JStaticMeshObject* meshobject = dynamic_cast<JStaticMeshObject*>(m_Objects[m_WorldMatrices.size() - 1].get());
-			meshobject->AddMaterial(contents["Resource/JKEngine/Materials/DefaultMaterial"]);
+			meshobject->AddMaterial(contents["Resource/JKEngine/Materials/DefaultMaterial"].get());
 			meshobject->SetShaderName("DefaultShader");
 			meshobject->SetStaticMesh(contents["Resource/JKEngine/Meshes/DefaultCube"].get());
 		}
@@ -214,7 +214,7 @@ void JEngineScene::BuildDefaultEditorScene()
 			JSpriteAnimationObject* spriteobject = dynamic_cast<JSpriteAnimationObject*>(m_Objects[m_WorldMatrices.size() - 1].get());
 			spriteobject->SetStaticMesh(contents["Resource/JKEngine/Meshes/DefaultPlaneq1"].get());
 			spriteobject->SetSpriteSet(contents["Resource/SpriteAnimation/TestSprite"]);
-			spriteobject->AddMaterial(contents["Resource/JKEngine/Materials/DefaultSpriteMaterial"]);
+			spriteobject->AddMaterial(contents["Resource/JKEngine/Materials/DefaultSpriteMaterial"].get());
 			spriteobject->SetShaderName("UVTransformShader");
 
 			spriteobject->SetScale(85.f, 85.f, 1.f, true);

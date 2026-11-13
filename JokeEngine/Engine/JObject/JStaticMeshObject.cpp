@@ -38,7 +38,8 @@ void JStaticMeshObject::Update(float elapsedTime, XMFLOAT4X4* parent)
 	m_MeshCB->m_CBMesh.nodeIndex = m_UID;
 	m_MeshCB->Update(elapsedTime);
 	for (auto& p : m_Materials)
-		p->Update(elapsedTime);
+		if(p)
+			p->Update(elapsedTime);
 
 	JObject::Update(elapsedTime, parent);
 }
@@ -56,16 +57,21 @@ void JStaticMeshObject::Render(UINT currentFrameIndex)
 
 	for (size_t i = 0; i < indices.size() && materialsize > 0; ++i) {
 		mati = (i >= materialsize) ? materialsize - 1 : i;
-		m_Materials[mati]->UpdateBuffer(currentFrameIndex);
-		m_Materials[mati]->SetGPUBuffer(currentFrameIndex, 2, JS_PS);
-		m_StaticMesh->Render(i);
+		if (m_Materials[mati]) {
+			m_Materials[mati]->UpdateBuffer(currentFrameIndex);
+			m_Materials[mati]->SetGPUBuffer(currentFrameIndex, 2, JS_PS);
+			m_StaticMesh->Render(i);
+		}
 	}
 
 }
 
-void JStaticMeshObject::AddMaterial(std::shared_ptr<JContent> material, int index)
+void JStaticMeshObject::AddMaterial(JContent* material, int index)
 {
-	std::shared_ptr<JMaterial> temp = std::dynamic_pointer_cast<JMaterial>(material);
+	if (not material) {	// -1 이면 그냥 슬롯 추가
+		m_Materials.emplace_back(); return;
+	}
+	JMaterial* temp = dynamic_cast<JMaterial*>(material);
 	if (!temp) {
 #if DEV_MODE
 		spdlog::error("{0} StaticMeshObject에서 잘못된 AddMaterial를 호출했습니다.", m_name.c_str());
@@ -78,6 +84,27 @@ void JStaticMeshObject::AddMaterial(std::shared_ptr<JContent> material, int inde
 	else {
 		m_Materials.emplace_back(temp);
 	}
+}
+
+void JStaticMeshObject::DeleteMaterial(int index)
+{
+	size_t size = m_Materials.size();
+	if (size <= 0) return;
+
+	if (index <= -1) { // 가장 뒷단의 material 제거
+		m_Materials.erase(m_Materials.end() - 1);
+		return;
+	}
+
+	if (size <= index) {	// index가 size를 넘어설 때
+#if DEV_MODE
+		spdlog::error("{} - DeleteMaterial에서 잘못된 index를 호출했습니다.", m_name);
+#endif
+		return;
+	}
+
+	// 지우기
+	m_Materials.erase(m_Materials.begin() + index);
 }
 
 void JStaticMeshObject::SetStaticMesh(JContent* mesh)
@@ -101,6 +128,8 @@ bool JStaticMeshObject::RenderInspector()
 
 	ImVec2 avail = ImGui::GetContentRegionAvail();
 	ImDrawList* dl = ImGui::GetWindowDrawList();
+	if (m_PlayMode)
+		ImGui::BeginDisabled(true);
 
 	ImGui::SeparatorText("StaticMesh");
 	ImGui::Text("Mesh");
@@ -140,7 +169,47 @@ bool JStaticMeshObject::RenderInspector()
 	{	// Material
 		ImGui::Separator();
 		ImGui::Text("Materials");
+		ImVec2 curPos = ImGui::GetCursorPos();
+		ImGui::SetCursorPos(ImVec2(curPos.x + avail.x - 43.f, curPos.y));
+		if(ImGui::Button("+##MaterialPlus", ImVec2(20, 20))) { AddMaterial(); }
+		ImGui::SetCursorPos(ImVec2(curPos.x + avail.x - 20.f, curPos.y));
+		if (ImGui::Button("-##MaterialMinus", ImVec2(20, 20))) { DeleteMaterial(); }
+		ImVec2 curScreenPos = ImGui::GetCursorScreenPos();
+		float matsize = static_cast<float>(m_Materials.size());
+		float rectY = 3.f + (matsize * 59.f);
+		dl->AddRectFilled(curScreenPos, ImVec2(curScreenPos.x + avail.x, curScreenPos.y + rectY), IM_COL32(45, 50, 60, 255));
+
+		for (size_t i = 0; i < matsize; ++i) {
+			ImGui::SetCursorScreenPos(ImVec2(curScreenPos.x + 3.f, curScreenPos.y + 3.f + (59.f * i)));
+			void* imageref = (m_Materials[i]) ? JGlobalContentManager::GetInstance()->GetManager()->GetContentTable()["Resource/JKEngine/Textures/MaterialFile.dds"]->GetDedicatedFactor()
+				: nullptr;
+			ImGui::ImageButton(std::string(std::to_string(i) + "##MaterialSelectButton").c_str(), imageref, ImVec2(50.f, 50.f));
+			if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right, false)) m_Materials[i] = nullptr;
+			if (ImGui::BeginDragDropTarget()) {
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DRAG_CONTENT_BROWSER")) {
+					JContent* pcon = *static_cast<JContent* const*>(payload->Data);
+					AddMaterial(pcon, i);
+				}
+				ImGui::EndDragDropTarget();
+			}
+
+			ImGui::SetCursorScreenPos(ImVec2(curScreenPos.x + 65.f, curScreenPos.y + 6.f + (59.f * i)));
+			if (m_Materials[i]) {
+				ImGui::TextAligned(0.0f, avail.x - 65.f, m_Materials[i]->GetName().c_str());
+				dl->AddLineH(curScreenPos.x + 65, curScreenPos.x + avail.x - 3.f, curScreenPos.y + 25.f + (59.f * i), IM_COL32(255, 255, 255, 255), 0.5f);
+				ImGui::SetCursorScreenPos(ImVec2(curScreenPos.x + 65.f, curScreenPos.y + 33.f + (59.f * i)));
+				ImGui::Text("FilePath:");
+				ImGui::SetCursorScreenPos(ImVec2(curScreenPos.x + 65.f, curScreenPos.y + 47.f + (59.f * i)));
+				ImGui::TextAligned(0.0f, avail.x - 65.f, m_Materials[i]->GetFullFilePath().string().c_str());
+			}
+			else {
+				ImGui::Text("No Material");
+			}
+		}
 	}
+
+	if (m_PlayMode)
+		ImGui::EndDisabled();
 
 	return ret;
 }

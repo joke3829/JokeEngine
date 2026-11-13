@@ -134,11 +134,11 @@ void JObject::SetPlayMode(bool mod)
 bool JObject::RenderInspector()
 {
 	bool dirty{};
+	if (m_PlayMode)
+		ImGui::BeginDisabled(true);
 	{	// General
 		float cursorx = 94.f;
 		ImGui::SeparatorText("General");
-		if (m_PlayMode)
-			ImGui::BeginDisabled(true);
 		ImGui::Text("Name"); ImGui::SameLine();
 		char cname[128]{};
 		strcpy(cname, m_name.c_str());
@@ -166,14 +166,10 @@ bool JObject::RenderInspector()
 			m_ShaderName = cname;
 			dirty = true;
 		}
-		if (m_PlayMode)
-			ImGui::EndDisabled();
 	}
 	{	// Transform
 		ImGui::SeparatorText("Transform");
 
-		if (m_PlayMode)
-			ImGui::BeginDisabled(true);
 
 		XMFLOAT3 scale = m_Scale;
 		XMFLOAT3 rotation = m_Rotation;
@@ -207,9 +203,9 @@ bool JObject::RenderInspector()
 		SetRotation(rotation, !m_PlayMode);
 		SetPosition(position, !m_PlayMode);
 
-		if (m_PlayMode)
-			ImGui::EndDisabled();
 	}
+	if (m_PlayMode)
+		ImGui::EndDisabled();
 	return dirty;
 }
 #endif

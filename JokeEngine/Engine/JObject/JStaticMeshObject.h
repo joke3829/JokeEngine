@@ -17,8 +17,8 @@ public:
 	virtual void Render(UINT currentFrameIndex);
 
 public:
-	void AddMaterial(std::shared_ptr<JContent> material, int index = -1);
-
+	void AddMaterial(JContent* material = nullptr, int index = -1);
+	void DeleteMaterial(int index = -1);
 	void SetStaticMesh(JContent* mesh);
 
 #if DEV_MODE
@@ -29,7 +29,7 @@ protected:
 	// 메시 상수 버퍼가 필요한데
 	std::unique_ptr<JMeshConstant>					m_MeshCB{};
 
-	std::vector<std::shared_ptr<JMaterial>>			m_Materials{};
+	std::vector<JMaterial*>			m_Materials{};
 
 	JStaticMesh*					m_StaticMesh{};
 };

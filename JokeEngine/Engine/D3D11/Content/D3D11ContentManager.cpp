@@ -94,6 +94,14 @@ void JContentManagerDX11::ReadyDefaultContent()
 #endif
 	}
 	{
+		std::shared_ptr<JTextureDX11> texture = std::make_shared<JTextureDX11>("Resource/JKEngine/Textures/MaterialFile.dds");
+		texture->Initialize();
+		auto [iter, inserted] = m_ContentLookupTable.try_emplace(texture->GetFullFilePath(), texture);
+#if DEV_MODE
+		if (not inserted) ShowInsertedFailed(texture->GetFullFilePath().string(), "ContentManager");
+#endif
+	}
+	{
 		std::shared_ptr<JTextureDX11> texture = std::make_shared<JTextureDX11>("Resource/test.dds");
 		texture->Initialize();
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(texture->GetFullFilePath(), texture);
