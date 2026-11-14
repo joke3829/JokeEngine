@@ -123,8 +123,7 @@ void JContentManagerDX11::ReadyDefaultContent()
 	{
 		std::shared_ptr<JMaterialDX11> material = std::make_shared<JMaterialDX11>("Resource/JKEngine/Materials/DefaultMaterial");
 		material->Initialize();
-		material->SetMissingTexture(m_ContentLookupTable["Resource/JKEngine/Textures/MissingTexture.png"]);
-		material->SetTexture(m_ContentLookupTable["Resource/test.dds"], TextureOrder::Albedo);
+		material->SetTexture(m_ContentLookupTable["Resource/test.dds"].get(), TextureOrder::BaseColor);
 
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(material->GetFullFilePath(), material);
 #if DEV_MODE
@@ -135,8 +134,7 @@ void JContentManagerDX11::ReadyDefaultContent()
 	{
 		std::shared_ptr<JMaterialDX11> material = std::make_shared<JMaterialDX11>("Resource/JKEngine/Materials/DefaultSpriteMaterial");
 		material->Initialize();
-		material->SetMissingTexture(m_ContentLookupTable["Resource/JKEngine/Textures/MissingTexture.png"]);
-		material->SetTexture(m_ContentLookupTable["Resource/SpriteAnimation/mushroom.dds"], TextureOrder::Albedo);
+		material->SetTexture(m_ContentLookupTable["Resource/SpriteAnimation/mushroom.dds"].get(), TextureOrder::BaseColor);
 
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(material->GetFullFilePath(), material);
 #if DEV_MODE

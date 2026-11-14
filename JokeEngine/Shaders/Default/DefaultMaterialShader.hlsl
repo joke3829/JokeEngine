@@ -52,13 +52,13 @@ float4 DefaultPS(DefaultPSInput input) : SV_Target
 #ifdef D3D12_TEXTURE_REGISTER
     return float4(1.f, 1.f, 0.f, 1.f);
 #endif
-    if (g_Material.AlbedoTexIndex)
+    if (g_Material.BaseColorTexIndex != -1)
     {
-        finalColor = g_Material.Albedo * g_Texture[0].Sample(g_Sampler, input.TexCoord0);
+        finalColor = g_Material.BaseColor * g_Texture[0].Sample(g_Sampler, input.TexCoord0);
     }
     else
     {
-        finalColor = g_Material.Albedo;
+        finalColor = g_Material.BaseColor;
     }
     
     if (finalColor.a <= 0.1f)

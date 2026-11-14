@@ -29,6 +29,7 @@ public:
 public:
 	virtual void RenderGUI(ImVec2 startPos, void* imageref = nullptr);
 	void RenderGeneralInspect();
+	void CheckRenderDetailPanelAndRender();
 	virtual void RenderDetailPanel() { RenderGeneralInspect(); }
 	virtual void* GetDedicatedFactor() { return nullptr; }
 protected:

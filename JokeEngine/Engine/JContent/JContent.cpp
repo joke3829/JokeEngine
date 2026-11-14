@@ -44,12 +44,6 @@ void JContent::RenderGUI(ImVec2 startPos, void* imageref)
 	if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && ImGui::IsItemHovered()) {
 		m_ShowDetailGui = true;
 	}
-	if (m_ShowDetailGui) {
-		if (ImGui::Begin(std::string(m_name + " DetailPanel").c_str(), &m_ShowDetailGui, ImGuiWindowFlags_AlwaysAutoResize)) {
-			RenderDetailPanel();
-		}
-		ImGui::End();
-	}
 	ImVec2 TextPos = startPos; TextPos.y += 96; TextPos.x += 5.5f;
 	ImGui::SetCursorPos(TextPos);
 	ImGui::TextAligned(0.5f, 110, m_name.c_str());
@@ -57,7 +51,7 @@ void JContent::RenderGUI(ImVec2 startPos, void* imageref)
 
 void JContent::RenderGeneralInspect()
 {
-	float cursorx = 94.f;
+	float cursorx = 120.f;
 	ImGui::SeparatorText("General");
 	char cname[128]{};
 	strcpy(cname, m_name.c_str());
@@ -66,8 +60,24 @@ void JContent::RenderGeneralInspect()
 	ImGui::SetCursorPosX(cursorx);
 	if (ImGui::InputText("##InputName", cname, std::size(cname), ImGuiInputTextFlags_EnterReturnsTrue)) {
 		if (IsValidString(cname)) {
-			m_name = cname;
+			std::filesystem::path tpath(cname);
+			if (tpath.extension() != m_FullFilePath.extension()) {
+				m_name = cname + m_FullFilePath.extension().string();
+			}
+			else
+				m_name = cname;
 		}
+	}
+}
+
+void JContent::CheckRenderDetailPanelAndRender()
+{
+	if (m_ShowDetailGui) {
+		ImGui::SetNextWindowSize(ImVec2(500.f, 640.f), ImGuiCond_FirstUseEver);
+		if (ImGui::Begin(std::string(m_name + " DetailPanel###" + std::to_string(reinterpret_cast<uintptr_t>(this))).c_str(), &m_ShowDetailGui)) {
+			RenderDetailPanel();
+		}
+		ImGui::End();
 	}
 }
 #endif

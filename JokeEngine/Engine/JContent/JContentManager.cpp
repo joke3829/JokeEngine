@@ -24,6 +24,7 @@ void JContentManager::RenderImGuiContents(ImVec2 startCursorPos, int row, int co
 			p.second->RenderGUI(curPos);
 			++scol;
 		}
+		p.second->CheckRenderDetailPanelAndRender();
 	}
 }
 #endif

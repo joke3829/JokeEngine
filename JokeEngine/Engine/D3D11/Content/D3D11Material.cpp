@@ -19,8 +19,6 @@ JMaterialDX11::JMaterialDX11(const char* name)
 	
 	for(UINT i = 0 ; i < kNumRenderTarget; ++i)
 		ThrowIfFailed(device->CreateBuffer(&desc, nullptr, m_MaterialConstantBuffer[i].GetAddressOf()));
-
-	m_Textures.assign(TextureOrder::Count, nullptr);
 }
 
 void JMaterialDX11::UpdateBuffer(UINT currentFrameIndex)
@@ -57,7 +55,7 @@ void JMaterialDX11::SetGPUBuffer(UINT currentFrameIndex, UINT parameter, JShader
 
 	ID3D11ShaderResourceView* srvs[TextureOrder::Count]{};
 	for (UINT i = 0; i < m_Textures.size(); ++i)
-		srvs[i] = m_Textures[i]->GetSRV();
+		srvs[i] = (m_Textures[i]) ? reinterpret_cast<ID3D11ShaderResourceView*>(m_Textures[i]->GetDedicatedFactor()) : nullptr;
 
 	switch (stage) {
 	case JS_VS:
@@ -89,46 +87,5 @@ void JMaterialDX11::SetGPUBuffer(UINT currentFrameIndex, UINT parameter, JShader
 		spdlog::error("[DX11] {0}에서 잘못된 SetGPUBuffer를 호출했습니다.", m_name.c_str());
 #endif
 		assert(0);
-	}
-}
-
-void JMaterialDX11::SetMissingTexture(std::shared_ptr<JContent>& MissingTexture)
-{
-	auto texDx11 = std::dynamic_pointer_cast<JTextureDX11>(MissingTexture);
-	if (!texDx11) {
-#if DEV_MODE
-		spdlog::error("{0} material에서 잘못된 texture를 이용한 SetMissingTexture을 호출했습니다.", m_name.c_str());
-#endif
-		return;
-	}
-
-	for (auto& t : m_Textures)
-		t = texDx11;
-}
-
-void JMaterialDX11::SetTexture(std::shared_ptr<JContent>& texture, TextureOrder order)
-{
-	auto texDx11 = std::dynamic_pointer_cast<JTextureDX11>(texture);
-	if (!texDx11) {
-#if DEV_MODE
-		spdlog::error("{0} material에서 잘못된 texture를 이용한 SetTexture를 호출했습니다.", m_name.c_str());
-#endif
-		return;
-	}
-
-	switch (order) {
-	case Albedo:
-		m_Textures[order] = texDx11;
-		m_SimpleMaterial.AlbedoTexIndex = 1;
-		break;
-	case Normal:
-		m_Textures[order] = texDx11;
-		//m_SimpleMaterial.Normal = 1;
-		break;
-	default:
-#if DEV_MODE
-		spdlog::error("{0} material에서 SetTexture에 잘못된 order를 설정했습니다.", m_name.c_str());
-#endif
-		break;
 	}
 }

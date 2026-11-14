@@ -41,11 +41,13 @@ struct DefaultPSInput
 
 struct DefaultMaterial
 {
-    float4 Albedo;
-    float4 Specular;
-    float4 Ambient;
+    float4 BaseColor;
     float4 Emissive;
-    int AlbedoTexIndex; // dx11: 0 or 1(true false)   dx12: -1 ~ g_TextureIndex
+    float2 MetallicRoughness;
+    float2 padding;
+    
+    int BaseColorTexIndex; // dx11: -1 or num(true false)   dx12: -1 ~ g_TextureIndex
+    int NormalTexIndex;
 };
 
 
