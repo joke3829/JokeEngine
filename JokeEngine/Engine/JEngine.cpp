@@ -6,10 +6,13 @@
 #include "Engine/JObject/JCameraObject.h"
 #endif
 
+HWND g_Hwnd = nullptr;
+
 // =======================================================================
 
 void JokeEngine::Initialize(HWND hWnd, HINSTANCE hInstance)
 {
+	g_Hwnd = hWnd;
 	m_hWnd = hWnd; m_hInstance = hInstance;
 
 	auto* p = JD2DTextEngine::GetInstance();
@@ -851,10 +854,9 @@ void JokeEngineDX11::RenderSceneImage()
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.f, 1.f, 0.f, 1.f));
 		auto& io = ImGui::GetIO();
 		ImGui::Text("%.2fFPS", io.Framerate);
-		ImGui::Text("%.1f, %.1f", io.MousePos.x, io.MousePos.y);
-		ImGui::Text("GetCursorPos: %.1f, %.1f", InitCursorPos.x, InitCursorPos.y);
-		ImGui::Text("GetCursorScreenPos: %.1f, %.1f", m_OldEditorSceneSP.x, m_OldEditorSceneSP.y);
-		ImGui::Text("%.1f, %.1f", avail.x, avail.y);
+		ImGui::Text("MousePos: %.1f, %.1f", io.MousePos.x, io.MousePos.y);
+		auto rtsize = m_Renderer->GetTargetSize();
+		ImGui::Text("RTSize: %d, %d", rtsize.x, rtsize.y);
 		ImGui::PopStyleColor();
 	}
 	ImGui::PopStyleVar();

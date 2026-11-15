@@ -67,6 +67,13 @@ JStaticMesh::JStaticMesh(XMFLOAT3 center, XMFLOAT3 extent, const char* name)
 
     m_Colors.emplace_back(XMFLOAT4(1.f, 1.f, 1.f, 1.f));
     m_TexCoord1.emplace_back(XMFLOAT2());
+    m_MeshOwnerFlag =
+        MeshOwnerFlag_HasVertex |
+        MeshOwnerFlag_HasNormal |
+        MeshOwnerFlag_HasTangent |
+        MeshOwnerFlag_HasBiTangent |
+        MeshOwnerFlag_HasTexCoord0 |
+        MeshOwnerFlag_HasIndices;
 }
 
 // 구(Sphere) 생성자, 
@@ -167,6 +174,14 @@ JStaticMesh::JStaticMesh(XMFLOAT3 center, float radius, UINT sliceCount, UINT st
 
     m_Colors.emplace_back(XMFLOAT4(1.f, 1.f, 1.f, 1.f));
     m_TexCoord1.emplace_back(XMFLOAT2());
+
+    m_MeshOwnerFlag =
+        MeshOwnerFlag_HasVertex |
+        MeshOwnerFlag_HasNormal |
+        MeshOwnerFlag_HasTangent |
+        MeshOwnerFlag_HasBiTangent |
+        MeshOwnerFlag_HasTexCoord0 |
+        MeshOwnerFlag_HasIndices;
 }
 
 // 평면 생성, 
@@ -238,6 +253,14 @@ JStaticMesh::JStaticMesh(XMFLOAT3 center, float width, float height, JSMPlane qu
 
     m_Colors.emplace_back(XMFLOAT4(1.f, 1.f, 1.f, 1.f));
     m_TexCoord1.emplace_back(XMFLOAT2());
+
+    m_MeshOwnerFlag =
+        MeshOwnerFlag_HasVertex |
+        MeshOwnerFlag_HasNormal |
+        MeshOwnerFlag_HasTangent |
+        MeshOwnerFlag_HasBiTangent |
+        MeshOwnerFlag_HasTexCoord0 |
+        MeshOwnerFlag_HasIndices;
 }
 
 
@@ -246,5 +269,32 @@ JStaticMesh::JStaticMesh(XMFLOAT3 center, float width, float height, JSMPlane qu
 void JStaticMesh::RenderGUI(ImVec2 startPos, void* imageref)
 {
     JContent::RenderGUI(startPos, JGlobalContentManager::GetInstance()->GetManager()->GetContentTable()["Resource/JKEngine/Textures/StaticMeshFile.dds"]->GetDedicatedFactor());
+}
+
+void JStaticMesh::RenderDetailPanel()
+{
+    JContent::RenderDetailPanel();
+
+    ImGui::SeparatorText("Mesh Info");
+    ImGui::Text("Vertices:    %d", m_Vertices.size());
+    ImGui::Text("SubMeshes:  %d", (m_MeshOwnerFlag & MeshOwnerFlag_HasIndices) ? m_vIndices.size() : 1);
+    ImGui::Separator();
+    if (m_MeshOwnerFlag & MeshOwnerFlag_HasIndices) {
+        for (int i = 0; i < m_vIndices.size(); ++i) {
+            ImGui::Text("SubMesh%d Triangles: %d", i, m_vIndices[i].size() / 3);
+        }
+    }
+    else {
+        ImGui::Text("SubMesh Triangles: %d", m_Vertices.size() / 3);
+    }
+
+    const char* tags[] = { "Vertex", "Color", "Normal", "Tangent", "BiTangent", "TexCoord0", "TexCoord1" };
+    ImGui::Separator();
+    ImGui::Text("Has Data: ");
+    for (int i = 0; i < std::size(tags); ++i) {
+        if (m_MeshOwnerFlag & (1 << i)) {
+            ImGui::Text(tags[i]);
+        }
+    }
 }
 #endif 

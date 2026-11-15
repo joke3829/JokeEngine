@@ -102,8 +102,5 @@ void JEngineRendererDX11::CreateRTV_DSV(UINT width, UINT height)
 		ThrowIfFailed(device->CreateRenderTargetView(m_RenderTarget[i].Get(), nullptr, m_RenderTargetView[i].ReleaseAndGetAddressOf()));
 		ThrowIfFailed(device->CreateDepthStencilView(m_DepthStencil[i].Get(), nullptr, m_DepthStencilView[i].ReleaseAndGetAddressOf()));
 	}
-#if DEV_MODE
-	spdlog::info("{} RTV_DSV Ready - Size: width - {}, height - {}", m_name.c_str(), width, height);
-#endif
 }
 

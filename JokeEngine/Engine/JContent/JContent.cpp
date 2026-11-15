@@ -68,6 +68,7 @@ void JContent::RenderGeneralInspect()
 				m_name = cname;
 		}
 	}
+	ImGui::Text("File Path: %s", m_FullFilePath.string().c_str());
 }
 
 void JContent::CheckRenderDetailPanelAndRender()

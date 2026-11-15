@@ -28,6 +28,14 @@ public:
 	const JSAnimData& GetKeyFrameData(std::string& animName, float& time); // time은 player가 관리 하되 현재 애니메이션의 시간을 초과하면 time을 초과한 시간을 제거하고 돌려줌
 
 	void LoadAnimationFactorFromYaml(const char* filepath);
+
+#if DEV_MODE
+public:
+	virtual void RenderGUI(ImVec2 startPos, void* imageref = nullptr);
+	virtual void RenderDetailPanel();
+protected:
+	int m_UISelectedAnimationSet{};
+#endif
 protected:
 	std::unordered_map<std::string, std::vector<JSAnimData>>	m_KeyFrame{};	// 반드시 0번째라도 채워두자
 	std::unordered_map<std::string, float>						m_PlayTime{};	// 애니메이션 별 엔드타임

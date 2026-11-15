@@ -2,6 +2,18 @@
 
 #include "JContent.h"
 
+enum MeshOwnerFlag_ {
+	MeshOwnerFlag_None = 0,
+	MeshOwnerFlag_HasVertex = 1 << 0,
+	MeshOwnerFlag_HasColor = 1 << 1,
+	MeshOwnerFlag_HasNormal = 1 << 2,
+	MeshOwnerFlag_HasTangent = 1 << 3,
+	MeshOwnerFlag_HasBiTangent = 1 << 4,
+	MeshOwnerFlag_HasTexCoord0 = 1 << 5,
+	MeshOwnerFlag_HasTexCoord1 = 1 << 6,
+	MeshOwnerFlag_HasIndices = 1 << 7
+};
+
 enum JSMPlane : unsigned char {
 	quad_no,
 	quad1,
@@ -29,13 +41,14 @@ public:
 #if DEV_MODE
 public:
 	virtual void RenderGUI(ImVec2 startPos, void* imageref = nullptr);
+	virtual void RenderDetailPanel();
 #endif
 protected:
 	virtual void LoadFromFile(const char* name) {}
 
 protected:
-	// cpu상에선 필요없을 수 있으나 현재는 메모리가 부족할 일은 없다 판단하기에 보류
-	// 하나로 묶을까?
+	unsigned short					m_MeshOwnerFlag{};
+
 	std::vector<XMFLOAT3>			m_Vertices{};
 	std::vector<XMFLOAT4>			m_Colors{};
 	std::vector<XMFLOAT3>			m_Normals{};

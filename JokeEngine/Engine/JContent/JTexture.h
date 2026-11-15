@@ -9,7 +9,6 @@ public:
 
 	virtual void LoadTextureFromFile(const wchar_t* filepath) {}
 	virtual void MakeMissingTexture() {}
-
 protected:
 	virtual void CreateContentFile() { MakeMissingTexture(); }
 };
