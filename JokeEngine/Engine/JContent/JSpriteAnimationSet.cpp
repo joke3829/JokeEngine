@@ -168,4 +168,23 @@ void JSpriteAnimationSet::RenderDetailPanel()
 	}
 
 }
+
+void JSpriteAnimationSet::ReadyTempData()
+{
+	JContent::ReadyTempData();
+	m_TempKeyFrame = m_KeyFrame;
+	m_TempPlayTime = m_PlayTime;
+}
+
+void JSpriteAnimationSet::ApplyTempDataToRealData()
+{
+	JContent::ApplyTempDataToRealData();
+}
+
+void JSpriteAnimationSet::CancelTempDataModify()
+{
+	m_KeyFrame = m_TempKeyFrame;
+	m_PlayTime = m_TempPlayTime;
+}
+
 #endif 

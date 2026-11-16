@@ -4,6 +4,8 @@
 #include "JObject/JObjectRegistry.h"
 #if DEV_MODE
 #include "Engine/JObject/JCameraObject.h"
+
+bool g_ModifiedContentPath = false;
 #endif
 
 HWND g_Hwnd = nullptr;

@@ -44,10 +44,14 @@ public:
 	virtual void RenderDetailPanel();
 #endif
 protected:
-	virtual void LoadFromFile(const char* name) {}
+	virtual void LoadFromFile();
+	virtual void CreateContentFile();
 
 protected:
+	virtual void BuffersReady() {}
 	unsigned short					m_MeshOwnerFlag{};
+
+	D3D_PRIMITIVE_TOPOLOGY			m_d3dTopology{};
 
 	std::vector<XMFLOAT3>			m_Vertices{};
 	std::vector<XMFLOAT4>			m_Colors{};

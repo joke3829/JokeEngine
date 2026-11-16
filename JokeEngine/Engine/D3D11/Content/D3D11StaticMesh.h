@@ -40,8 +40,6 @@ private:
 	void BuffersReady();
 
 private:
-	D3D11_PRIMITIVE_TOPOLOGY			m_d3dTopology{};
-
 	UINT								m_strides[7]{};
 	UINT								m_offsets[7]{};
 

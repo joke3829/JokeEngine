@@ -42,6 +42,7 @@ void JContent::RenderGUI(ImVec2 startPos, void* imageref)
 		ImGui::EndDragDropSource();
 	}
 	if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && ImGui::IsItemHovered()) {
+		ReadyTempData();
 		m_ShowDetailGui = true;
 	}
 	ImVec2 TextPos = startPos; TextPos.y += 96; TextPos.x += 5.5f;
@@ -54,7 +55,7 @@ void JContent::RenderGeneralInspect()
 	float cursorx = 120.f;
 	ImGui::SeparatorText("General");
 	char cname[128]{};
-	strcpy(cname, m_name.c_str());
+	strcpy(cname, m_ModifyName.c_str());
 	ImGui::Text("Name"); ImGui::SameLine();
 	
 	ImGui::SetCursorPosX(cursorx);
@@ -62,23 +63,66 @@ void JContent::RenderGeneralInspect()
 		if (IsValidString(cname)) {
 			std::filesystem::path tpath(cname);
 			if (tpath.extension() != m_FullFilePath.extension()) {
-				m_name = cname + m_FullFilePath.extension().string();
+				m_ModifyName = cname + m_FullFilePath.extension().string();
 			}
 			else
-				m_name = cname;
+				m_ModifyName = cname;
 		}
 	}
 	ImGui::Text("File Path: %s", m_FullFilePath.string().c_str());
 }
 
-void JContent::CheckRenderDetailPanelAndRender()
+bool JContent::CheckRenderDetailPanelAndRender()
 {
+	bool ret{};
 	if (m_ShowDetailGui) {
 		ImGui::SetNextWindowSize(ImVec2(500.f, 640.f), ImGuiCond_FirstUseEver);
 		if (ImGui::Begin(std::string(m_name + " DetailPanel###" + std::to_string(reinterpret_cast<uintptr_t>(this))).c_str(), &m_ShowDetailGui)) {
+			ImVec2 curScreenPos = ImGui::GetCursorScreenPos();
+			ImVec2 avail = ImGui::GetContentRegionAvail();
 			RenderDetailPanel();
+
+			ImGui::SetCursorScreenPos(ImVec2(curScreenPos.x + avail.x - 150.f, curScreenPos.y + avail.y - 20.f));
+			if (ImGui::Button("Save##TheEgo", ImVec2(70.f, 20.f))) {
+				// 임시를 실제로 바꾸고
+				ApplyTempDataToRealData();
+				// 파일 재생성(최신화)
+				CreateContentFile();
+				ret = true;
+				m_ShowDetailGui = false;
+			}
+			ImGui::SetCursorScreenPos(ImVec2(curScreenPos.x + avail.x - 70.f, curScreenPos.y + avail.y - 20.f));
+			if (ImGui::Button("Cancel##ChangeContent", ImVec2(70.f, 20.f))) {
+				CancelTempDataModify();
+				m_ShowDetailGui = false;
+			}
 		}
 		ImGui::End();
+	}
+	return ret;
+}
+
+void JContent::ReadyTempData()
+{
+	m_ModifyName = m_name;
+}
+
+void JContent::ApplyTempDataToRealData()
+{
+	if (m_name != m_ModifyName) {
+		// rename을 해주기
+		if (not std::filesystem::exists(m_FullFilePath)) {
+			spdlog::error("{} - Not exist File", m_FullFilePath.string());
+			return;
+		}
+
+		std::filesystem::path newPath = m_FullFilePath;
+
+		newPath.replace_filename(m_ModifyName);
+		std::filesystem::rename(m_FullFilePath, newPath);
+
+		m_name = m_ModifyName;
+		m_FullFilePath = newPath;
 	}
 }
 #endif

@@ -29,16 +29,22 @@ public:
 public:
 	virtual void RenderGUI(ImVec2 startPos, void* imageref = nullptr);
 	void RenderGeneralInspect();
-	void CheckRenderDetailPanelAndRender();
+	// first true일 시 이름 바뀐것
+	bool CheckRenderDetailPanelAndRender();
 	virtual void RenderDetailPanel() { RenderGeneralInspect(); }
 	virtual void* GetDedicatedFactor() { return nullptr; }
 protected:
+	virtual void ReadyTempData();
+	virtual void ApplyTempDataToRealData();
+	virtual void CancelTempDataModify() {}
+
+	std::string m_ModifyName{};
 	bool m_ShowDetailGui{};
 #endif
 
 protected:
-	// 파일이 없다면 새 content 파일 (json or yaml을 만들어라)
-	virtual void CreateContentFile() {}	
+	// 파일이 없다면 새 content 파일 + 기록	(자신의 값을 기록하는걸로 한다, 따라서 default 값을 반드시 지정해야한다.)
+	virtual void CreateContentFile() { /* 일반적인 visual studio 자료 크기를 사용, int: 4 */}
 	// 있다면 그걸 Load하라
 	virtual void LoadFromFile() {}
 	std::filesystem::path m_FullFilePath{};

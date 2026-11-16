@@ -46,7 +46,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     spdlog::info("Debug Console Start");
     spdlog::info("spdlog version: {}.{}.{}", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR, SPDLOG_VER_PATCH);
 #endif
-
+    // CoInitialize
+    HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+    if (S_OK != hr) {
+        spdlog::critical("CoInitializeEX Failed");
+    }
     // 전역 문자열을 초기화합니다.
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_JOKEENGINE, szWindowClass, MAX_LOADSTRING);
@@ -74,6 +78,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #if DEV_MODE
     FreeConsole();
 #endif
+    CoUninitialize();
 }
 
 

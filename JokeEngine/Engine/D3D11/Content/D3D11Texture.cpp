@@ -47,6 +47,8 @@ void JTextureDX11::MakeMissingTexture()
 	};
 
 	ThrowIfFailed(device->CreateShaderResourceView(m_Texture.Get(), nullptr, m_SRV.ReleaseAndGetAddressOf()));
+
+    m_Created = true;
 }
 
 
@@ -56,8 +58,8 @@ void JTextureDX11::LoadFromFile()
 
 	auto* device = JD3D11GlobalFactor::GetInstance()->GetDevice();
 	auto* context = JD3D11GlobalFactor::GetInstance()->GetDeviceContext();
+    ID3D11Resource** temp = reinterpret_cast<ID3D11Resource**>(m_Texture.ReleaseAndGetAddressOf());
 	if (ext == ".dds") {
-		ID3D11Resource** temp = reinterpret_cast<ID3D11Resource**>(m_Texture.ReleaseAndGetAddressOf());
 		ThrowIfFailed(DirectX::CreateDDSTextureFromFile(
 			device,
 			m_FullFilePath.wstring().c_str(),
@@ -66,8 +68,15 @@ void JTextureDX11::LoadFromFile()
 		));
 	}
 	else { // WIC
-
+        ThrowIfFailed(DirectX::CreateWICTextureFromFile(
+            device,
+            context,
+            m_FullFilePath.wstring().c_str(),
+            temp,
+            m_SRV.ReleaseAndGetAddressOf()));
 	}
+
+    m_Created = true;
 }
 
 #if DEV_MODE

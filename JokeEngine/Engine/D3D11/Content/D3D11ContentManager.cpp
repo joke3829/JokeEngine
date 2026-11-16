@@ -8,16 +8,15 @@ void JContentManagerDX11::ReadyDefaultContent()
 {
 	// 1. Default StaticMesh 준비
 	{	// Default Cube
-		std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>(XMFLOAT3(0.f, 0.f, 0.f), XMFLOAT3(2.5f, 2.5f, 2.5f), "Resource/JKEngine/Meshes/DefaultCube");
+		std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>("Resource/JKEngine/Meshes/Cube.jkmh");
 		mesh->Initialize();
-		//std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>(XMFLOAT3(0.f, 0.f, 0.f), 2.5f, 20, 20, 1, "DefaultCube");
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(mesh->GetFullFilePath(), mesh);
 #if DEV_MODE
 		if(not inserted) ShowInsertedFailed(mesh->GetFullFilePath().string(), "ContentManager");
 #endif
 	}
 	{ // Default Sphere
-		std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>(XMFLOAT3(0.f, 0.f, 0.f), 2.5f, 20, 20, 0, "Resource/JKEngine/Meshes/DefaultSphere");
+		std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>("Resource/JKEngine/Meshes/Sphere.jkmh");
 		mesh->Initialize();
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(mesh->GetFullFilePath(), mesh);
 #if DEV_MODE
@@ -27,7 +26,7 @@ void JContentManagerDX11::ReadyDefaultContent()
 
 	{	// DefaultPlane
 		//quad1
-		std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>(XMFLOAT3(0.f, 0.f, 0.f), 1.f, 1.f, JSMPlane::quad1, "Resource/JKEngine/Meshes/DefaultPlaneq1");
+		std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>("Resource/JKEngine/Meshes/Planeq1.jkmh");
 		mesh->Initialize();
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(mesh->GetFullFilePath(), mesh);
 #if DEV_MODE
@@ -35,7 +34,7 @@ void JContentManagerDX11::ReadyDefaultContent()
 #endif
 	}
 	{
-		std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>(XMFLOAT3(0.f, 0.f, 0.f), 1.f, 1.f, JSMPlane::quad2, "Resource/JKEngine/Meshes/DefaultPlaneq2");
+		std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>("Resource/JKEngine/Meshes/Planeq2.jkmh");
 		mesh->Initialize();
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(mesh->GetFullFilePath(), mesh);
 #if DEV_MODE
@@ -43,7 +42,7 @@ void JContentManagerDX11::ReadyDefaultContent()
 #endif
 	}
 	{
-		std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>(XMFLOAT3(0.f, 0.f, 0.f), 1.f, 1.f, JSMPlane::quad3, "Resource/JKEngine/Meshes/DefaultPlaneq3");
+		std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>("Resource/JKEngine/Meshes/Planeq3.jkmh");
 		mesh->Initialize();
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(mesh->GetFullFilePath(), mesh);
 #if DEV_MODE
@@ -51,7 +50,7 @@ void JContentManagerDX11::ReadyDefaultContent()
 #endif
 	}
 	{
-		std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>(XMFLOAT3(0.f, 0.f, 0.f), 1.f, 1.f, JSMPlane::quad4, "Resource/JKEngine/Meshes/DefaultPlaneq4");
+		std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>("Resource/JKEngine/Meshes/Planeq4.jkmh");
 		mesh->Initialize();
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(mesh->GetFullFilePath(), mesh);
 #if DEV_MODE
@@ -59,7 +58,7 @@ void JContentManagerDX11::ReadyDefaultContent()
 #endif
 	}
 	{
-		std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>(XMFLOAT3(0.f, 0.f, 0.f), 1.f, 1.f, JSMPlane::quad_no, "Resource/JKEngine/Meshes/DefaultPlane");
+		std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>("Resource/JKEngine/Meshes/Plane.jkmh");
 		mesh->Initialize();
 		auto [iter, inserted] = m_ContentLookupTable.try_emplace(mesh->GetFullFilePath(), mesh);
 #if DEV_MODE

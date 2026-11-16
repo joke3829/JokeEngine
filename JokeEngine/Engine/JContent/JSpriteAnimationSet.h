@@ -34,6 +34,13 @@ public:
 	virtual void RenderGUI(ImVec2 startPos, void* imageref = nullptr);
 	virtual void RenderDetailPanel();
 protected:
+	virtual void ReadyTempData();
+	virtual void ApplyTempDataToRealData();
+	virtual void CancelTempDataModify();
+
+	std::unordered_map<std::string, std::vector<JSAnimData>>	m_TempKeyFrame{};
+	std::unordered_map<std::string, float>						m_TempPlayTime{};
+
 	int m_UISelectedAnimationSet{};
 #endif
 protected:

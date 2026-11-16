@@ -70,6 +70,22 @@ void JMaterial::RenderGUI(ImVec2 startPos, void* imageref)
 	JContent::RenderGUI(startPos, JGlobalContentManager::GetInstance()->GetManager()->GetContentTable()["Resource/JKEngine/Textures/MaterialFile.dds"]->GetDedicatedFactor());
 }
 
+void JMaterial::ReadyTempData()
+{
+	JContent::ReadyTempData();
+	m_TempTextures = m_Textures;
+}
+
+void JMaterial::ApplyTempDataToRealData()
+{
+	JContent::ApplyTempDataToRealData();
+}
+
+void JMaterial::CancelTempDataModify()
+{
+	m_Textures = m_TempTextures;
+}
+
 // =================================================================
 
 void JDMaterial::RenderDetailPanel()
@@ -141,6 +157,23 @@ void JDMaterial::RenderDetailPanel()
 		}
 	}
 
+}
+
+void JDMaterial::ReadyTempData()
+{
+	JMaterial::ReadyTempData();
+	m_TempSimpleMaterial = m_SimpleMaterial;
+}
+
+void JDMaterial::ApplyTempDataToRealData()
+{
+	JMaterial::ApplyTempDataToRealData();
+}
+
+void JDMaterial::CancelTempDataModify()
+{
+	JMaterial::CancelTempDataModify();
+	m_SimpleMaterial = m_TempSimpleMaterial;
 }
 
 #endif

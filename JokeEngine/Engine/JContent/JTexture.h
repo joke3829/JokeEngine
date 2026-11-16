@@ -10,5 +10,6 @@ public:
 	virtual void LoadTextureFromFile(const wchar_t* filepath) {}
 	virtual void MakeMissingTexture() {}
 protected:
-	virtual void CreateContentFile() { MakeMissingTexture(); }
+	virtual void CreateContentFile() { if(not m_Created) MakeMissingTexture(); }
+	bool m_Created{}; // 이미 만들어졌나?
 };

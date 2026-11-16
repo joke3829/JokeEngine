@@ -13,7 +13,7 @@
 
 JEngineScene::JEngineScene()
 {
-	
+	m_name = "NewScene";
 }
 
 void JEngineScene::ClearScene()
@@ -173,7 +173,7 @@ void JEngineScene::BuildDefaultEditorScene()
 			"EditorPlayer"
 		);
 		eplayer->SetRotation(45.f, -45.f, 0.f, true);
-		eplayer->SetPosition(15.f, 15.f, -15.f, true);
+		eplayer->SetPosition(35.f, 35.f, -35.f, true);
 		m_EditorPlayer = eplayer.get();
 
 		m_Objects.try_emplace(eplayer->GetUID(), std::move(eplayer));
@@ -202,7 +202,7 @@ void JEngineScene::BuildDefaultEditorScene()
 			JStaticMeshObject* meshobject = dynamic_cast<JStaticMeshObject*>(m_Objects[m_WorldMatrices.size() - 1].get());
 			meshobject->AddMaterial(contents["Resource/JKEngine/Materials/DefaultMaterial"].get());
 			meshobject->SetShaderName("DefaultShader");
-			meshobject->SetStaticMesh(contents["Resource/JKEngine/Meshes/DefaultCube"].get());
+			meshobject->SetStaticMesh(contents["Resource/JKEngine/Meshes/Cube.jkmh"].get());
 		}
 	}
 
@@ -212,7 +212,7 @@ void JEngineScene::BuildDefaultEditorScene()
 			spdlog::error("JSpriteAnimationObject 추가 실패");
 		else {
 			JSpriteAnimationObject* spriteobject = dynamic_cast<JSpriteAnimationObject*>(m_Objects[m_WorldMatrices.size() - 1].get());
-			spriteobject->SetStaticMesh(contents["Resource/JKEngine/Meshes/DefaultPlaneq1"].get());
+			spriteobject->SetStaticMesh(contents["Resource/JKEngine/Meshes/Planeq1.jkmh"].get());
 			spriteobject->SetSpriteSet(contents["Resource/SpriteAnimation/TestSprite"]);
 			spriteobject->AddMaterial(contents["Resource/JKEngine/Materials/DefaultSpriteMaterial"].get());
 			spriteobject->SetShaderName("UVTransformShader");

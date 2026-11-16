@@ -37,6 +37,12 @@ public:
 #if DEV_MODE
 public:
 	void RenderGUI(ImVec2 startPos, void* imageref = nullptr);
+protected:
+	virtual void ReadyTempData();
+	virtual void ApplyTempDataToRealData();
+	virtual void CancelTempDataModify();
+
+	std::vector<JTexture*> m_TempTextures{};
 #endif
 protected:
 	std::vector<JTexture*>	m_Textures{};
@@ -54,6 +60,12 @@ public:
 #if DEV_MODE
 public:
 	virtual void RenderDetailPanel();
+protected:
+	virtual void ReadyTempData();
+	virtual void ApplyTempDataToRealData();
+	virtual void CancelTempDataModify();
+
+	cbSimpleMaterial							m_TempSimpleMaterial;
 #endif
 protected:
 	cbSimpleMaterial							m_SimpleMaterial{};

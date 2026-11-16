@@ -37,13 +37,13 @@ void JStaticMeshDX11::BuffersReady()
 	CreateBufferByInfo(device, D3D11_BIND_VERTEX_BUFFER, m_TexCoord0Buffer, m_TexCoord0);
 	CreateBufferByInfo(device, D3D11_BIND_VERTEX_BUFFER, m_TexCoord1Buffer, m_TexCoord1);
 
-	m_strides[0] = m_Vertices.size() > 1 ? sizeof(XMFLOAT3) : 0;
-	m_strides[1] = m_Colors.size() > 1 ? sizeof(XMFLOAT4) : 0;
-	m_strides[2] = m_Normals.size() > 1 ? sizeof(XMFLOAT3) : 0;
-	m_strides[3] = m_Tangents.size() > 1 ? sizeof(XMFLOAT3) : 0;
-	m_strides[4] = m_BiTangents.size() > 1 ? sizeof(XMFLOAT3) : 0;
-	m_strides[5] = m_TexCoord0.size() > 1 ? sizeof(XMFLOAT2) : 0;
-	m_strides[6] = m_TexCoord1.size() > 1 ? sizeof(XMFLOAT2) : 0;
+	m_strides[0] = (m_MeshOwnerFlag & MeshOwnerFlag_HasVertex) ? sizeof(XMFLOAT3) : 0;
+	m_strides[1] = (m_MeshOwnerFlag & MeshOwnerFlag_HasColor) > 1 ? sizeof(XMFLOAT4) : 0;
+	m_strides[2] = (m_MeshOwnerFlag & MeshOwnerFlag_HasNormal) > 1 ? sizeof(XMFLOAT3) : 0;
+	m_strides[3] = (m_MeshOwnerFlag & MeshOwnerFlag_HasTangent) > 1 ? sizeof(XMFLOAT3) : 0;
+	m_strides[4] = (m_MeshOwnerFlag & MeshOwnerFlag_HasBiTangent) > 1 ? sizeof(XMFLOAT3) : 0;
+	m_strides[5] = (m_MeshOwnerFlag & MeshOwnerFlag_HasTexCoord0) > 1 ? sizeof(XMFLOAT2) : 0;
+	m_strides[6] = (m_MeshOwnerFlag & MeshOwnerFlag_HasTexCoord1) > 1 ? sizeof(XMFLOAT2) : 0;
 
 	// index 버퍼 ready
 	for (size_t i = 0; i < m_vIndices.size(); ++i) {
@@ -71,7 +71,6 @@ void JStaticMeshDX11::Render()
 	};
 
 	context->IASetVertexBuffers(0, 7, buffers, m_strides, m_offsets);
-
 	for (size_t i = 0; i < m_vIndexBuffers.size(); ++i) {
 		context->IASetIndexBuffer(m_vIndexBuffers[i].Get(), DXGI_FORMAT_R32_UINT, 0);
 		context->DrawIndexed(m_vIndices[i].size(), 0, 0);
@@ -98,7 +97,9 @@ void JStaticMeshDX11::Render(UINT i)
 
 	context->IASetVertexBuffers(0, 7, buffers, m_strides, m_offsets);
 
-	context->IASetIndexBuffer(m_vIndexBuffers[i].Get(), DXGI_FORMAT_R32_UINT, 0);
-	context->DrawIndexed(m_vIndices[i].size(), 0, 0);
+	if (i >= 0 && m_vIndices.size() > i) {
+		context->IASetIndexBuffer(m_vIndexBuffers[i].Get(), DXGI_FORMAT_R32_UINT, 0);
+		context->DrawIndexed(m_vIndices[i].size(), 0, 0);
+	}
 }
 

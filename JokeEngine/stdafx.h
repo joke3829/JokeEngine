@@ -169,7 +169,7 @@ inline bool IsValidString(const char* str)
         return false;
 
 	return std::all_of(str, str + strlen(str), [](unsigned char c) {
-		return std::isalnum(c) || c == '_';
+		return std::isalnum(c) || c == '_' || c == '.';
 		});
 }
 
