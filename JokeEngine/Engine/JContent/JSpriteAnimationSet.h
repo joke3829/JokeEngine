@@ -44,6 +44,9 @@ protected:
 	int m_UISelectedAnimationSet{};
 #endif
 protected:
+	virtual void CreateContentFile();
+	virtual void LoadFromFile();
+
 	std::unordered_map<std::string, std::vector<JSAnimData>>	m_KeyFrame{};	// 반드시 0번째라도 채워두자
 	std::unordered_map<std::string, float>						m_PlayTime{};	// 애니메이션 별 엔드타임
 };

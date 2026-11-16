@@ -96,7 +96,47 @@ void JSpriteAnimationSet::LoadAnimationFactorFromYaml(const char* filepath)
 	}
 }
 
+void JSpriteAnimationSet::CreateContentFile()
+{
+	std::ofstream out{ m_FullFilePath, std::ios::binary };
+	unsigned int numAni = m_KeyFrame.size();
+	// 애니메이션 개수
+	out.write(reinterpret_cast<const char*>(&numAni), sizeof(unsigned int));
 
+	for (auto& adata : m_KeyFrame) {
+		// key 문자열 길이 + 문자열
+		const std::string& key = adata.first;
+		unsigned int keylen = key.length();
+		out.write(reinterpret_cast<const char*>(&keylen), sizeof(unsigned int));
+		out.write(key.data(), keylen);
+		// 애니메이션 총 시간
+		float time = m_PlayTime[key];
+		out.write(reinterpret_cast<const char*>(&time), sizeof(float));
+		// JSAnimData 개수 + 값
+		auto& vs = adata.second;
+		unsigned int vssize = vs.size();
+		out.write(reinterpret_cast<const char*>(&vssize), sizeof(unsigned int));
+		out.write(reinterpret_cast<const char*>(vs.data()), sizeof(JSAnimData) * vssize);
+	}
+}
+
+void JSpriteAnimationSet::LoadFromFile()
+{
+	std::ifstream in{ m_FullFilePath, std::ios::binary };
+	unsigned int numAni{};
+	in.read(reinterpret_cast<char*>(&numAni), sizeof(unsigned int));
+	for (unsigned int i = 0; i < numAni; ++i) {
+		unsigned int keylen{}; in.read(reinterpret_cast<char*>(&keylen), sizeof(unsigned int));
+		std::string key; key.resize(keylen); in.read(key.data(), keylen);
+		float anitime{}; in.read(reinterpret_cast<char*>(&anitime), sizeof(float));
+		unsigned int numd{}; in.read(reinterpret_cast<char*>(&numd), sizeof(unsigned int));
+		std::vector<JSAnimData> tempdata(numd);
+		in.read(reinterpret_cast<char*>(tempdata.data()), sizeof(JSAnimData) * numd);
+
+		m_KeyFrame.try_emplace(key, std::move(tempdata));
+		m_PlayTime.try_emplace(key, anitime);
+	}
+}
 
 #if DEV_MODE 
 void JSpriteAnimationSet::RenderGUI(ImVec2 startPos, void* imageref)
@@ -186,5 +226,4 @@ void JSpriteAnimationSet::CancelTempDataModify()
 	m_KeyFrame = m_TempKeyFrame;
 	m_PlayTime = m_TempPlayTime;
 }
-
 #endif 
