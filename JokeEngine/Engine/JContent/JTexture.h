@@ -7,7 +7,6 @@ public:
 	JTexture(const char* name) : JContent(name) {}
 	JTexture(std::filesystem::path name) : JContent(name) {}
 
-	virtual void LoadTextureFromFile(const wchar_t* filepath) {}
 	virtual void MakeMissingTexture() {}
 protected:
 	virtual void CreateContentFile() { if(not m_Created) MakeMissingTexture(); }

@@ -2,11 +2,6 @@
 #include "JTexture.h"
 #include "JContentManager.h"
 
-JMaterial::JMaterial(const char* name)
-	: JContent(name)
-{
-	
-}
 
 
 void JMaterial::DettachTexture(unsigned char order)
@@ -18,6 +13,12 @@ void JMaterial::DettachTexture(unsigned char order)
 
 JDMaterial::JDMaterial(const char* name)
 	: JMaterial(name)
+{
+	m_Textures.assign(TextureOrder::Count, nullptr);
+}
+
+JDMaterial::JDMaterial(std::filesystem::path filepath)
+	: JMaterial(filepath)
 {
 	m_Textures.assign(TextureOrder::Count, nullptr);
 }
@@ -59,6 +60,65 @@ void JDMaterial::DettachTexture(unsigned char order)
 	case TextureOrder::Normal:
 		m_SimpleMaterial.NormalTexIndex = -1;
 		break;
+	}
+}
+
+void JDMaterial::CreateContentFile()
+{
+	std::ofstream out{ m_FullFilePath, std::ios::binary };
+	// BaseColor
+	out.write(reinterpret_cast<const char*>(&m_SimpleMaterial.BaseColor), sizeof(XMFLOAT4));
+	// Metaillic
+	out.write(reinterpret_cast<const char*>(&m_SimpleMaterial.MetallicRoughnessFactor), sizeof(XMFLOAT2));
+	// Emissive
+	out.write(reinterpret_cast<const char*>(&m_SimpleMaterial.Emissive), sizeof(XMFLOAT4));
+
+	// 텍스쳐 정보 - 일단은 변화가 생기면 파일 직접 삭제 후 처음부터 생성하도록 하기(개선점)
+	for (int i = 0; i < TextureOrder::Count; ++i) {
+		bool exist{};
+		if (m_Textures[i] && i < m_Textures.size()) {
+			exist = true;
+			out.write(reinterpret_cast<const char*>(&exist), sizeof(bool));
+			std::string spath = m_Textures[i]->GetFullFilePath().string();
+			unsigned int len = spath.length();
+			out.write(reinterpret_cast<const char*>(&len), sizeof(unsigned int));
+			out.write(reinterpret_cast<const char*>(spath.data()), len);
+			continue;
+		}
+		out.write(reinterpret_cast<const char*>(&exist), sizeof(bool));
+	}
+}
+
+void JDMaterial::LoadFromFile()
+{
+	std::ifstream in{ m_FullFilePath, std::ios::binary };
+	in.read(reinterpret_cast<char*>(&m_SimpleMaterial.BaseColor), sizeof(XMFLOAT4));
+	in.read(reinterpret_cast<char*>(&m_SimpleMaterial.MetallicRoughnessFactor), sizeof(XMFLOAT2));
+	in.read(reinterpret_cast<char*>(&m_SimpleMaterial.Emissive), sizeof(XMFLOAT4));
+
+	auto& contents = JGlobalContentManager::GetInstance()->GetManager()->GetContentTable();
+
+ 
+	for (int i = 0; i < TextureOrder::Count; ++i) {
+		bool exist{};
+		in.read(reinterpret_cast<char*>(&exist), sizeof(bool));
+		if (exist) {
+			unsigned int len{};
+			in.read(reinterpret_cast<char*>(&len), sizeof(unsigned int));
+			std::string spath; spath.resize(len);
+			in.read(reinterpret_cast<char*>(spath.data()), len);
+			std::filesystem::path fpath = spath;
+			if (contents.contains(fpath)) {
+				SetTexture(contents[fpath].get(), i);
+			}
+			else { // 없으면 missing texture
+				SetTexture(contents["Resource/JKEngine/Textures/MissingTexture.png"].get(), i);
+			}
+			switch (i) { // 나중에 12 추가할 땐 텍스쳐마다 번호 지정해줘서 그 번호 얻어오게 하기
+			case TextureOrder::BaseColor: m_SimpleMaterial.BaseColorTexIndex = 1; break;
+			case TextureOrder::Normal: m_SimpleMaterial.NormalTexIndex = 1; break;
+			}
+		}
 	}
 }
 

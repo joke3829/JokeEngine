@@ -25,7 +25,8 @@ class JTexture;
 
 class JMaterial : public JContent {
 public:
-	JMaterial(const char* name = nullptr);
+	JMaterial(const char* name = nullptr) : JContent(name) {}
+	JMaterial(std::filesystem::path filepath) : JContent(filepath) {}
 
 	virtual void Update(float elapsedTime) {}
 	virtual void UpdateBuffer(UINT currentFrameIndex) {}
@@ -52,6 +53,7 @@ protected:
 class JDMaterial : public JMaterial {
 public:
 	JDMaterial(const char* name = nullptr);
+	JDMaterial(std::filesystem::path filepath);
 
 	virtual void SetTexture(JContent* texture, unsigned char order);
 	virtual void DettachTexture(unsigned char order);
@@ -68,6 +70,9 @@ protected:
 	cbSimpleMaterial							m_TempSimpleMaterial;
 #endif
 protected:
+	virtual void CreateContentFile();
+	virtual void LoadFromFile();
+
 	cbSimpleMaterial							m_SimpleMaterial{};
 	// 실제 텍스쳐 리스트는 DX쪽에서 자신의 버젼에 맞는 것의 리스트로 가진다.
 };

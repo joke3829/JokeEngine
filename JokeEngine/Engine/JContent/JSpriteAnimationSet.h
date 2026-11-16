@@ -23,7 +23,8 @@ struct JSAnimData {
 // keyframe에 대한 정보만 가진다.
 class JSpriteAnimationSet : public JContent {
 public:
-	JSpriteAnimationSet(const char* name = nullptr);
+	JSpriteAnimationSet(const char* name = nullptr) : JContent(name) {}
+	JSpriteAnimationSet(std::filesystem::path filepath) : JContent(filepath) {}
 
 	const JSAnimData& GetKeyFrameData(std::string& animName, float& time); // time은 player가 관리 하되 현재 애니메이션의 시간을 초과하면 time을 초과한 시간을 제거하고 돌려줌
 

@@ -2,11 +2,6 @@
 #include "JContentManager.h"
 
 
-JSpriteAnimationSet::JSpriteAnimationSet(const char* name)
-	: JContent(name)
-{
-}
-
 const JSAnimData& JSpriteAnimationSet::GetKeyFrameData(std::string& animName, float& time)
 {
 	if (!m_KeyFrame.contains(animName)) {

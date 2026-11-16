@@ -12,6 +12,7 @@ class JTextureDX11;
 class JMaterialDX11 final : public JDMaterial {
 public:
 	JMaterialDX11(const char* name = nullptr);
+	JMaterialDX11(std::filesystem::path filepath);
 
 	void Update(float elapsedTime) {}
 	void UpdateBuffer(UINT currentFrameIndex);

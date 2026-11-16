@@ -21,6 +21,25 @@ JMaterialDX11::JMaterialDX11(const char* name)
 		ThrowIfFailed(device->CreateBuffer(&desc, nullptr, m_MaterialConstantBuffer[i].GetAddressOf()));
 }
 
+JMaterialDX11::JMaterialDX11(std::filesystem::path filepath)
+	: JDMaterial(filepath)
+{
+	auto* gFactor = JD3D11GlobalFactor::GetInstance();
+	auto* device = gFactor->GetDevice();
+
+
+	// Usage, BindFlag 변화 고려
+	D3D11_BUFFER_DESC desc{
+	.ByteWidth = Align(sizeof(m_SimpleMaterial), 16),
+	.Usage = D3D11_USAGE_DYNAMIC,
+	.BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+	.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,
+	};
+
+	for (UINT i = 0; i < kNumRenderTarget; ++i)
+		ThrowIfFailed(device->CreateBuffer(&desc, nullptr, m_MaterialConstantBuffer[i].GetAddressOf()));
+}
+
 void JMaterialDX11::UpdateBuffer(UINT currentFrameIndex)
 {
 	auto* context = JD3D11GlobalFactor::GetInstance()->GetDeviceContext();

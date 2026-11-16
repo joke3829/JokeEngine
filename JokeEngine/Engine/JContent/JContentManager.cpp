@@ -2,7 +2,37 @@
 #include "Engine/D3D11/Content/D3D11ContentManager.h"
 #include "Engine/JokeEngineConfig.h"
 
-void JContentManager::AddContent(std::shared_ptr<JContent> content) 
+
+// 그 디렉토리 안에 하위 폴더를 전부 탐색 및 콘텐츠 생성
+// 누적을 원하면 clear = false
+void JContentManager::AddContentFromDirectory(std::filesystem::path filepath, bool clear)
+{
+	if(clear)
+		m_ContentLookupTable.clear(); // 부르기 전 clear
+
+	// missing texture부터 준비
+	ReadyMissingTexture();
+
+	std::vector<std::filesystem::path> matFiles;
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(filepath)) {
+		if (entry.path().extension() != ".jkmt") {
+			AddContentFromFile(entry.path());
+			continue;
+		}
+		matFiles.emplace_back(entry.path());
+	}
+
+	for (auto& matpath : matFiles) {
+		AddContentFromFile(matpath);
+	}
+}
+
+void JContentManager::ReadyMissingTexture()
+{
+	AddContentFromFile("Resource/JKEngine/Textures/MissingTexture.png");
+}
+
+void JContentManager::AddContent(std::shared_ptr<JContent> content)
 {
 	m_ContentLookupTable.insert({ content->GetFullFilePath(), content});
 }
@@ -32,8 +62,6 @@ JGlobalContentManager::JGlobalContentManager()
 	default:
 		break;
 	}
-
-	m_Manager->ReadyDefaultContent();
 }
 
 JGlobalContentManager::~JGlobalContentManager()

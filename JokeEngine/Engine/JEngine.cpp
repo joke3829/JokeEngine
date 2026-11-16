@@ -595,7 +595,7 @@ void JokeEngineDX11::Initialize(HWND hWnd, HINSTANCE hInstance)
 	auto* config = JEngineDefaultGlobalConfig::GetInstance()->GetConfigFactor();
 
 	// ContentManager Initialize
-	JGlobalContentManager::GetInstance();
+	JGlobalContentManager::GetInstance()->GetManager()->AddContentFromDirectory("Resource");
 
 	JokeEngine::Initialize(hWnd, hInstance);
 	

@@ -6,9 +6,11 @@
 class JContentManager {
 public:
 	
-	virtual void ReadyDefaultContent() {}							// Null Texture도 만들어 두기
-	virtual void AddContentFromDirectory(const char* dir) {}	// 그 디렉토리 안에 하위 폴더를 전부 탐색 및 콘텐츠 생성
-	virtual void AddContentFromFile(const char* filename) {}	// 하나의 특정 파일만 로드 할 때
+	virtual void ReadyDefaultContent() {}							// Null Texture도 만들어 두기, 이거 기능 바꿔라, 없을 때 만들어내는걸로
+
+
+	void AddContentFromDirectory(std::filesystem::path filepath, bool clear = true);
+	virtual void AddContentFromFile(std::filesystem::path filepath) {}	// 하나의 특정 파일만 로드 할 때 -> override
 	void AddContent(std::shared_ptr<JContent> content);
 
 	size_t GetNumContents() { return m_ContentLookupTable.size(); }
@@ -18,7 +20,7 @@ public:
 	void RenderImGuiContents(ImVec2 startCursorPos, int row, int col, int curRow, int curCol, const std::filesystem::path& parent);
 #endif
 protected:
-
+	void ReadyMissingTexture();
 	// key: FullPath -> 확장자 명까지, value: 실제 Content
 	std::unordered_map<std::filesystem::path, std::shared_ptr<JContent>>			m_ContentLookupTable{};
 };
