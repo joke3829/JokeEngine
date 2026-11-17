@@ -288,7 +288,8 @@ void JTextObject::MakeDirtyFlag()
 bool JTextObject::RenderInspector()
 {
 	bool dirty = JObject::RenderInspector();
-
+	if (m_PlayMode)
+		ImGui::BeginDisabled(true);
 	float cursorx = 94.f;
 	ImGui::SeparatorText("TextOption");
 	
@@ -366,6 +367,8 @@ bool JTextObject::RenderInspector()
 			ImGui::EndCombo();
 		}
 	}
+	if (m_PlayMode)
+		ImGui::EndDisabled();
 	return dirty;
 }
 #endif

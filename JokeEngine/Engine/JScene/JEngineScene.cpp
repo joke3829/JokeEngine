@@ -213,7 +213,7 @@ void JEngineScene::BuildDefaultEditorScene()
 		else {
 			JSpriteAnimationObject* spriteobject = dynamic_cast<JSpriteAnimationObject*>(m_Objects[m_WorldMatrices.size() - 1].get());
 			spriteobject->SetStaticMesh(contents["Resource/JKEngine/Meshes/Planeq1.jkmh"].get());
-			spriteobject->SetSpriteSet(contents["Resource/SpriteAnimation/TestSprite.jkspt"]);
+			spriteobject->SetSpriteSet(contents["Resource/SpriteAnimation/TestSprite.jkspt"].get());
 			spriteobject->AddMaterial(contents["Resource/JKEngine/Materials/DefaultSpriteMaterial.jkmt"].get());
 			spriteobject->SetShaderName("UVTransformShader");
 

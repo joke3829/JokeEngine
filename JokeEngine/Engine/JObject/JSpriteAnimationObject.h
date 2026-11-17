@@ -15,12 +15,17 @@ public:
 
 	void Update(float elapsedTime, XMFLOAT4X4* parent = nullptr);
 	
-	void SetAnimationSet(const char* setName, float minustime = 0.f);
+	void SetAnimationSet(const char* setName, float elapsedTime = 0.f, float minustime = 0.f, bool edit = false);
+	void SetAnimationSet(std::string& setName, float elapsedTime = 0.f, float minustime = 0.f, bool edit = false);
 
 	void Render(UINT currentFrameIndex);
 
 public:
-	void SetSpriteSet(std::shared_ptr<JContent> spriteSet);
+	void SetSpriteSet(JContent* spriteSet);
+#if DEV_MODE
+public:
+	virtual bool RenderInspector();
+#endif
 protected:
 	bool									m_bMirror{};
 	bool									m_bInitialMirror{};
@@ -29,7 +34,8 @@ protected:
 	std::string								m_InitialAnimation{};
 
 	float									m_ElapsedTime{};
+	float									m_InitialElapsedTime{};
 
 	std::unique_ptr<JSpriteMeshConstant>	m_SpriteMeshCB{};
-	std::shared_ptr<JSpriteAnimationSet>	m_SpriteSet{};
+	JSpriteAnimationSet*					m_SpriteSet{};
 };

@@ -240,7 +240,7 @@ void JokeEngine::RenderContentManager()
 
 					}
 					if (ImGui::MenuItem("Save All")) {
-
+						manager->ReSaveAll();
 					}
 					ImGui::EndMenu();
 				}

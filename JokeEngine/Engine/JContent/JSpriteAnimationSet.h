@@ -30,6 +30,9 @@ public:
 
 	void LoadAnimationFactorFromYaml(const char* filepath);
 
+	bool GetHasKeyFrame() { return m_KeyFrame.size(); }
+	const std::unordered_map<std::string, float>& GetPlayTimeMap() { return m_PlayTime; }
+
 #if DEV_MODE
 public:
 	virtual void RenderGUI(ImVec2 startPos, void* imageref = nullptr);

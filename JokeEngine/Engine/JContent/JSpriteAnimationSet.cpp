@@ -10,9 +10,6 @@ const JSAnimData& JSpriteAnimationSet::GetKeyFrameData(std::string& animName, fl
 			animName = s->first;
 		}
 		else {
-#if DEV_MODE
-			spdlog::error("{0} m_KeyFrame이 비어있습니다.", m_name.c_str());
-#endif
 			JSAnimData data{};
 			return data;
 		}
