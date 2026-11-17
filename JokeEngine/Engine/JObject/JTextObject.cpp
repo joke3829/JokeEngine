@@ -10,7 +10,7 @@ JTextObject::JTextObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4
 	: JObject(vWorld, vWorldTP, uid, name)
 {
 	SetText(L"Text", true);
-	SetFontName(L"Bahnschrift", true);
+	SetFontFamily(L"Arial", true);
 	SetFontSize(32.f, true);
 	SetFontWeight(400.f, true);
 	SetFontWidth(100.f, true);
@@ -52,10 +52,11 @@ void JTextObject::Update(float elapsedTime, XMFLOAT4X4* parent)
 
 	// 여기서 CPUDirty -> IDWrite, Brush 등 최신화
 	if (m_CPUDirty) {
-		m_TextResource->CreateDWriteTextFomat(m_FontName, m_FontCollectionName, m_FontSize, m_FontWeight, m_FontWidth);
+		m_TextResource->CreateDWriteTextFomat(m_FontFamily, m_FontSize, m_FontWeight, m_FontWidth);
 		float maxwidth = static_cast<float>(kTextTexture2DWidth);
 		float maxheight = static_cast<float>(kTextTexture2DHeight);
-		m_TextResource->CreateDWriteTextLayout(m_Text, maxwidth, maxheight);
+		JSpacingFactor sf{ m_LeadingSpacing,m_TrailingSpacing,m_MinimumAdvanceWidth };
+		m_TextResource->CreateDWriteTextLayout(m_Text, maxwidth, maxheight, sf);
 		m_CPUDirty = false;
 
 		m_TextMetrics = m_TextResource->GetMetricsWithUVMatrixUpdate();
@@ -217,6 +218,30 @@ void JTextObject::SetFontWidth(float width, bool edit)
 	MakeDirtyFlag();
 }
 
+void JTextObject::SetLeadingSpacing(float leading, bool edit)
+{
+	m_LeadingSpacing = leading;
+	if (edit) m_InitialLeadingSpacing = leading;
+	MakeDirtyFlag();
+}
+
+void JTextObject::SetTrailingSpacing(float trailing, bool edit)
+{
+	m_TrailingSpacing = trailing;
+	if (edit) m_InitialTrailingSpacing = trailing;
+	MakeDirtyFlag();
+}
+
+void JTextObject::SetMinimumAdvanceWidth(float minimum, bool edit)
+{
+	if (minimum < 0.f) minimum = 0.f;
+	m_MinimumAdvanceWidth = minimum;
+	if (edit)
+		m_InitialMinimumAdvanceWidth = minimum;
+
+	MakeDirtyFlag();
+}
+
 void JTextObject::SetHorizonAlignment(JText_Alignment align, bool edit)
 {
 	switch (align) {
@@ -295,15 +320,12 @@ bool JTextObject::RenderInspector()
 	
 	// fontcollection과 fontname 설정
 	const char* tempitems[] = { "1", "2" };
-	ImGui::Text("FontCollection"); ImGui::SameLine();
+	ImGui::Text("FontFamily"); ImGui::SameLine();
 	ImGui::SetCursorPosX(cursorx);
-	if (ImGui::BeginCombo("##FontCollection", tempitems[m_Selected_FontCollection])) {
-		for (int i = 0; i < std::size(tempitems); ++i) {
-			bool is_selected = (m_Selected_FontCollection == i);
-			if (ImGui::Selectable(tempitems[i], is_selected))
-				m_Selected_FontCollection = i;
-		}
-		ImGui::EndCombo();
+	char cfontfamily[128]{};
+	strcpy(cfontfamily, ConvertHelper::WideToUtf8(m_FontFamily).c_str());
+	if (ImGui::InputText("##FamilyText", cfontfamily, std::size(cfontfamily), ImGuiInputTextFlags_EnterReturnsTrue)) {
+		SetFontFamily(ConvertHelper::Utf8ToWide(std::string(cfontfamily)).c_str(), true);
 	}
 
 	// text
@@ -335,6 +357,25 @@ bool JTextObject::RenderInspector()
 	if (ImGui::DragFloat("##FontWidth", &width, 0.05f, 1.f, FLT_MAX, "%.2f", ImGuiSliderFlags_AlwaysClamp))
 		SetFontWidth(width, true);
 	
+	// spacing Factor
+	float leading = m_LeadingSpacing;
+	ImGui::Text("Spacing L"); ImGui::SameLine();
+	ImGui::SetCursorPosX(cursorx);
+	if (ImGui::DragFloat("##Leading", &leading, 0.01f))
+		SetLeadingSpacing(leading, true);
+
+	float trail = m_TrailingSpacing;
+	ImGui::Text("Spacing T"); ImGui::SameLine();
+	ImGui::SetCursorPosX(cursorx);
+	if (ImGui::DragFloat("##Trailing", &trail, 0.01f))
+		SetTrailingSpacing(trail, true);
+
+	float minspa = m_MinimumAdvanceWidth;
+	ImGui::Text("Spacing Min"); ImGui::SameLine();
+	ImGui::SetCursorPosX(cursorx);
+	if (ImGui::DragFloat("##Minimum", &minspa, 0.01f, 0.f, 1000.f, "%.3f", ImGuiSliderFlags_AlwaysClamp))
+		SetMinimumAdvanceWidth(minspa, true);
+
 	// align
 	ImGui::Separator();
 	{

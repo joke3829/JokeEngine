@@ -13,6 +13,12 @@ struct JTextMetrics {
 	float Height{};
 };
 
+struct JSpacingFactor {
+	float LeadingSpacing{};
+	float TrailingSpacing{};
+	float MinimumAdvanceWidth{};
+};
+
 class JTextResource {
 public:
 	JTextResource(UINT uid) : m_OwnerUID{ uid } {}
@@ -22,8 +28,8 @@ public:
 	virtual void UpdateBuffer(UINT currentFrameIndex) {}
 	virtual void SetGPUBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage = JS_NONE) {};
 
-	virtual void CreateDWriteTextFomat(std::wstring& fontname, std::string& fontcollection, float fontsize, float fontweight, float fontwidth) {}
-	virtual void CreateDWriteTextLayout(std::wstring& text, float maxwidth, float maxheight) {}
+	virtual void CreateDWriteTextFomat(std::wstring& fontfamily, float fontsize, float fontweight, float fontwidth) {}
+	virtual void CreateDWriteTextLayout(std::wstring& text, float maxwidth, float maxheight, JSpacingFactor space = {}) {}
 
 	virtual void CreateSolidColorBrush(XMFLOAT4 color = XMFLOAT4(1.f, 1.f, 1.f, 1.f)) {}
 	virtual void CreateSolidColorBrush(D2D1::ColorF color = D2D1::ColorF::White) {}

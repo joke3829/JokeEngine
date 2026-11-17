@@ -14,14 +14,16 @@ void JTextResourceD2D::UpdateBuffer(UINT currentFrameIndex)
 	p->RenderText(m_OwnerUID, currentFrameIndex, m_TextLayout.Get(), m_Brush[currentFrameIndex].Get());
 }
 
-void JTextResourceD2D::CreateDWriteTextFomat(std::wstring& fontname, std::string& fontcollection, float fontsize, float fontweight, float fontwidth)
+void JTextResourceD2D::CreateDWriteTextFomat(std::wstring& fontfamily, float fontsize, float fontweight, float fontwidth)
 {
-	JD2DTextEngine::GetInstance()->CreateTextFormat(m_TextFormat, fontname, fontcollection, fontsize, fontweight, fontwidth);
+	JD2DTextEngine::GetInstance()->CreateTextFormat(m_TextFormat, fontfamily, fontsize, fontweight, fontwidth);
 }
 
-void JTextResourceD2D::CreateDWriteTextLayout(std::wstring& text, float maxwidth, float maxheight)
+void JTextResourceD2D::CreateDWriteTextLayout(std::wstring& text, float maxwidth, float maxheight, JSpacingFactor space)
 {
 	JD2DTextEngine::GetInstance()->CreateTextLayout(m_TextLayout, m_TextFormat, text, maxwidth, maxheight);
+	DWRITE_TEXT_RANGE textRange{ 0, text.length() };
+	m_TextLayout->SetCharacterSpacing(space.LeadingSpacing, space.TrailingSpacing, space.MinimumAdvanceWidth, textRange);
 }
 
 void JTextResourceD2D::CreateSolidColorBrush(XMFLOAT4 color)

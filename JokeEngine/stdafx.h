@@ -19,6 +19,7 @@
 #include <tchar.h>
 #include <cassert>
 
+#include <iostream>
 #include <string>
 #include <memory>
 #include <fstream>

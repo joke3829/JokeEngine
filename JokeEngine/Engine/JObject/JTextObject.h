@@ -33,11 +33,14 @@ public:
 	void UpdateRenderPlaneIndex();
 
 	void SetText(const wchar_t* text, bool edit = false) { m_Text = text; if (edit) m_InitialText = text; MakeDirtyFlag(); }
-	void SetFontName(const wchar_t* fontName, bool edit = false) { m_FontName = fontName; if (edit) m_InitialFontName = fontName; MakeDirtyFlag(); }
+	void SetFontFamily(const wchar_t* fontName, bool edit = false) { m_FontFamily = fontName; if (edit) m_InitialFontFamily = fontName; MakeDirtyFlag(); }
 	void SetFontSize(float size, bool edit = false);
 	void SetFontCollectionName(const char* collectionname, bool edit = false) { m_FontCollectionName = collectionname; if (edit) m_InitialFontCollectionName = collectionname; MakeDirtyFlag(); }
 	void SetFontWeight(float weight, bool edit = false);
 	void SetFontWidth(float width, bool edit = false);
+	void SetLeadingSpacing(float leading, bool edit = false);
+	void SetTrailingSpacing(float trailing, bool edit = false);
+	void SetMinimumAdvanceWidth(float minimum, bool edit = false);
 	void SetHorizonAlignment(JText_Alignment align, bool edit = false);
 	void SetVerticalAlignment(JText_Alignment align, bool edit = false);
 
@@ -47,7 +50,6 @@ public:
 public:
 	virtual bool RenderInspector();
 protected:
-	unsigned char m_Selected_FontCollection{};
 	unsigned char m_Selected_HAlign{};
 	unsigned char m_Selected_VAlign{};
 #endif
@@ -57,10 +59,14 @@ protected:
 
 	float m_FontSize;
 	std::wstring m_Text;
-	std::wstring m_FontName;
+	std::wstring m_FontFamily;
 	std::string m_FontCollectionName{};
 	float m_FontWeight{ 400.f };		// 폰트 두께 (1~1000, 기본값 400)
-	float m_FontWidth{ 100.f };			// 폰트 너비(간격, > 0, 기본값 100)
+	float m_FontWidth{ 100.f };			// 폰트 장평(간격, > 0, 기본값 100)
+
+	float m_LeadingSpacing{};
+	float m_TrailingSpacing{};
+	float m_MinimumAdvanceWidth{};		// 음수 안됨
 
 	// 둘 중 하나가 center면 둘다 center
 	JText_Alignment m_HorizonAlignment = JText_Alignment::Left;	
@@ -70,11 +76,15 @@ protected:
 
 	// Reset용 Initialize요소들 추가하기
 	std::wstring m_InitialText{};
-	std::wstring m_InitialFontName{};
+	std::wstring m_InitialFontFamily{};
 	std::string m_InitialFontCollectionName{};
 	float m_InitialFontSize{};
 	float m_InitialFontWeight{};
 	float m_InitialFontWidth{};
+
+	float m_InitialLeadingSpacing{};
+	float m_InitialTrailingSpacing{};
+	float m_InitialMinimumAdvanceWidth{};
 	JText_Alignment m_InitialHorizonAlignment;
 	JText_Alignment m_InitialVerticalAlignment;
 

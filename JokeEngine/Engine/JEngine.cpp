@@ -18,6 +18,7 @@ void JokeEngine::Initialize(HWND hWnd, HINSTANCE hInstance)
 	m_hWnd = hWnd; m_hInstance = hInstance;
 
 	auto* p = JD2DTextEngine::GetInstance();
+	p->CreateFontCollectionFromDirectory("Resource/JKEngine/Font");
 
 	m_InputThread = std::make_shared<JInputThread>(m_hWnd);
 	m_InputThread->InputThreadStart();

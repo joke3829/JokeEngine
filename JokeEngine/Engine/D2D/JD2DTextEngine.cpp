@@ -9,6 +9,59 @@ JD2DTextEngine* JD2DTextEngine::GetInstance()
 	return m_Instance;
 }
 
+// 한 디렉토리 안에 .ttf .otf파일을 넣어두세요
+void JD2DTextEngine::CreateFontCollectionFromDirectory(std::filesystem::path filepath)
+{
+	ComPtr<IDWriteFontSetBuilder2> builder{};
+	ThrowIfFailed(m_DWriteFactory->CreateFontSetBuilder(builder.ReleaseAndGetAddressOf()));
+
+	// Window 폰트부터
+	ComPtr<IDWriteFontSet> systemfont{};
+	ThrowIfFailed(m_DWriteFactory->GetSystemFontSet(systemfont.ReleaseAndGetAddressOf()));
+	ThrowIfFailed(builder->AddFontSet(systemfont.Get()));
+
+	// 파일 재귀로 돌며 폰트 파일 찾아 넣기
+	for (auto& entry : std::filesystem::recursive_directory_iterator(filepath)) {
+		if (entry.path().extension() == ".ttf" || entry.path().extension() == ".otf") {
+			std::filesystem::path abpath = std::filesystem::absolute(entry.path());
+			ThrowIfFailed(builder->AddFontFile(abpath.wstring().c_str()));
+		}
+	}
+	ComPtr<IDWriteFontSet> fset{};
+	ThrowIfFailed(builder->CreateFontSet(fset.ReleaseAndGetAddressOf()));
+
+	ThrowIfFailed(m_DWriteFactory->CreateFontCollectionFromFontSet(fset.Get(), reinterpret_cast<IDWriteFontCollection1**>(m_DWriteFontCollection.ReleaseAndGetAddressOf())));
+
+	spdlog::info("Font num: {}", m_DWriteFontCollection->GetFontFamilyCount());
+	for (UINT i = 0; i < m_DWriteFontCollection->GetFontFamilyCount(); ++i) {
+		ComPtr<IDWriteFontFamily> family{};
+		m_DWriteFontCollection->GetFontFamily(i, family.ReleaseAndGetAddressOf());
+		ComPtr<IDWriteLocalizedStrings> wh{};
+		family->GetFamilyNames(wh.ReleaseAndGetAddressOf());
+		
+		// 사용자의 기본 로캘(예: 한국어/영어)에 해당하는 이름을 찾기 위한 인덱스 확인
+		UINT32 index = 0;
+		BOOL exists = FALSE;
+
+		// 우선순위로 한국어(ko-KR)나 영어(en-US)를 찾고, 없으면 0번 인덱스 사용
+		wh->FindLocaleName(L"en-US", &index, &exists);
+		if (!exists)
+		{
+			wh->FindLocaleName(L"ko-KR", &index, &exists);
+			if (!exists) index = 0;
+		}
+
+		// 이름의 길이 확보
+		UINT32 length = 0;
+		wh->GetStringLength(index, &length);
+
+		std::wstring familyName(length + 1, L'\0');
+		wh->GetString(index, &familyName[0], length + 1);
+
+		std::wcout << L"[" << i << L"] " << familyName.c_str() << std::endl;
+	}
+}
+
 void JD2DTextEngine::AddRTsForD3D11Texture2D(UINT uid, ID3D11Texture2D** texture2d)
 {
 	for (UINT i = 0; i < kNumRenderTarget; ++i) {
@@ -53,23 +106,23 @@ void JD2DTextEngine::RenderText(UINT uid, UINT currentFrameIndex, IDWriteTextLay
 	rt->EndDraw();
 }
 
-void JD2DTextEngine::CreateTextFormat(ComPtr<IDWriteTextFormat3>& format, std::wstring& fontname, std::string& fontcollection, float fontsize, float fontweight, float fontwidth)
+void JD2DTextEngine::CreateTextFormat(ComPtr<IDWriteTextFormat3>& format, std::wstring& fontfamily, float fontsize, float fontweight, float fontwidth)
 {
 	DWRITE_FONT_AXIS_VALUE avalue[2] = 
 	{ 
 		{.axisTag = DWRITE_FONT_AXIS_TAG_WEIGHT, .value = fontweight}, 
 		{.axisTag = DWRITE_FONT_AXIS_TAG_WIDTH, .value = fontwidth}
 	};
-	IDWriteFontCollection* fcol = nullptr;
-	// table에서 찾아서 없으면 nullptr
-	// if(map.contain(fontcollection))
 
-	ThrowIfFailed(m_DWriteFactory->CreateTextFormat(fontname.c_str(), fcol, avalue, std::size(avalue), fontsize, L"ko-KR", format.ReleaseAndGetAddressOf()));
+	// locale 고려하기(option에 언어같은거 하게되면 그때 하기)
+	ThrowIfFailed(m_DWriteFactory->CreateTextFormat(fontfamily.c_str(), m_DWriteFontCollection.Get(), avalue, std::size(avalue), fontsize, L"ko-KR", format.ReleaseAndGetAddressOf()));
 }
 
-void JD2DTextEngine::CreateTextLayout(ComPtr<IDWriteTextLayout>& layout, ComPtr<IDWriteTextFormat3>& format, std::wstring& text, float maxwidth, float maxheight)
+void JD2DTextEngine::CreateTextLayout(ComPtr<IDWriteTextLayout4>& layout, ComPtr<IDWriteTextFormat3>& format, std::wstring& text, float maxwidth, float maxheight)
 {
-	ThrowIfFailed(m_DWriteFactory->CreateTextLayout(text.c_str(), text.size(), format.Get(), maxwidth, maxheight, layout.ReleaseAndGetAddressOf()));
+	ComPtr<IDWriteTextLayout> tlayout{};
+	ThrowIfFailed(m_DWriteFactory->CreateTextLayout(text.c_str(), text.size(), format.Get(), maxwidth, maxheight, tlayout.ReleaseAndGetAddressOf()));
+	tlayout->QueryInterface(IID_PPV_ARGS(layout.ReleaseAndGetAddressOf()));
 }
 
 
