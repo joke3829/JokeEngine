@@ -32,9 +32,16 @@ void JContentManager::ReadyMissingTexture()
 	AddContentFromFile("Resource/JKEngine/Textures/MissingTexture.png");
 }
 
-void JContentManager::AddContent(std::shared_ptr<JContent> content)
+void JContentManager::AddContent(std::filesystem::path filepath)
 {
-	m_ContentLookupTable.insert({ content->GetFullFilePath(), content});
+	AddContentFromFile(filepath);
+}
+
+// contentmanager에 있는 모든 것의 파일 최신화 (material 내 기록된 참조 경로 등)
+void JContentManager::ReSaveAll()
+{
+	for (auto& item : m_ContentLookupTable)
+		item.second->SaveFile();
 }
 
 JGlobalContentManager* JGlobalContentManager::m_Instance = nullptr;

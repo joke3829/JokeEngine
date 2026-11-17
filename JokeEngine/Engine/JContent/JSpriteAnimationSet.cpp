@@ -93,6 +93,7 @@ void JSpriteAnimationSet::LoadAnimationFactorFromYaml(const char* filepath)
 
 void JSpriteAnimationSet::CreateContentFile()
 {
+	JContent::CreateContentFile();
 	std::ofstream out{ m_FullFilePath, std::ios::binary };
 	unsigned int numAni = m_KeyFrame.size();
 	// 애니메이션 개수

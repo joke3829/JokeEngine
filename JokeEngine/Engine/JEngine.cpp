@@ -210,12 +210,59 @@ void JokeEngine::RenderContentManager()
 		flag |= ImGuiWindowFlags_NoCollapse;
 		flag |= ImGuiWindowFlags_MenuBar;
 
+		auto manager = JGlobalContentManager::GetInstance()->GetManager();
 		auto& contents = JGlobalContentManager::GetInstance()->GetManager()->GetContentTable();
+
+		auto FindUnDuplicationPath = [&](std::filesystem::path& parent, std::filesystem::path name) -> std::filesystem::path {
+			for (unsigned int i = 0; i < 0x0FFFFFFF; ++i) {
+				std::filesystem::path p = parent;
+				if (0 == i) {
+					p /= name;
+				}
+				else {
+					std::string fname = name.stem().string();
+					std::string ext = name.extension().string();
+					std::filesystem::path fename = fname + "(" + std::to_string(i) + ")" + ext;
+					p /= fename;
+				}
+				if (not std::filesystem::exists(p))
+					return p;
+			};
+			spdlog::error("Too Many Duplication File");
+			return "";
+			};
 
 		if (ImGui::Begin("Content", &m_ShowContentManager, flag)) {
 			// menubar
 			if (ImGui::BeginMenuBar()) {
 				if (ImGui::BeginMenu("Asset")) {
+					if (ImGui::MenuItem("Import")) {
+
+					}
+					if (ImGui::MenuItem("Save All")) {
+
+					}
+					ImGui::EndMenu();
+				}
+				if (ImGui::BeginMenu("Create")) {
+					if (ImGui::BeginMenu("DefaultMesh")) {
+						if (ImGui::MenuItem("Cube")) {
+							m_CreateMeshContentFlag |= 0b10000001;
+						}
+						if (ImGui::MenuItem("Plane")) {
+							m_CreateMeshContentFlag |= 0b10000010;
+						}
+						if (ImGui::MenuItem("Sphere")) {
+							m_CreateMeshContentFlag |= 0b10000100;
+						}
+						ImGui::EndMenu();
+					}
+					if (ImGui::MenuItem("Material")) {
+						manager->AddContent(FindUnDuplicationPath(m_ContentManagerFilePath, "Material.jkmt"));
+					}
+					if (ImGui::MenuItem("SpriteAnimationSet")) {
+						manager->AddContent(FindUnDuplicationPath(m_ContentManagerFilePath, "SpriteAnimationSet.jkspt"));
+					}
 					ImGui::EndMenu();
 				}
 				ImGui::EndMenuBar();
@@ -226,8 +273,7 @@ void JokeEngine::RenderContentManager()
 
 			{// icon 렌더링
 				// 1. 현재 내 경로에 상위가 있다면 ... 버튼 만들기
-				auto p = JGlobalContentManager::GetInstance()->GetManager();
-				size_t count = p->GetNumContents();
+				size_t count = manager->GetNumContents();
 				ImVec2 windowSize = ImGui::GetContentRegionAvail();
 				ImVec2 startcursorpos = ImGui::GetCursorPos();
 
@@ -280,7 +326,7 @@ void JokeEngine::RenderContentManager()
 				}
 				
 				// 3. 현 디렉터리의 컨텐츠들 그리기
-				p->RenderImGuiContents(startcursorpos, row, col, curRow, curCol, m_ContentManagerFilePath);
+				manager->RenderImGuiContents(startcursorpos, row, col, curRow, curCol, m_ContentManagerFilePath);
 			}
 		}
 		ImGui::End();
@@ -438,6 +484,7 @@ void JokeEngine::RenderProjectSettingPopup()
 
 void JokeEngine::RenderCreateWindowPopup()
 {
+	// Create WindowPopup
 	if (m_CreateWindowPopup) {
 		ImGui::OpenPopup("Create Window");
 		m_CreateWindowPopup = false;
@@ -485,6 +532,40 @@ void JokeEngine::RenderCreateWindowPopup()
 			ImGui::CloseCurrentPopup(); 
 		} ImGui::SameLine();
 		if (ImGui::Button("Cancel", ImVec2(80, 0))) { ImGui::CloseCurrentPopup(); }
+		ImGui::EndPopup();
+	}
+
+
+	// Content CreatePopup
+	if (m_CreateMeshContentFlag & 0b10000000) {
+		ImGui::OpenPopup("##StaticMeshContentCreateInspector");
+		m_CreateMeshContentFlag &= 0b01111111;
+	}
+
+	if (ImGui::BeginPopupModal("##StaticMeshContentCreateInspector", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+		auto FindUnDuplicationPath = [&](std::filesystem::path& parent, std::filesystem::path name) -> std::filesystem::path {
+			for (unsigned int i = 0; i < 0x0FFFFFFF; ++i) {
+				std::filesystem::path p = parent;
+				if (0 == i) {
+					p /= name;
+				}
+				else {
+					std::string fname = name.stem().string();
+					std::string ext = name.extension().string();
+					std::filesystem::path fename = fname + "(" + std::to_string(i) + ")" + ext;
+					p /= fename;
+				}
+				if (not std::filesystem::exists(p))
+					return p;
+			};
+			spdlog::error("Too Many Duplication File");
+			return "";
+			};
+		std::filesystem::path filename = m_ContentManagerFilePath;
+		if (m_CreateMeshContentFlag & 0b00000001) filename = FindUnDuplicationPath(filename, "Cube.jkmh");
+		else if (m_CreateMeshContentFlag & 0b00000010) filename = FindUnDuplicationPath(filename, "Plane.jkmh");
+		else if (m_CreateMeshContentFlag & 0b00000100) filename = FindUnDuplicationPath(filename, "Sphere.jkmh");
+		JGlobalContentManager::GetInstance()->GetManager()->AddMeshWithFlag(m_CreateMeshContentFlag, filename);
 		ImGui::EndPopup();
 	}
 }

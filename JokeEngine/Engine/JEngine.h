@@ -55,6 +55,7 @@ protected:
 	bool m_ProjectSettingPopup{ false };
 	bool m_CreateWindowPopup{ false };
 	bool m_ShowContentManager{ false };
+	BYTE m_CreateMeshContentFlag{};		// 0b | popupOn/Off | x | x | x | x | sphere | plane | cube |  추가하려면 원뿔, 원기둥, 도넛 등등...
 	unsigned short m_SelectedObjectInCreatePopup{};
 
 	ImVec2 m_OldEditorSceneSP{}; // GetCursorScreenPos

@@ -23,7 +23,7 @@ JObject* JObjectRegistry::CreateObject(const char* ObjectType, std::vector<XMFLO
 #if DEV_MODE
         spdlog::error("{} not contains JObjectRegistry", ObjectType);
 #endif
-        return nullptr;
+        return map["JObject"](vWorld, vWorldTP, nodeIndex, name);
     }
     return map[ObjectType](vWorld, vWorldTP, nodeIndex, name);
 }

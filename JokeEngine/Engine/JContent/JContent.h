@@ -16,6 +16,8 @@ public:
 	// 반드시 처음에 호출
 	void Initialize();
 
+
+	void SaveFile() { CreateContentFile(); }
 	// 11: slot, 12: root parameter, 12는 parameter만 채우면 된다.
 	virtual void SetGPUBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage = JS_NONE) {}
 
@@ -33,6 +35,9 @@ public:
 	bool CheckRenderDetailPanelAndRender();
 	virtual void RenderDetailPanel() { RenderGeneralInspect(); }
 	virtual void* GetDedicatedFactor() { return nullptr; }
+
+	void SetDetailPanelOn() { ReadyTempData(); m_ShowDetailGui = true; }
+	bool GetShowDetailPanel() { return m_ShowDetailGui; }
 protected:
 	virtual void ReadyTempData();
 	virtual void ApplyTempDataToRealData();
@@ -44,7 +49,7 @@ protected:
 
 protected:
 	// 파일이 없다면 새 content 파일 + 기록	(자신의 값을 기록하는걸로 한다, 따라서 default 값을 반드시 지정해야한다.)
-	virtual void CreateContentFile() { /* 일반적인 visual studio 자료 크기를 사용, int: 4 */}
+	virtual void CreateContentFile();
 	// 있다면 그걸 Load하라
 	virtual void LoadFromFile() {}
 	std::filesystem::path m_FullFilePath{};

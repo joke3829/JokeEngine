@@ -27,6 +27,13 @@ void JContent::Initialize()
 		CreateContentFile();
 }
 
+void JContent::CreateContentFile()
+{
+	// 작성한 경로가 실제 디스크에 없으면 생성
+	if (not std::filesystem::exists(m_FullFilePath.parent_path()))
+		std::filesystem::create_directories(m_FullFilePath.parent_path());
+}
+
 #if DEV_MODE 
 void JContent::RenderGUI(ImVec2 startPos, void* imageref)
 {
@@ -41,9 +48,8 @@ void JContent::RenderGUI(ImVec2 startPos, void* imageref)
 		ImGui::Text(m_name.c_str());
 		ImGui::EndDragDropSource();
 	}
-	if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && ImGui::IsItemHovered()) {
-		ReadyTempData();
-		m_ShowDetailGui = true;
+	if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && ImGui::IsItemHovered() && not m_ShowDetailGui) {
+		SetDetailPanelOn();
 	}
 	ImVec2 TextPos = startPos; TextPos.y += 96; TextPos.x += 5.5f;
 	ImGui::SetCursorPos(TextPos);

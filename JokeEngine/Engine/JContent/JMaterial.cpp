@@ -65,6 +65,7 @@ void JDMaterial::DettachTexture(unsigned char order)
 
 void JDMaterial::CreateContentFile()
 {
+	JContent::CreateContentFile();
 	std::ofstream out{ m_FullFilePath, std::ios::binary };
 	// BaseColor
 	out.write(reinterpret_cast<const char*>(&m_SimpleMaterial.BaseColor), sizeof(XMFLOAT4));

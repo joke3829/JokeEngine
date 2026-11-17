@@ -149,6 +149,11 @@ bool JStaticMeshObject::RenderInspector()
 			void* imageref = (m_Materials[i]) ? JGlobalContentManager::GetInstance()->GetManager()->GetContentTable()["Resource/JKEngine/Textures/MaterialFile.dds"]->GetDedicatedFactor()
 				: nullptr;
 			ImGui::ImageButton(std::string(std::to_string(i) + "##MaterialSelectButton").c_str(), imageref, ImVec2(50.f, 50.f));
+			if (m_Materials[i]) {
+				if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && ImGui::IsItemHovered() && not m_Materials[i]->GetShowDetailPanel()) {
+					m_Materials[i]->SetDetailPanelOn();
+				}
+			}
 			if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right, false)) m_Materials[i] = nullptr;
 			if (ImGui::BeginDragDropTarget()) {
 				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DRAG_CONTENT_BROWSER")) {
@@ -184,6 +189,11 @@ bool JStaticMeshObject::RenderInspector()
 		void* imageref = (m_StaticMesh) ? JGlobalContentManager::GetInstance()->GetManager()->GetContentTable()["Resource/JKEngine/Textures/StaticMeshFile.dds"]->GetDedicatedFactor()
 			: nullptr;
 		ImGui::ImageButton("MeshSelectButton", imageref, ImVec2(50.f, 50.f));
+		if (m_StaticMesh) {
+			if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && ImGui::IsItemHovered() && not m_StaticMesh->GetShowDetailPanel()) {
+				m_StaticMesh->SetDetailPanelOn();
+			}
+		}
 		if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right, false)) m_StaticMesh = nullptr;
 		if (ImGui::BeginDragDropTarget()) {
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DRAG_CONTENT_BROWSER")) {

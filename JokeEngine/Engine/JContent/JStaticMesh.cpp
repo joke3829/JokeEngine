@@ -372,6 +372,7 @@ void JStaticMesh::LoadFromFile()
 
 void JStaticMesh::CreateContentFile()
 {
+    JContent::CreateContentFile();
     std::ofstream out{ m_FullFilePath, std::ios::binary };
     // Primitive Topology
     unsigned int num = ConvertPrimitiveTopologyD3DToInt(m_d3dTopology);
