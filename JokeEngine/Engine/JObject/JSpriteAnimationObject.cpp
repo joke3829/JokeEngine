@@ -33,8 +33,6 @@ JSpriteAnimationObject::~JSpriteAnimationObject()
 
 void JSpriteAnimationObject::Reset()
 {
-	m_ElapsedTime = 0;
-
 	m_bMirror = m_bInitialMirror;
 	m_CurrentAnimation.first = m_InitialAnimation;
 	m_ElapsedTime = m_InitialElapsedTime;
@@ -114,9 +112,9 @@ void JSpriteAnimationObject::SetSpriteSet(JContent* spriteSet)
 
 
 #if DEV_MODE
-bool JSpriteAnimationObject::RenderInspector()
+bool JSpriteAnimationObject::RenderInspector(UINT currentFrameIndex)
 {
-	bool ret = JStaticMeshObject::RenderInspector();
+	bool ret = JStaticMeshObject::RenderInspector(currentFrameIndex);
 
 	ImVec2 avail = ImGui::GetContentRegionAvail();
 	ImDrawList* dl = ImGui::GetWindowDrawList();

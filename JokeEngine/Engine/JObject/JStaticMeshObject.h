@@ -23,7 +23,7 @@ public:
 
 #if DEV_MODE
 public:
-	virtual bool RenderInspector();
+	virtual bool RenderInspector(UINT currentFrameIndex = 0);
 #endif
 protected:
 	// 메시 상수 버퍼가 필요한데

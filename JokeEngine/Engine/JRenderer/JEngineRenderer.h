@@ -18,6 +18,8 @@ public:
 	virtual void SetScene(std::shared_ptr<JEngineScene> scene) { m_Scene = scene; }
 
 	const XMUINT2& GetTargetSize() { return m_TargetSize; }
+
+	UINT GetCurrentFrameIndex() { return m_CurrentFrameIndex; }
 protected:
 	virtual void CreateRTV_DSV(UINT width, UINT height) {}
 

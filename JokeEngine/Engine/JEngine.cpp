@@ -857,6 +857,8 @@ void JokeEngineDX11::Render()
 		ThrowIfFailed(m_SwapChain->Present(0, DXGI_PRESENT_ALLOW_TEARING));
 	}
 
+	// 12의 경우 fence는 present 이후에
+
 }
 
 

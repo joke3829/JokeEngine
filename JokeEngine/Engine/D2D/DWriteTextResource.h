@@ -3,9 +3,6 @@
 #include "Engine/GResource/JTextResource.h"
 #include "JD2DTextEngine.h"
 
-// fontSize 32기준 줄3 열60
-constexpr UINT kTextTexture2DWidth = 1920;
-constexpr UINT kTextTexture2DHeight = 96;
 
 class JTextResourceD2D : public JTextResource {
 public:
@@ -20,14 +17,21 @@ public:
 	void CreateDWriteTextLayout(std::wstring& text, float maxwidth, float maxheight, JSpacingFactor space = {});
 
 	// TextEngine 불러서 Brush각각 브러시 만들기 지원
-	void CreateSolidColorBrush(XMFLOAT4 color = XMFLOAT4(1.f, 1.f, 1.f, 1.f));
-	void CreateSolidColorBrush(D2D1::ColorF color = D2D1::ColorF::White);
+	void CreateSolidColorBrush();
 
 	JTextMetrics GetMetrics();
 
+	XMUINT2 GetRTSize() { return m_RTSize; }
+	virtual void ResizeRT(XMUINT2 size) { m_RTSize = size; }
+
+	virtual void SetBrushColor(XMFLOAT4 color) { m_BrushColor = color; }
+
 protected:
+	XMUINT2					m_RTSize{ 1920, 96 };
+
 	ComPtr<IDWriteTextFormat3> m_TextFormat{};
 	ComPtr<IDWriteTextLayout4> m_TextLayout{};
 
 	ComPtr<ID2D1Brush> m_Brush[kNumRenderTarget]{};
+	XMFLOAT4 m_BrushColor{};
 };

@@ -9,9 +9,11 @@ public:
 	void CreateFontCollectionFromDirectory(std::filesystem::path filepath);
 
 	void AddRTsForD3D11Texture2D(UINT uid, ID3D11Texture2D** texture2d);
+	void AddRTsForD3D11Texture2DOne(UINT uid, UINT currentFrameIndex, ID3D11Texture2D* texture2d);
 	void AddRTsForD3D12Resource() {}
 
 	void DeleteInRTTable(UINT uid);
+	void DeleteInRTTableOne(UINT uid, UINT currentFrameIndex);
 
 
 	void RenderText(UINT uid, UINT currentFrameIndex, IDWriteTextLayout* layout, ID2D1Brush* brush);

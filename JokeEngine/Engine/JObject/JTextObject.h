@@ -24,6 +24,8 @@ public:
 	JTextObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT uid, const char* name = nullptr);
 	~JTextObject();
 
+	virtual void Reset();
+
 	void Update(float elapsedTime, XMFLOAT4X4* parent = nullptr);
 	void Render(UINT currentFrameIndex);
 
@@ -35,7 +37,6 @@ public:
 	void SetText(const wchar_t* text, bool edit = false) { m_Text = text; if (edit) m_InitialText = text; MakeDirtyFlag(); }
 	void SetFontFamily(const wchar_t* fontName, bool edit = false) { m_FontFamily = fontName; if (edit) m_InitialFontFamily = fontName; MakeDirtyFlag(); }
 	void SetFontSize(float size, bool edit = false);
-	void SetFontCollectionName(const char* collectionname, bool edit = false) { m_FontCollectionName = collectionname; if (edit) m_InitialFontCollectionName = collectionname; MakeDirtyFlag(); }
 	void SetFontWeight(float weight, bool edit = false);
 	void SetFontWidth(float width, bool edit = false);
 	void SetLeadingSpacing(float leading, bool edit = false);
@@ -43,12 +44,14 @@ public:
 	void SetMinimumAdvanceWidth(float minimum, bool edit = false);
 	void SetHorizonAlignment(JText_Alignment align, bool edit = false);
 	void SetVerticalAlignment(JText_Alignment align, bool edit = false);
+	void SetBrushColor(XMFLOAT4 color, bool edit = false);
 
+	void ResizeRT(XMUINT2 size);
 	void MakeDirtyFlag();
 
 #if DEV_MODE
 public:
-	virtual bool RenderInspector();
+	virtual bool RenderInspector(UINT currentFrameIndex = 0);
 protected:
 	unsigned char m_Selected_HAlign{};
 	unsigned char m_Selected_VAlign{};
@@ -60,13 +63,14 @@ protected:
 	float m_FontSize;
 	std::wstring m_Text;
 	std::wstring m_FontFamily;
-	std::string m_FontCollectionName{};
 	float m_FontWeight{ 400.f };		// 폰트 두께 (1~1000, 기본값 400)
 	float m_FontWidth{ 100.f };			// 폰트 장평(간격, > 0, 기본값 100)
 
 	float m_LeadingSpacing{};
 	float m_TrailingSpacing{};
 	float m_MinimumAdvanceWidth{};		// 음수 안됨
+
+	XMFLOAT4 m_BrushColor{1.f, 1.f, 1.f, 1.f};
 
 	// 둘 중 하나가 center면 둘다 center
 	JText_Alignment m_HorizonAlignment = JText_Alignment::Left;	
@@ -77,7 +81,6 @@ protected:
 	// Reset용 Initialize요소들 추가하기
 	std::wstring m_InitialText{};
 	std::wstring m_InitialFontFamily{};
-	std::string m_InitialFontCollectionName{};
 	float m_InitialFontSize{};
 	float m_InitialFontWeight{};
 	float m_InitialFontWidth{};
@@ -85,6 +88,8 @@ protected:
 	float m_InitialLeadingSpacing{};
 	float m_InitialTrailingSpacing{};
 	float m_InitialMinimumAdvanceWidth{};
+
+	XMFLOAT4 m_InitialBrushColor{1.f, 1.f, 1.f, 1.f};
 	JText_Alignment m_InitialHorizonAlignment;
 	JText_Alignment m_InitialVerticalAlignment;
 

@@ -26,16 +26,10 @@ void JTextResourceD2D::CreateDWriteTextLayout(std::wstring& text, float maxwidth
 	m_TextLayout->SetCharacterSpacing(space.LeadingSpacing, space.TrailingSpacing, space.MinimumAdvanceWidth, textRange);
 }
 
-void JTextResourceD2D::CreateSolidColorBrush(XMFLOAT4 color)
+void JTextResourceD2D::CreateSolidColorBrush()
 {
 	auto* e = JD2DTextEngine::GetInstance();
-	e->CreateSolidColorBrush(m_Brush, m_OwnerUID, color);
-}
-
-void JTextResourceD2D::CreateSolidColorBrush(D2D1::ColorF color)
-{
-	auto* e = JD2DTextEngine::GetInstance();
-	e->CreateSolidColorBrush(m_Brush, m_OwnerUID, color);
+	e->CreateSolidColorBrush(m_Brush, m_OwnerUID, m_BrushColor);
 }
 
 

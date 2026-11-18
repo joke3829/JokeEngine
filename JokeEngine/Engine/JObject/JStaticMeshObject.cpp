@@ -122,9 +122,9 @@ void JStaticMeshObject::SetStaticMesh(JContent* mesh)
 
 #if DEV_MODE
 #include "Engine/JContent/JContentManager.h"
-bool JStaticMeshObject::RenderInspector()
+bool JStaticMeshObject::RenderInspector(UINT currentFrameIndex)
 {
-	bool ret = JObject::RenderInspector();
+	bool ret = JObject::RenderInspector(currentFrameIndex);
 
 	ImVec2 avail = ImGui::GetContentRegionAvail();
 	ImDrawList* dl = ImGui::GetWindowDrawList();

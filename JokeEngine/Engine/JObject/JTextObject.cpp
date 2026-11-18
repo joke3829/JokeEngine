@@ -36,13 +36,31 @@ JTextObject::JTextObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4
 
 	// temp
 	SetShaderName("UVTransformShader");
-	m_TextResource->CreateSolidColorBrush(XMFLOAT4(1.f, 1.f, 1.f, 1.f));
+	m_TextResource->SetBrushColor(m_BrushColor);
 	MakeDirtyFlag();
 }
 
 JTextObject::~JTextObject()
 {
 
+}
+
+void JTextObject::Reset()
+{
+	JObject::Reset();
+	m_FontSize = m_InitialFontSize;
+	m_Text = m_InitialText;
+	m_FontFamily = m_InitialFontFamily;
+	m_FontWeight = m_InitialFontWeight;
+	m_FontWidth = m_InitialFontWidth;
+
+	m_LeadingSpacing = m_InitialLeadingSpacing;
+	m_TrailingSpacing = m_InitialTrailingSpacing;
+	m_MinimumAdvanceWidth = m_InitialMinimumAdvanceWidth;
+
+	m_BrushColor = m_InitialBrushColor;
+	m_HorizonAlignment = m_InitialHorizonAlignment;
+	m_VerticalAlignment = m_InitialVerticalAlignment;
 }
 
 void JTextObject::Update(float elapsedTime, XMFLOAT4X4* parent)
@@ -53,10 +71,12 @@ void JTextObject::Update(float elapsedTime, XMFLOAT4X4* parent)
 	// 여기서 CPUDirty -> IDWrite, Brush 등 최신화
 	if (m_CPUDirty) {
 		m_TextResource->CreateDWriteTextFomat(m_FontFamily, m_FontSize, m_FontWeight, m_FontWidth);
-		float maxwidth = static_cast<float>(kTextTexture2DWidth);
-		float maxheight = static_cast<float>(kTextTexture2DHeight);
+		XMUINT2 tsize = m_TextResource->GetRTSize();
+		float maxwidth = static_cast<float>(tsize.x);
+		float maxheight = static_cast<float>(tsize.y);
 		JSpacingFactor sf{ m_LeadingSpacing,m_TrailingSpacing,m_MinimumAdvanceWidth };
 		m_TextResource->CreateDWriteTextLayout(m_Text, maxwidth, maxheight, sf);
+		m_TextResource->CreateSolidColorBrush();
 		m_CPUDirty = false;
 
 		m_TextMetrics = m_TextResource->GetMetricsWithUVMatrixUpdate();
@@ -301,6 +321,19 @@ void JTextObject::SetVerticalAlignment(JText_Alignment align, bool edit)
 	UpdateRenderPlaneIndex();
 }
 
+void JTextObject::SetBrushColor(XMFLOAT4 color, bool edit)
+{
+	m_BrushColor = color; if (edit) m_InitialBrushColor = color;
+	m_TextResource->SetBrushColor(color);
+	MakeDirtyFlag();
+}
+
+void JTextObject::ResizeRT(XMUINT2 size)
+{
+	m_TextResource->ResizeRT(size);
+	MakeDirtyFlag();
+}
+
 void JTextObject::MakeDirtyFlag()
 {
 	m_CPUDirty = true;
@@ -310,16 +343,14 @@ void JTextObject::MakeDirtyFlag()
 
 
 #if DEV_MODE
-bool JTextObject::RenderInspector()
+bool JTextObject::RenderInspector(UINT currentFrameIndex)
 {
-	bool dirty = JObject::RenderInspector();
+	bool dirty = JObject::RenderInspector(currentFrameIndex);
 	if (m_PlayMode)
 		ImGui::BeginDisabled(true);
 	float cursorx = 94.f;
 	ImGui::SeparatorText("TextOption");
 	
-	// fontcollection과 fontname 설정
-	const char* tempitems[] = { "1", "2" };
 	ImGui::Text("FontFamily"); ImGui::SameLine();
 	ImGui::SetCursorPosX(cursorx);
 	char cfontfamily[128]{};
@@ -333,7 +364,7 @@ bool JTextObject::RenderInspector()
 	ImGui::SetCursorPosX(cursorx);
 	char ctext[128]{};
 	strcpy(ctext, ConvertHelper::WideToUtf8(m_Text).c_str());
-	if (ImGui::InputText("##Text", ctext, std::size(ctext), ImGuiInputTextFlags_EnterReturnsTrue)) {
+	if (ImGui::InputTextMultiline("##Text", ctext, std::size(ctext), ImVec2(0, 0), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CtrlEnterForNewLine)) {
 		SetText(ConvertHelper::Utf8ToWide(std::string(ctext)).c_str(), true);
 	}
 
@@ -407,6 +438,33 @@ bool JTextObject::RenderInspector()
 			}
 			ImGui::EndCombo();
 		}
+	}
+	{// brush 색상 조절
+		ImGui::Separator();
+		ImGui::Text("Brush Color"); ImGui::SameLine();
+		ImGui::SetCursorPosX(cursorx);
+		if (ImGui::ColorEdit4("##BrushColor", reinterpret_cast<float*>(&m_BrushColor), ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_Float)) {
+			SetBrushColor(m_BrushColor);
+		}
+	}
+	{
+		ImGui::Separator();
+		// rt size 조절 + Image
+		ImVec2 imagesize;
+		XMUINT2 rtsize = m_TextResource->GetRTSize();
+
+		ImGui::Text("RTSize"); ImGui::SameLine();
+		if (ImGui::DragInt2("##Rtdrag", reinterpret_cast<int*>(&rtsize), 1, 1, 8192, "%d", ImGuiSliderFlags_AlwaysClamp)) {
+			ResizeRT(rtsize);
+		}
+
+		ImVec2 avail = ImGui::GetContentRegionAvail();
+		
+		imagesize.x = (rtsize.x > static_cast<UINT>(avail.x)) ? avail.x : rtsize.x;
+		imagesize.y = (rtsize.x > static_cast<UINT>(avail.x)) ? static_cast<float>(rtsize.y) * (avail.x / static_cast<float>(rtsize.x)) : rtsize.y;
+		ImGui::PushStyleVar(ImGuiStyleVar_ImageBorderSize, 5.f);
+		ImGui::ImageWithBg(m_TextResource->GetDedicatedFactor(currentFrameIndex), imagesize, ImVec2(0, 0), ImVec2(1, 1), ImVec4(0.f, 0.f, 0.f, 1.f));
+		ImGui::PopStyleVar();
 	}
 	if (m_PlayMode)
 		ImGui::EndDisabled();

@@ -70,7 +70,7 @@ public:
 #if DEV_MODE
 public:
 	void SetPlayMode(bool mod);
-	virtual bool RenderInspector();	// true: need renderer update
+	virtual bool RenderInspector(UINT currentFrameIndex = 0);	// true: need renderer update
 	const XMFLOAT4X4& GetParentWorldTransform() { return m_ParentWorldMatix; }
 protected:
 	XMFLOAT4X4 m_ParentWorldMatix{};

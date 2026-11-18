@@ -83,7 +83,7 @@ bool JContent::CheckRenderDetailPanelAndRender()
 	bool ret{};
 	if (m_ShowDetailGui) {
 		ImGui::SetNextWindowSize(ImVec2(500.f, 640.f), ImGuiCond_FirstUseEver);
-		if (ImGui::Begin(std::string(m_name + " DetailPanel###" + std::to_string(reinterpret_cast<uintptr_t>(this))).c_str(), &m_ShowDetailGui)) {
+		if (ImGui::Begin(std::string(m_name + " DetailPanel###" + std::to_string(reinterpret_cast<uintptr_t>(this))).c_str())) {
 			ImVec2 curScreenPos = ImGui::GetCursorScreenPos();
 			ImVec2 avail = ImGui::GetContentRegionAvail();
 			RenderDetailPanel();

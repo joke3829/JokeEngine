@@ -31,35 +31,6 @@ void JD2DTextEngine::CreateFontCollectionFromDirectory(std::filesystem::path fil
 	ThrowIfFailed(builder->CreateFontSet(fset.ReleaseAndGetAddressOf()));
 
 	ThrowIfFailed(m_DWriteFactory->CreateFontCollectionFromFontSet(fset.Get(), reinterpret_cast<IDWriteFontCollection1**>(m_DWriteFontCollection.ReleaseAndGetAddressOf())));
-
-	spdlog::info("Font num: {}", m_DWriteFontCollection->GetFontFamilyCount());
-	for (UINT i = 0; i < m_DWriteFontCollection->GetFontFamilyCount(); ++i) {
-		ComPtr<IDWriteFontFamily> family{};
-		m_DWriteFontCollection->GetFontFamily(i, family.ReleaseAndGetAddressOf());
-		ComPtr<IDWriteLocalizedStrings> wh{};
-		family->GetFamilyNames(wh.ReleaseAndGetAddressOf());
-		
-		// 사용자의 기본 로캘(예: 한국어/영어)에 해당하는 이름을 찾기 위한 인덱스 확인
-		UINT32 index = 0;
-		BOOL exists = FALSE;
-
-		// 우선순위로 한국어(ko-KR)나 영어(en-US)를 찾고, 없으면 0번 인덱스 사용
-		wh->FindLocaleName(L"en-US", &index, &exists);
-		if (!exists)
-		{
-			wh->FindLocaleName(L"ko-KR", &index, &exists);
-			if (!exists) index = 0;
-		}
-
-		// 이름의 길이 확보
-		UINT32 length = 0;
-		wh->GetStringLength(index, &length);
-
-		std::wstring familyName(length + 1, L'\0');
-		wh->GetString(index, &familyName[0], length + 1);
-
-		std::wcout << L"[" << i << L"] " << familyName.c_str() << std::endl;
-	}
 }
 
 void JD2DTextEngine::AddRTsForD3D11Texture2D(UINT uid, ID3D11Texture2D** texture2d)
@@ -85,12 +56,39 @@ void JD2DTextEngine::AddRTsForD3D11Texture2D(UINT uid, ID3D11Texture2D** texture
 	}
 }
 
+void JD2DTextEngine::AddRTsForD3D11Texture2DOne(UINT uid, UINT currentFrameIndex, ID3D11Texture2D* texture2d)
+{
+	UINT id = (uid * kNumRenderTarget) + currentFrameIndex;
+	ComPtr<ID2D1RenderTarget> rt{};
+	ComPtr<IDXGISurface> dxgisurface{};
+	ThrowIfFailed(texture2d->QueryInterface(IID_PPV_ARGS(dxgisurface.ReleaseAndGetAddressOf())));
+
+
+	D2D1_RENDER_TARGET_PROPERTIES properties{
+		.type = D2D1_RENDER_TARGET_TYPE_DEFAULT,
+		.pixelFormat = D2D1::PixelFormat(DXGI_FORMAT_UNKNOWN, D2D1_ALPHA_MODE_PREMULTIPLIED),
+	};
+	ThrowIfFailed(m_D2DFactory->CreateDxgiSurfaceRenderTarget(dxgisurface.Get(), properties, rt.ReleaseAndGetAddressOf()));
+
+	auto [iter, inserted] = m_RTTable.try_emplace(id, rt);
+#if DEV_MODE
+	if (not inserted)
+		spdlog::error("D2DEngine: {} - AddRTsForD3D11Texture2D Failed", uid);
+#endif
+}
+
 void JD2DTextEngine::DeleteInRTTable(UINT uid)
 {
 	for (UINT i = 0; i < kNumRenderTarget; ++i) {
 		UINT id = (uid * kNumRenderTarget) + i;
 		if (m_RTTable.contains(id)) m_RTTable.erase(id);
 	}
+}
+
+void JD2DTextEngine::DeleteInRTTableOne(UINT uid, UINT currentFrameIndex)
+{
+	UINT id = (uid * kNumRenderTarget) + currentFrameIndex;
+	if (m_RTTable.contains(id)) m_RTTable.erase(id);
 }
 
 void JD2DTextEngine::RenderText(UINT uid, UINT currentFrameIndex, IDWriteTextLayout* layout, ID2D1Brush* brush)

@@ -131,7 +131,7 @@ void JObject::SetPlayMode(bool mod)
 		child->SetPlayMode(m_PlayMode);
 }
 
-bool JObject::RenderInspector()
+bool JObject::RenderInspector(UINT currentFrameIndex)
 {
 	bool dirty{};
 	if (m_PlayMode)

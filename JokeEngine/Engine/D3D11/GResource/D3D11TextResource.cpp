@@ -10,11 +10,30 @@ JTextResourceDX11::JTextResourceDX11(UINT uid)
 
 void JTextResourceDX11::Update(float elapsedTime)
 {
-
+	
 }
 
 void JTextResourceDX11::UpdateBuffer(UINT currentFrameIndex)
 {
+	// 여기서 자기 번호 리소스 사이즈 바꾸고 다시 잡기
+	D3D11_TEXTURE2D_DESC desc{};
+	m_TextureRT[currentFrameIndex]->GetDesc(&desc);
+	if (desc.Width != m_RTSize.x || desc.Height != m_RTSize.y) {// 사이즈 다름, 갱신 시작
+		auto* eng = JD2DTextEngine::GetInstance();
+		auto* dev = JD3D11GlobalFactor::GetInstance()->GetDevice();
+		eng->DeleteInRTTableOne(m_OwnerUID, currentFrameIndex);
+
+		m_TextureRTSRV[currentFrameIndex].Reset();
+
+		desc.Width = m_RTSize.x; desc.Height = m_RTSize.y;
+		dev->CreateTexture2D(&desc, nullptr, m_TextureRT[currentFrameIndex].ReleaseAndGetAddressOf());
+		dev->CreateShaderResourceView(m_TextureRT[currentFrameIndex].Get(), nullptr, m_TextureRTSRV[currentFrameIndex].ReleaseAndGetAddressOf());
+
+		eng->AddRTsForD3D11Texture2DOne(m_OwnerUID, currentFrameIndex, m_TextureRT[currentFrameIndex].Get());
+
+		JTextResourceD2D::CreateSolidColorBrush();
+	}
+
 	JTextResourceD2D::UpdateBuffer(currentFrameIndex);
 	// cb 업데이트
 
@@ -61,8 +80,8 @@ JTextMetrics JTextResourceDX11::GetMetricsWithUVMatrixUpdate()
 {
 	JTextMetrics metric = JTextResourceD2D::GetMetrics();
 
-	float rtWidth = static_cast<float>(kTextTexture2DWidth);
-	float rtHeight = static_cast<float>(kTextTexture2DHeight);
+	float rtWidth = static_cast<float>(m_RTSize.x);
+	float rtHeight = static_cast<float>(m_RTSize.y);
 	float uSize = metric.Width / rtWidth;
 	float vSize = metric.Height / rtHeight;
 	float offsetU = metric.Left / rtWidth;
@@ -96,8 +115,8 @@ void JTextResourceDX11::ReadyDX11Resource()
 		};
 
 		D3D11_TEXTURE2D_DESC tdesc{
-			.Width = kTextTexture2DWidth,
-			.Height = kTextTexture2DHeight,
+			.Width = m_RTSize.x,
+			.Height = m_RTSize.y,
 			.MipLevels = 1,
 			.ArraySize = 1,
 			.Format = DXGI_FORMAT_R8G8B8A8_UNORM,

@@ -12,6 +12,8 @@ public:
 	void SetGPUBuffer(UINT currentFrameIndex, UINT parameter, JShaderStage stage = JS_NONE);
 
 	JTextMetrics GetMetricsWithUVMatrixUpdate();
+
+	void* GetDedicatedFactor(UINT currentFrameIndex) { return m_TextureRTSRV[currentFrameIndex].Get(); }
 protected:
 	void ReadyDX11Resource();
 

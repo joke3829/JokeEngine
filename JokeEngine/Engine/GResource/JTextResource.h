@@ -31,13 +31,17 @@ public:
 	virtual void CreateDWriteTextFomat(std::wstring& fontfamily, float fontsize, float fontweight, float fontwidth) {}
 	virtual void CreateDWriteTextLayout(std::wstring& text, float maxwidth, float maxheight, JSpacingFactor space = {}) {}
 
-	virtual void CreateSolidColorBrush(XMFLOAT4 color = XMFLOAT4(1.f, 1.f, 1.f, 1.f)) {}
-	virtual void CreateSolidColorBrush(D2D1::ColorF color = D2D1::ColorF::White) {}
+	virtual void CreateSolidColorBrush() {}
 	virtual void SetTextColor() {}
 
 	virtual JTextMetrics GetMetrics() = 0;
 	virtual JTextMetrics GetMetricsWithUVMatrixUpdate() = 0;
 
+	virtual XMUINT2 GetRTSize() { return XMUINT2(); }
+	virtual void ResizeRT(XMUINT2 size) {}
+	virtual void* GetDedicatedFactor(UINT currentFrameIndex) { return nullptr; }
+
+	virtual void SetBrushColor(XMFLOAT4 color) {}
 protected:
 	UINT m_OwnerUID{};
 };

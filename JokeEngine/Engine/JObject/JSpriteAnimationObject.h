@@ -24,7 +24,7 @@ public:
 	void SetSpriteSet(JContent* spriteSet);
 #if DEV_MODE
 public:
-	virtual bool RenderInspector();
+	virtual bool RenderInspector(UINT currentFrameIndex = 0);
 #endif
 protected:
 	bool									m_bMirror{};
