@@ -52,9 +52,11 @@ public:
 	void SetPause(bool pause) { m_Pause = pause; }
 	void SetControlEditorScene(bool ces) { m_ControlEditorScene = ces; }
 	void EditorCameraResize(float width, float height);
+	virtual void RenderSettingImGui();
 	JCameraObject* GetEditorCamera() { return m_EditorCamera; }
 	JCameraObject* GetCurrentMainCamera() { return m_Cameras[m_CurrentMainCamera]; }
 protected:
+	int m_TempCameraIndex{ 0 };
 	bool m_PlayMode{};
 	bool m_Pause{};
 	bool m_ControlEditorScene{};
@@ -68,8 +70,9 @@ protected:
 	std::vector<JPlayerObject*>						m_Players{};
 	// player(character) 목록 추기
 	int												m_CurrentPlayer{ -1 };	// -1일땐 Scene에 Player가 없는걸로
-	int												m_CurrentMainCamera{ -1 };	// 상수버퍼에 넘길 카메라 인덱스(사용할 것)
-	int												m_InitialCameraIdx{};	// Scene이 시작할 때 사용할 카메라 인덱스
+	int												m_InitialPlayerIdx{ -1 };
+	int												m_CurrentMainCamera{ 0 };	// 상수버퍼에 넘길 카메라 인덱스(사용할 것) 카메라는 반드시 존재해야함
+	int												m_InitialCameraIdx{ 0 };	// Scene이 시작할 때 사용할 카메라 인덱스
 
 
 	std::vector<XMFLOAT4X4>						m_WorldMatrices{};

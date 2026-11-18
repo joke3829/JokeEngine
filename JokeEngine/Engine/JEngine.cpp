@@ -4,6 +4,7 @@
 #include "JObject/JObjectRegistry.h"
 #if DEV_MODE
 #include "Engine/JObject/JCameraObject.h"
+#include "Engine/JObject/JEditorPlayer.h"
 
 bool g_ModifiedContentPath = false;
 #endif
@@ -397,7 +398,7 @@ void JokeEngine::RenderSceneHierarchy()
 			m_SelectedObject = nullptr;
 		if (ImGui::TreeNodeEx(m_Scene->GetName().c_str(), flags)) {
 			for (auto& object : objects) {
-				if(not object.second->IsHasParent())
+				if(not object.second->IsHasParent() && not dynamic_cast<JEditorPlayerObject*>(object.second.get()))
 					DrawHierarchy(DrawHierarchy, object.second.get());
 			}
 			ImGui::TreePop();
@@ -478,7 +479,9 @@ void JokeEngine::RenderProjectSettingPopup()
 	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 
 	if (ImGui::BeginPopupModal("Project Setting", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
-		if (ImGui::Button("Test", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
+		// 이건 즉시 적용입니다.
+		m_Scene->RenderSettingImGui();
+		if (ImGui::Button("Close", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
 		ImGui::EndPopup();
 	}
 }

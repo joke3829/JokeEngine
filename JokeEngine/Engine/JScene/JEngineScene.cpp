@@ -28,6 +28,7 @@ void JEngineScene::ClearScene()
 	m_Players.clear();
 
 	m_CurrentPlayer = -1;
+	m_InitialPlayerIdx = -1;
 	m_CurrentMainCamera = 0;
 	m_InitialCameraIdx = 0;
 
@@ -58,6 +59,20 @@ JObject* JEngineScene::CreateObject(const char* ObjectType)
 	JObject* ret = object.get();
 	m_Objects.try_emplace(object->GetUID(), std::move(object));
 
+	// player냐?
+	if (JPlayerObject* player = dynamic_cast<JPlayerObject*>(ret)) {
+		if (m_CurrentPlayer < 0) { m_CurrentPlayer = 0; }
+		m_Players.emplace_back(player);
+	}
+	else if (JCameraObject* camera = dynamic_cast<JCameraObject*>(ret)) {
+#if DEV_MODE
+		if (m_TempCameraIndex < 0) m_TempCameraIndex = 0;
+#endif
+		if (m_CurrentMainCamera < 0) { m_CurrentMainCamera = 0; }
+		m_Cameras.emplace_back(camera);
+	}
+
+
 	// 추가 요청
 	CDObjectInfo info{ ret->GetShaderName(), ret->GetUID(), ret};
 	m_CDQueue.push(info);
@@ -72,21 +87,38 @@ void JEngineScene::DeleteObject(UINT uid)
 	auto& obj = m_Objects[uid];
 
 	if (JCameraObject* cp = dynamic_cast<JCameraObject*>(m_Objects[uid].get())) {
+#if DEV_MODE
+		for (int i = 1; i < m_Cameras.size(); ++i) {
+			if (cp == m_Cameras[i]) {
+				m_Cameras.erase(m_Cameras.begin() + i);
+				m_CameraMatrices.erase(m_CameraMatrices.begin() + i);
+				m_CameraMatricesTP.erase(m_CameraMatricesTP.begin() + i);
+				if (m_CurrentMainCamera >= m_Cameras.size() - 1) {
+					m_CurrentMainCamera = m_Cameras.size() - 2;
+				}
+				if (m_TempCameraIndex >= m_Cameras.size() - 1)
+					m_TempCameraIndex = m_Cameras.size() - 2;
+			}
+		}
+#else
 		for (int i = 0; i < m_Cameras.size(); ++i) {
 			if (cp == m_Cameras[i]) {
 				m_Cameras.erase(m_Cameras.begin() + i);
 				m_CameraMatrices.erase(m_CameraMatrices.begin() + i);
 				m_CameraMatricesTP.erase(m_CameraMatricesTP.begin() + i);
 				if (m_CurrentMainCamera >= m_Cameras.size()) {
-					m_CurrentMainCamera = 0;
+					m_CurrentMainCamera = m_Cameras.size() - 1;
 				}
 			}
 		}
+#endif	
 	}
 	else if (JPlayerObject* pp = dynamic_cast<JPlayerObject*>(m_Objects[uid].get())) {
 		for (int i = 0; i < m_Players.size(); ++i) {
 			if (pp == m_Players[i]) {
 				m_Players.erase(m_Players.begin() + i);
+				if (m_CurrentPlayer >= m_Players.size())
+					m_CurrentPlayer = m_Players.size() - 1;
 			}
 		}
 	}
@@ -135,6 +167,14 @@ void JEngineScene::Update(float elapsedTime)
 
 void JEngineScene::Reset()
 {
+	m_CurrentPlayer = m_InitialPlayerIdx;
+
+#if DEV_MODE
+	m_TempCameraIndex = m_InitialCameraIdx;
+#else
+	m_CurrentMainCamera = m_InitialCameraIdx;
+#endif
+
 	for (auto& object : m_Objects)
 		object.second->Reset();
 }
@@ -191,7 +231,6 @@ void JEngineScene::BuildDefaultEditorScene()
 		m_Cameras.emplace_back(m_EditorCamera);
 
 		m_EditorPlayer->Attach(camera.get());
-		m_CurrentMainCamera = 0;
 		m_Objects.try_emplace(camera->GetUID(), std::move(camera));
 	}
 
@@ -207,20 +246,6 @@ void JEngineScene::BuildDefaultEditorScene()
 	}
 
 
-	{// sprite object
-		if (not CreateObject("JSpriteAnimationObject"))
-			spdlog::error("JSpriteAnimationObject 추가 실패");
-		else {
-			JSpriteAnimationObject* spriteobject = dynamic_cast<JSpriteAnimationObject*>(m_Objects[m_WorldMatrices.size() - 1].get());
-			spriteobject->SetStaticMesh(contents["Resource/JKEngine/Meshes/Planeq1.jkmh"].get());
-			spriteobject->SetSpriteSet(contents["Resource/SpriteAnimation/TestSprite.jkspt"].get());
-			spriteobject->AddMaterial(contents["Resource/JKEngine/Materials/DefaultSpriteMaterial.jkmt"].get());
-			spriteobject->SetShaderName("UVTransformShader");
-
-			spriteobject->SetScale(85.f, 85.f, 1.f, true);
-		}
-	}
-
 	// player + camera
 	{
 		if(not CreateObject("JPlayerObject"))
@@ -228,27 +253,17 @@ void JEngineScene::BuildDefaultEditorScene()
 		else {
 			JPlayerObject* player = dynamic_cast<JPlayerObject*>(m_Objects[m_WorldMatrices.size() - 1].get());
 			player->SetPosition(0.f, 0.f, -15.f, true);
-			m_Players.emplace_back(player);
-			m_CurrentPlayer = 0;
 
 			if (not CreateObject("JCameraObject")) {
 				spdlog::error("JCameraObject 추가 실패");
 			}
 			else {
 				JCameraObject* camera = dynamic_cast<JCameraObject*>(m_Objects[m_WorldMatrices.size() - 1].get());
-				m_Cameras.emplace_back(camera);
 				player->Attach(camera);
 			}
 		}
 	}
 
-	{
-		if (not CreateObject("JTextObject"))
-			spdlog::error("JTextObject 추가 실패");
-		else {
-			m_Objects[m_WorldMatrices.size() - 1]->SetPosition(5.f, -5.f, 0.f, true);
-		}
-	}
 
 	SetDirty();
 	spdlog::info("DefaultScene Load Complete");
@@ -261,10 +276,11 @@ void JEngineScene::SetPlayMode(bool pmode)
 		object.second->SetPlayMode(m_PlayMode);
 
 	if (m_PlayMode) {
-		m_CurrentMainCamera += 1;
+		m_CurrentMainCamera = m_TempCameraIndex + 1;
 	}
-	else
+	else {
 		m_CurrentMainCamera = 0;
+	}
 }
 
 void JEngineScene::EditorCameraResize(float width, float height)
@@ -273,5 +289,53 @@ void JEngineScene::EditorCameraResize(float width, float height)
 	m_EditorCamera->SetProjFactorPerspective(factor.Fov, width / height, factor.Near, factor.Far);
 	auto& vp = m_EditorCamera->GetViewport();
 	m_EditorCamera->SetViewport(vp.TopLeftX, vp.TopLeftY, width, height, vp.MinDepth, vp.MaxDepth);
+}
+
+// DEV_MODE일때만 사용, 반드시 Scene에 EditorCamera&Player가 있어야함
+void JEngineScene::RenderSettingImGui()
+{
+	ImGui::SeparatorText("General");
+	char cname[128]{};
+	strcpy(cname, m_name.c_str());
+
+	if (ImGui::InputText("Scene Name", cname, std::size(cname), ImGuiInputTextFlags_EnterReturnsTrue)) {
+		if (IsValidString(cname)) {
+			m_name = cname;
+		}
+	}
+	// player에는 editorplayer 안들어감
+	{
+		const char* preview = (m_CurrentPlayer > -1) ? m_Players[m_CurrentPlayer]->GetName().c_str() : "No Player";
+		if (ImGui::BeginCombo("Player Select", preview)) {
+			for (int i = 0; i < m_Players.size(); ++i) {
+				bool is_selected = m_CurrentPlayer == i;
+				if (ImGui::Selectable((m_Players[i]->GetName() + "##" + std::to_string(m_Players[i]->GetUID())).c_str(), is_selected)) {
+					m_CurrentPlayer = i;
+					m_InitialPlayerIdx = i;
+				}
+
+				if (is_selected)
+					ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+	}
+	// camera는 들어감
+	{
+		const char* preview = (m_TempCameraIndex > -1) ? m_Cameras[m_TempCameraIndex + 1]->GetName().c_str() : "No Camera";
+		if (ImGui::BeginCombo("Camera Select", preview)) {
+			for (int i = 1; i < m_Cameras.size(); ++i) {	// 0번째가 editor이다.
+				bool is_selected = m_TempCameraIndex == i - 1;
+				if (ImGui::Selectable((m_Cameras[i]->GetName() + "##" + std::to_string(m_Cameras[i]->GetUID())).c_str(), is_selected)) {
+					m_TempCameraIndex = i - 1;
+					m_InitialCameraIdx = i - 1;
+				}
+
+				if (is_selected)
+					ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+	}
 }
 #endif
