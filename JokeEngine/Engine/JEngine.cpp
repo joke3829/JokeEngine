@@ -905,6 +905,8 @@ void JokeEngineDX11::ImGuiShutDown()
 	ImGui::DestroyContext();
 }
 
+TempGlobalSceneInfo g_GlobalSceneInfo;
+
 void JokeEngineDX11::RenderSceneImage()
 {
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
@@ -917,6 +919,9 @@ void JokeEngineDX11::RenderSceneImage()
 		m_NewImageDestSize.y = static_cast<UINT>(ImageSize.y);
 		ImVec2 InitCursorPos = ImGui::GetCursorPos();
 		m_OldEditorSceneSP = ImGui::GetCursorScreenPos();
+
+		g_GlobalSceneInfo.screenpos = m_OldEditorSceneSP;
+		g_GlobalSceneInfo.avail = ImageSize;
 
 		if (m_PlayMode) {
 			XMUINT2 cnSize = m_Renderer->GetTargetSize();

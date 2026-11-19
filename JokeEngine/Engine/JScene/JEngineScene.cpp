@@ -8,6 +8,8 @@
 #include "Engine/JObject/JObjectRegistry.h"
 #if DEV_MODE
 #include "Engine/JObject/JEditorPlayer.h"
+
+extern TempGlobalSceneInfo g_GlobalSceneInfo;
 #endif
 
 
@@ -140,6 +142,8 @@ void JEngineScene::Update(float elapsedTime)
 	m_InputThread->GetInputs(inputs);
 
 #if DEV_MODE
+	g_GlobalSceneInfo.camera = m_Cameras[m_CurrentMainCamera];
+
 	if (m_PlayMode && !m_Pause) {
 		if (m_CurrentPlayer > -1) {
 			for (auto& state : inputs) {
@@ -286,7 +290,10 @@ void JEngineScene::SetPlayMode(bool pmode)
 void JEngineScene::EditorCameraResize(float width, float height)
 {
 	auto& factor = m_EditorCamera->GetProjFactor();
-	m_EditorCamera->SetProjFactorPerspective(factor.Fov, width / height, factor.Near, factor.Far);
+	if (factor.bOrtho)
+		m_EditorCamera->SetProjFactorOrthographic(-width / 2, width / 2, -height / 2, height / 2, factor.Near, factor.Far);
+	else
+		m_EditorCamera->SetProjFactorPerspective(factor.Fov, static_cast<UINT>(width), static_cast<UINT>(height), factor.Near, factor.Far);
 	auto& vp = m_EditorCamera->GetViewport();
 	m_EditorCamera->SetViewport(vp.TopLeftX, vp.TopLeftY, width, height, vp.MinDepth, vp.MaxDepth);
 }

@@ -23,6 +23,7 @@ void JObject::Reset()
 	m_Active = m_InitialActive;
 	m_Position = m_InitialPosition;
 	m_Rotation = m_InitialRotation;
+	m_Quaternion = m_InitialQuaternion;
 	m_Scale = m_InitialScale;
 }
 

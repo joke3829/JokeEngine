@@ -19,7 +19,8 @@ struct common_viewport {
 struct JProjFactor {
 	bool bOrtho = false;
 	float Fov{};		// degree
-	float Aspect{};
+	UINT asWidth{16};
+	UINT asHeight{9};
 	float Near{};
 	float Far{};
 
@@ -37,6 +38,7 @@ public:
 	JCameraObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT uid, const char* name = nullptr);
 	virtual ~JCameraObject() {}
 
+	virtual void Reset();
 public:
 	XMFLOAT4X4 GetViewMatrix();
 	XMFLOAT4X4 GetProjMatrix();
@@ -48,12 +50,22 @@ public:
 
 
 
-	void SetProjFactorPerspective(float Fov, float Aspect, float Near, float Far);
-	void SetProjFactorOrthographic(float Left, float Right, float Bottom, float Top, float Near, float Far);
-	void SetProjFactor(JProjFactor factor) { m_ProjFactor = factor; }
+	void SetProjFactorPerspective(float Fov, UINT width, UINT height, float Near, float Far, bool edit = false);
+	void SetProjFactorOrthographic(float Left, float Right, float Bottom, float Top, float Near, float Far, bool edit = false);
+	void SetProjFactor(JProjFactor factor, bool edit = false);
 	const JProjFactor& GetProjFactor() { return m_ProjFactor; }
-
+#if DEV_MODE
+public:
+	virtual bool RenderInspector(UINT currentFrameIndex = 0);
+#endif
 protected:
+	void MakeOBBFromProjFactor();
+	void MakeFrustumFromProjFactor();
+
 	common_viewport						m_Viewport{};
 	JProjFactor							m_ProjFactor{};
+	JProjFactor							m_InitialProjFactor{};
+
+	BoundingOrientedBox					m_ProjOBBBox{};
+	BoundingFrustum						m_ProjFrustum{};
 };

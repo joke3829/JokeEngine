@@ -25,6 +25,7 @@
 #include <fstream>
 #include <filesystem>
 #include <algorithm>
+#include <numeric>
 #include <vector>
 #include <set>
 #include <unordered_map>
@@ -81,6 +82,17 @@ using Microsoft::WRL::ComPtr;
 #endif
 #include "Package/nlohmann/json.hpp"
 #include "Package/fkYAML/node.hpp"
+
+
+#if DEV_MODE
+
+struct TempGlobalSceneInfo {
+    void* camera{};
+    ImVec2 screenpos{};
+    ImVec2 avail{};
+};
+
+#endif
 
 
 // 공용 함수 선언부===============================================================================
