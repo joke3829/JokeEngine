@@ -141,7 +141,7 @@ void JCameraObject::MakeOBBFromProjFactor()
 	center.z = (m_ProjFactor.Far + m_ProjFactor.Near) / 2;
 	extent.x = m_ProjFactor.Right - center.x;
 	extent.y = m_ProjFactor.Top - center.y;
-	extent.z = m_ProjFactor.Far - extent.z;
+	extent.z = m_ProjFactor.Far - center.z;
 	XMFLOAT4 quat{ 0.f, 0.f, 0.f, 1.f };
 	m_ProjOBBBox = BoundingOrientedBox(center, extent, quat);
 }
@@ -175,8 +175,8 @@ bool JCameraObject::RenderInspector(UINT currentFrameIndex)
 		for (int i = 0; i < 2; ++i) {
 			bool is_selected = num == i;
 			if (ImGui::Selectable((std::string(tag[i]) + "##CameraCombo").c_str(), &is_selected)) {
-				if (i == 1) m_ProjFactor.bOrtho = true;
-				else m_ProjFactor.bOrtho = false;
+				if (i == 1) { m_ProjFactor.bOrtho = true; m_InitialProjFactor.bOrtho = true; }
+				else { m_ProjFactor.bOrtho = false; m_ProjFactor.bOrtho = false; }
 			}
 
 			if (is_selected)
@@ -220,6 +220,43 @@ bool JCameraObject::RenderInspector(UINT currentFrameIndex)
 
 	// view range
 	if (not m_PlayMode) {
+
+		ImVec2 avail = g_GlobalSceneInfo.avail;
+		ImVec2 offset = g_GlobalSceneInfo.screenpos;
+
+		auto DrawLineWithClipping = [&](ImDrawList* dl, XMFLOAT4& pos1, XMFLOAT4& pos2) {
+			if (pos1.w <= 0 && pos2.w <= 0) return;	// 둘다 뒤에
+			// R(t) = tB + (1 - t)A 이걸로 w가 0보다 커지는 순간의 t를 찾는다. (w는 4차원이지만 현재는 방향이 정해져 있기에 괜찮다)
+			if (pos1.w > 0 && pos2.w > 0) {
+				ImVec2 vppos0{ pos1.x / pos1.w, pos1.y / pos1.w };
+				ImVec2 vppos1{ pos2.x / pos2.w, pos2.y / pos2.w };
+				ImVec2 offsetpos0{ (vppos0.x + 1) * (avail.x / 2) + offset.x, ((vppos0.y * -1) + 1) * (avail.y / 2) + offset.y };
+				ImVec2 offsetpos1{ (vppos1.x + 1) * (avail.x / 2) + offset.x, ((vppos1.y * -1) + 1) * (avail.y / 2) + offset.y };
+				dl->AddLine(offsetpos0, offsetpos1, IM_COL32(255, 255, 0, 255));
+			}
+			if (pos1.w <= 0) {
+				float t = (pos1.w - 0.01f) / (pos1.w - pos2.w);
+				XMFLOAT4 clippos{ (1 - t) * pos1.x + t * pos2.x, (1 - t) * pos1.y + t * pos2.y , (1 - t) * pos1.z + t * pos2.z , (1 - t) * pos1.w + t * pos2.w };
+				ImVec2 vppos0{ (clippos.x / clippos.w), (clippos.y / clippos.w) };
+				ImVec2 vppos1{ pos2.x / pos2.w, pos2.y / pos2.w };
+
+				ImVec2 offsetpos0{ (vppos0.x + 1) * (avail.x / 2) + offset.x, ((vppos0.y * -1) + 1) * (avail.y / 2) + offset.y };
+				ImVec2 offsetpos1{ (vppos1.x + 1) * (avail.x / 2) + offset.x, ((vppos1.y * -1) + 1) * (avail.y / 2) + offset.y };
+				dl->AddLine(offsetpos0, offsetpos1, IM_COL32(255, 255, 0, 255));
+				return;
+			}
+			else if (pos2.w <= 0) {
+				float t = (pos2.w - 0.01f) / (pos2.w - pos1.w);
+				XMFLOAT4 clippos{ (1 - t) * pos2.x + t * pos1.x, (1 - t) * pos2.y + t * pos1.y , (1 - t) * pos2.z + t * pos1.z , (1 - t) * pos2.w + t * pos1.w };
+				ImVec2 vppos0{ (clippos.x / clippos.w), (clippos.y / clippos.w) };
+				ImVec2 vppos1{ pos1.x / pos1.w, pos1.y / pos1.w };
+
+				ImVec2 offsetpos0{ (vppos0.x + 1) * (avail.x / 2) + offset.x, ((vppos0.y * -1) + 1) * (avail.y / 2) + offset.y };
+				ImVec2 offsetpos1{ (vppos1.x + 1) * (avail.x / 2) + offset.x, ((vppos1.y * -1) + 1) * (avail.y / 2) + offset.y };
+				dl->AddLine(offsetpos0, offsetpos1, IM_COL32(255, 255, 0, 255));
+				return;
+			}
+			};
 		if (ImGui::Begin("Scene")) {
 			auto* dl = ImGui::GetWindowDrawList();
 			XMFLOAT4X4 world = GetWorldTransform();
@@ -227,7 +264,20 @@ bool JCameraObject::RenderInspector(UINT currentFrameIndex)
 			if (m_ProjFactor.bOrtho) {
 				BoundingOrientedBox obb;
 				m_ProjOBBBox.Transform(obb, fworld);
+				XMFLOAT3 campos{ world._41, world._42, world._43 };
+				XMFLOAT3 wpos[8];
+				obb.GetCorners(wpos);
+				if (JCameraObject* mainCam = reinterpret_cast<JCameraObject*>(g_GlobalSceneInfo.camera)) {
+					XMFLOAT4X4 viewproj = mainCam->GetViewProjMatrix(); XMMATRIX fvp = XMLoadFloat4x4(&viewproj);
+					XMFLOAT4 vpos[8], vori;
+					XMStoreFloat4(&vori, XMVector4Transform(XMVectorSet(campos.x, campos.y, campos.z, 1.f), fvp));
+					for (int i = 0; i < 8; ++i) XMStoreFloat4(&vpos[i], XMVector4Transform(XMVectorSet(wpos[i].x, wpos[i].y, wpos[i].z, 1.f), fvp));
 
+					DrawLineWithClipping(dl, vori, vpos[7]); DrawLineWithClipping(dl, vori, vpos[4]); DrawLineWithClipping(dl, vori, vpos[5]); DrawLineWithClipping(dl, vori, vpos[6]);
+					DrawLineWithClipping(dl, vpos[0], vpos[1]); DrawLineWithClipping(dl, vpos[1], vpos[2]); DrawLineWithClipping(dl, vpos[2], vpos[3]); DrawLineWithClipping(dl, vpos[3], vpos[0]);
+					DrawLineWithClipping(dl, vpos[4], vpos[5]); DrawLineWithClipping(dl, vpos[5], vpos[6]); DrawLineWithClipping(dl, vpos[6], vpos[7]); DrawLineWithClipping(dl, vpos[7], vpos[4]);
+					DrawLineWithClipping(dl, vpos[7], vpos[3]); DrawLineWithClipping(dl, vpos[4], vpos[0]); DrawLineWithClipping(dl, vpos[5], vpos[1]); DrawLineWithClipping(dl, vpos[6], vpos[2]);
+				}
 			}
 			else {
 				BoundingFrustum frustum;
@@ -239,27 +289,12 @@ bool JCameraObject::RenderInspector(UINT currentFrameIndex)
 				if (JCameraObject* mainCam = reinterpret_cast<JCameraObject*>(g_GlobalSceneInfo.camera)) {
 					XMFLOAT4X4 viewproj = mainCam->GetViewProjMatrix(); XMMATRIX fvp = XMLoadFloat4x4(&viewproj);
 					XMFLOAT4 vpos[8], vori;
-					XMStoreFloat4(&vori, XMVector4Transform(XMLoadFloat3(&wPos), fvp));
-					for (int i = 0; i < 8; ++i) XMStoreFloat4(&vpos[i], XMVector4Transform(XMLoadFloat3(&fwpos[i]), fvp));
-
-					auto DrawLineWithClipping = [&](XMFLOAT4& pos1, XMFLOAT4& pos2) {
-						if (pos1.w <= 0 && pos2.w <= 0) return;	// 둘다 뒤에
-						if (pos1.w <= 0) pos1;
-						// R(t) = tB + (1 - t)A 이걸로 w가 0보다 커지는 순간의 t를 찾는다. (w는 4차원이지만 현재는 방향이 정해져 있기에 괜찮다)
-						};
-
-
-					ImVec2 avail = g_GlobalSceneInfo.avail;
-					ImVec2 offset = g_GlobalSceneInfo.screenpos;
-					vori.x = (vori.x + 1) * (avail.x / 2) + offset.x; vori.y = ((vori.y * -1) + 1) * (avail.y / 2) + offset.y;
-					for (int i = 0; i < 8; ++i) {
-						vpos[i].x = (vpos[i].x + 1) * (avail.x / 2) + offset.x; vpos[i].y = ((vpos[i].y * -1) + 1) * (avail.y / 2) + offset.y;
-					}
-
-					dl->AddLine(ImVec2(vori.x, vori.y), ImVec2(vpos[4].x, vpos[4].y), IM_COL32(255, 255, 0, 255));
-					dl->AddLine(ImVec2(vori.x, vori.y), ImVec2(vpos[5].x, vpos[5].y), IM_COL32(255, 255, 0, 255));
-					dl->AddLine(ImVec2(vori.x, vori.y), ImVec2(vpos[6].x, vpos[6].y), IM_COL32(255, 255, 0, 255));
-					dl->AddLine(ImVec2(vori.x, vori.y), ImVec2(vpos[7].x, vpos[7].y), IM_COL32(255, 255, 0, 255));
+					XMStoreFloat4(&vori, XMVector4Transform(XMVectorSet(wPos.x, wPos.y, wPos.z, 1.f), fvp));
+					for (int i = 0; i < 8; ++i) XMStoreFloat4(&vpos[i], XMVector4Transform(XMVectorSet(fwpos[i].x, fwpos[i].y, fwpos[i].z, 1.f), fvp));
+					
+					DrawLineWithClipping(dl, vori, vpos[4]); DrawLineWithClipping(dl, vori, vpos[5]); DrawLineWithClipping(dl, vori, vpos[6]); DrawLineWithClipping(dl, vori, vpos[7]);
+					DrawLineWithClipping(dl, vpos[0], vpos[1]); DrawLineWithClipping(dl, vpos[1], vpos[2]); DrawLineWithClipping(dl, vpos[2], vpos[3]); DrawLineWithClipping(dl, vpos[3], vpos[0]);
+					DrawLineWithClipping(dl, vpos[4], vpos[5]); DrawLineWithClipping(dl, vpos[5], vpos[6]); DrawLineWithClipping(dl, vpos[6], vpos[7]); DrawLineWithClipping(dl, vpos[7], vpos[4]);
 				}
 			}
 		}
