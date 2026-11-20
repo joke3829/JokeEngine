@@ -24,8 +24,7 @@ void JCameraObject::Reset()
 	JObject::Reset();
 
 	m_ProjFactor = m_InitialProjFactor;
-	if (m_ProjFactor.bOrtho) MakeOBBFromProjFactor();
-	else MakeFrustumFromProjFactor();
+	MakeColliderFromProjFactor();
 }
 
 XMFLOAT4X4 JCameraObject::GetViewMatrix()
@@ -88,7 +87,7 @@ void JCameraObject::SetProjFactorPerspective(float Fov, UINT width, UINT height,
 	m_ProjFactor.Near = Near;
 	m_ProjFactor.Far = Far;
 
-	MakeFrustumFromProjFactor();
+	MakeColliderFromProjFactor();
 
 	if (edit) {
 		m_InitialProjFactor.bOrtho = false;
@@ -111,7 +110,7 @@ void JCameraObject::SetProjFactorOrthographic(float Left, float Right, float Bot
 	m_ProjFactor.Near = Near;
 	m_ProjFactor.Far = Far;
 
-	MakeOBBFromProjFactor();
+	MakeColliderFromProjFactor();
 
 	if (edit) {
 		m_InitialProjFactor.bOrtho = true;
@@ -128,11 +127,11 @@ void JCameraObject::SetProjFactor(JProjFactor factor, bool edit)
 {
 	m_ProjFactor = factor; 
 	if (edit) m_InitialProjFactor = factor;
-	if (m_ProjFactor.bOrtho) MakeOBBFromProjFactor();
-	else MakeFrustumFromProjFactor();
+	// near,far는 공유라 바로 적용하는게 좋은데 안됨
+	MakeColliderFromProjFactor();
 }
 
-void JCameraObject::MakeOBBFromProjFactor()
+void JCameraObject::MakeColliderFromProjFactor()
 {
 	XMFLOAT3 center{};
 	XMFLOAT3 extent{};
@@ -144,11 +143,7 @@ void JCameraObject::MakeOBBFromProjFactor()
 	extent.z = m_ProjFactor.Far - center.z;
 	XMFLOAT4 quat{ 0.f, 0.f, 0.f, 1.f };
 	m_ProjOBBBox = BoundingOrientedBox(center, extent, quat);
-}
 
-void JCameraObject::MakeFrustumFromProjFactor()
-{
-	if (m_ProjFactor.bOrtho) return;
 	XMFLOAT4X4 proj = GetProjMatrix();
 	m_ProjFrustum = BoundingFrustum(XMLoadFloat4x4(&proj));
 }
@@ -167,7 +162,7 @@ bool JCameraObject::RenderInspector(UINT currentFrameIndex)
 		ImGui::BeginDisabled(true);
 
 	float cursorx = 94.f;
-	ImGui::SeparatorText("Camera");
+	ImGui::SeparatorText("JCameraObject");
 	const char* tag[] = { "Perspective", "Orthograph" };
 	int num = (m_ProjFactor.bOrtho) ? 1 : 0;
 	ImGui::Text("CameraType"); ImGui::SameLine(); ImGui::SetCursorPosX(cursorx);

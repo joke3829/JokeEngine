@@ -12,6 +12,9 @@ public:
 	virtual void UpdateInput(JKeyState& input);
 
 	virtual void UpdateInputWindowMessage(UINT msg, WPARAM wParam, LPARAM lParam);
+#if DEV_MODE
+	virtual bool RenderInspector(UINT currentFrameIndex = 0);
+#endif
 protected:
 	// 기능의 따른 키 설정 상태
 	std::unordered_map<int, int> dmdkr;

@@ -131,7 +131,7 @@ bool JStaticMeshObject::RenderInspector(UINT currentFrameIndex)
 	if (m_PlayMode)
 		ImGui::BeginDisabled(true);
 
-	ImGui::SeparatorText("StaticMesh");
+	ImGui::SeparatorText("JStaticMeshObject");
 	{	// Material
 		ImGui::Text("Materials");
 		ImVec2 curPos = ImGui::GetCursorPos();

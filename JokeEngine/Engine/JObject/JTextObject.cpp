@@ -349,7 +349,7 @@ bool JTextObject::RenderInspector(UINT currentFrameIndex)
 	if (m_PlayMode)
 		ImGui::BeginDisabled(true);
 	float cursorx = 94.f;
-	ImGui::SeparatorText("TextOption");
+	ImGui::SeparatorText("JTextObject");
 	
 	ImGui::Text("FontFamily"); ImGui::SameLine();
 	ImGui::SetCursorPosX(cursorx);

@@ -54,5 +54,15 @@ void JPlayerObject::UpdateInputWindowMessage(UINT msg, WPARAM wParam, LPARAM lPa
 
 }
 
+#if DEV_MODE
+bool JPlayerObject::RenderInspector(UINT currentFrameIndex)
+{
+	bool ret = JObject::RenderInspector(currentFrameIndex);
+	
+	ImGui::SeparatorText("JPlayerObject");
+
+	return ret;
+}
+#endif
 
 REGISTER_OBJECT(JPlayerObject)

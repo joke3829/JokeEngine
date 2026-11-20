@@ -59,8 +59,7 @@ public:
 	virtual bool RenderInspector(UINT currentFrameIndex = 0);
 #endif
 protected:
-	void MakeOBBFromProjFactor();
-	void MakeFrustumFromProjFactor();
+	void MakeColliderFromProjFactor();
 
 	common_viewport						m_Viewport{};
 	JProjFactor							m_ProjFactor{};

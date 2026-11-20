@@ -121,7 +121,11 @@ bool JSpriteAnimationObject::RenderInspector(UINT currentFrameIndex)
 	if (m_PlayMode)
 		ImGui::BeginDisabled(true);
 
-	ImGui::SeparatorText("SpriteSet");
+	if (!m_StaticMesh) 
+		for(int i = 0; i < 3; ++i)
+			ImGui::Text("");
+
+	ImGui::SeparatorText("JSpriteAnimationObject");
 	ImVec2 curScreenPos = ImGui::GetCursorScreenPos();
 	{
 		ImVec2 curPos = ImGui::GetCursorPos();
@@ -142,7 +146,7 @@ bool JSpriteAnimationObject::RenderInspector(UINT currentFrameIndex)
 				JContent* pcon = *static_cast<JContent* const*>(payload->Data);
 				JSpriteAnimationSet* pSprite = dynamic_cast<JSpriteAnimationSet*>(pcon);
 				if (pSprite) {
-					m_SpriteSet = pSprite;
+					SetSpriteSet(pSprite);
 					if (not pSprite->GetHasKeyFrame())
 						spdlog::warn("설정한 SpriteSet의 data가 없습니다.");
 				}
@@ -166,7 +170,7 @@ bool JSpriteAnimationObject::RenderInspector(UINT currentFrameIndex)
 		ImGui::SetCursorScreenPos(ImVec2(curScreenPos.x, curScreenPos.y + 65.f));
 		ImGui::Separator();
 		ImGui::Text("test");
-		if (m_SpriteSet->GetHasKeyFrame()) {
+		if (m_SpriteSet && m_SpriteSet->GetHasKeyFrame()) {
 			// 애니메니이션 콤보 박스
 			auto& play = m_SpriteSet->GetPlayTimeMap();
 			std::vector<std::string> aninames; aninames.reserve(play.size());
