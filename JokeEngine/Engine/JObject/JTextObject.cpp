@@ -9,14 +9,6 @@ constexpr float kTextScale = 0.05f;
 JTextObject::JTextObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT uid, const char* name)
 	: JObject(vWorld, vWorldTP, uid, name)
 {
-	SetText(L"Text", true);
-	SetFontFamily(L"Arial", true);
-	SetFontSize(32.f, true);
-	SetFontWeight(400.f, true);
-	SetFontWidth(100.f, true);
-	SetHorizonAlignment(JText_Alignment::Left, true);
-	SetVerticalAlignment(JText_Alignment::Top, true);
-
 	auto* opt = JEngineDefaultGlobalConfig::GetInstance()->GetConfigFactor();
 	switch (opt->DirectX_Version) {
 	case 11:
@@ -31,18 +23,28 @@ JTextObject::JTextObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4
 		// 문제 예외 처리
 		break;
 	}
-
 	ReadyPlanes(JGlobalContentManager::GetInstance()->GetManager()->GetContentTable());
-
 	// temp
-	SetShaderName("UVTransformShader");
-	m_TextResource->SetBrushColor(m_BrushColor);
+	SetShaderName("TextureMappingShader");
 	MakeDirtyFlag();
 }
 
 JTextObject::~JTextObject()
 {
 
+}
+
+void JTextObject::Initialize()
+{
+	SetText(L"Text", true);
+	SetFontFamily(L"Arial", true);
+	SetFontSize(32.f, true);
+	SetFontWeight(400.f, true);
+	SetFontWidth(100.f, true);
+	SetHorizonAlignment(JText_Alignment::Left, true);
+	SetVerticalAlignment(JText_Alignment::Top, true);
+
+	m_TextResource->SetBrushColor(m_BrushColor);
 }
 
 void JTextObject::Reset()

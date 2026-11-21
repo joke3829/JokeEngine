@@ -12,6 +12,7 @@ struct CDObjectInfo {	// CD: Create Delete
 	UINT uid{};				// 제거할 uid
 	JObject* object = nullptr;
 };
+// main camera가 없어 튕길 상황일 땐 _backup을 붙힌 세이브를 만들고 크래시가 나도록 한다.
 
 class JEngineScene : public JCommon {
 public:
@@ -54,7 +55,7 @@ public:
 	void EditorCameraResize(float width, float height);
 	virtual void RenderSettingImGui();
 	JCameraObject* GetEditorCamera() { return m_EditorCamera; }
-	JCameraObject* GetCurrentMainCamera() { return m_Cameras[m_CurrentMainCamera]; }
+	JCameraObject* GetCurrentMainCamera() { return (m_Cameras.size() > m_CurrentMainCamera && m_CurrentMainCamera >= 0) ? m_Cameras[m_CurrentMainCamera] : nullptr; }
 protected:
 	int m_TempCameraIndex{ 0 };
 	bool m_PlayMode{};

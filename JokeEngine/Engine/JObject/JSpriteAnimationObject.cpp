@@ -25,10 +25,29 @@ JSpriteAnimationObject::JSpriteAnimationObject(std::vector<XMFLOAT4X4>& vWorld, 
 		assert(0);
 		break;
 	}
+
+	SetShaderName("DefaultSpriteShader");
 }
 
 JSpriteAnimationObject::~JSpriteAnimationObject()
 {
+}
+
+void JSpriteAnimationObject::Initialize()
+{
+	auto& content = JGlobalContentManager::GetInstance()->GetManager()->GetContentTable();
+	if (content.contains("Resource/JKEngine/Example/SpriteAnimation/SpriteAnimationSampleMaterial.jkmt")) {
+		AddMaterial();
+		AddMaterial(content["Resource/JKEngine/Example/SpriteAnimation/SpriteAnimationSampleMaterial.jkmt"].get(), 0);
+	}
+
+	if (content.contains("Resource/JKEngine/Meshes/5x5Plane.jkmh")) {
+		SetStaticMesh(content["Resource/JKEngine/Meshes/5x5Plane.jkmh"].get());
+	}
+
+	if (content.contains("Resource/JKEngine/Example/SpriteAnimation/SpriteSetExample.jkspt")) {
+		SetSpriteSet(content["Resource/JKEngine/Example/SpriteAnimation/SpriteSetExample.jkspt"].get());
+	}
 }
 
 void JSpriteAnimationObject::Reset()

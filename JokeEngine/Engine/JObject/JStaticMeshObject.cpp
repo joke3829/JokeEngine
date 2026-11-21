@@ -3,6 +3,7 @@
 #include "Engine/JContent/JMaterial.h"
 #include "Engine/JContent/JStaticMesh.h"
 #include "Engine/D3D11/GResource/D3D11MeshConstant.h"
+#include "Engine/JContent/JContentManager.h"
 #include "JObjectRegistry.h"
 
 
@@ -26,11 +27,24 @@ JStaticMeshObject::JStaticMeshObject(std::vector<XMFLOAT4X4>& vWorld, std::vecto
 		assert(0);
 		break;
 	}
+	SetShaderName("DefaultShader");
 }
 
 JStaticMeshObject::~JStaticMeshObject()
 {
 
+}
+
+void JStaticMeshObject::Initialize()
+{ 
+	auto& content = JGlobalContentManager::GetInstance()->GetManager()->GetContentTable();
+	if (content.contains("Resource/JKEngine/Materials/DefaultMaterial.jkmt")) {
+		AddMaterial();
+		AddMaterial(content["Resource/JKEngine/Materials/DefaultMaterial.jkmt"].get(), 0);
+	}
+
+	if (content.contains("Resource/JKEngine/Meshes/Cube.jkmh"))
+		SetStaticMesh(content["Resource/JKEngine/Meshes/Cube.jkmh"].get());
 }
 
 void JStaticMeshObject::Update(float elapsedTime, XMFLOAT4X4* parent)

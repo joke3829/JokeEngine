@@ -192,7 +192,7 @@ bool JCameraObject::RenderInspector(UINT currentFrameIndex)
 		ImGui::Text("Top"); ImGui::SameLine(); ImGui::SetCursorPosX(cursorx);
 		if (ImGui::DragFloat("##OrthoTop", &temp.Top, 0.1f, temp.Bottom + 1.f, FLT_MAX, "%.3f", ImGuiSliderFlags_AlwaysClamp)) modified = true;
 		ImGui::Text("Near"); ImGui::SameLine(); ImGui::SetCursorPosX(cursorx);
-		if (ImGui::DragFloat("##OrthoNear", &temp.Near, 0.1f, -FLT_MAX, temp.Far - 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) modified = true;
+		if (ImGui::DragFloat("##OrthoNear", &temp.Near, 0.1f, 0.001f, temp.Far - 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) modified = true;
 		ImGui::Text("Far"); ImGui::SameLine(); ImGui::SetCursorPosX(cursorx);
 		if (ImGui::DragFloat("##OrthoFar", &temp.Far, 0.1f, temp.Near + 1.f, FLT_MAX, "%.3f", ImGuiSliderFlags_AlwaysClamp)) modified = true;
 
@@ -207,7 +207,7 @@ bool JCameraObject::RenderInspector(UINT currentFrameIndex)
 		ImGui::Text("AspectHeight"); ImGui::SameLine(); ImGui::SetCursorPosX(cursorx);
 		if (ImGui::DragInt("##PespectHeight", reinterpret_cast<int*>(&temp.asHeight), 1, 1, 9999, "%d", ImGuiSliderFlags_AlwaysClamp)) modified = true;
 		ImGui::Text("Near"); ImGui::SameLine(); ImGui::SetCursorPosX(cursorx);
-		if (ImGui::DragFloat("##PerspectNear", &temp.Near, 0.1f, -FLT_MAX, temp.Far - 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) modified = true;
+		if (ImGui::DragFloat("##PerspectNear", &temp.Near, 0.1f, 0.001f, temp.Far - 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) modified = true;
 		ImGui::Text("Far"); ImGui::SameLine(); ImGui::SetCursorPosX(cursorx);
 		if (ImGui::DragFloat("##PerspectFar", &temp.Far, 0.1f, temp.Near + 1.f, FLT_MAX, "%.3f", ImGuiSliderFlags_AlwaysClamp)) modified = true;
 		if (modified) SetProjFactor(temp, true);

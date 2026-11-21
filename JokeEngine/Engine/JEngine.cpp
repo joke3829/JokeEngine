@@ -173,6 +173,13 @@ void JokeEngine::RenderMenubar()
 			}
 		}
 		{ // Create Menu
+			if (!m_PlayMode) {
+				if (ImGui::IsKeyPressed(ImGuiKey_A) && io.KeyShift && not m_CreateWindowPopup && not m_ControlEditorScene) {
+					m_CreateWindowPopup = true;
+					m_SelectedObjectInCreatePopup = 0;
+				}
+			}
+
 			if (ImGui::BeginMenu("Create")) {
 				if (ImGui::MenuItem("Cube")) {
 
@@ -190,7 +197,7 @@ void JokeEngine::RenderMenubar()
 
 				}
 				ImGui::Separator();
-				if (ImGui::MenuItem("ObjectWindow")) {
+				if (ImGui::MenuItem("CreateWindow", "Shift + A")) {
 					m_CreateWindowPopup = true;
 					m_SelectedObjectInCreatePopup = 0;
 				}
@@ -525,6 +532,7 @@ void JokeEngine::RenderCreateWindowPopup()
 		if (ImGui::Button("Create", ImVec2(80, 0))) { 
 			// 선택된 Object 이름으로 추가한다.
 			JObject* object = m_Scene->CreateObject(names[m_SelectedObjectInCreatePopup].c_str());
+			object->Initialize();
 			const XMFLOAT4X4& w = m_Scene->GetEditorCamera()->GetWorldTransform();
 			XMFLOAT3 dir{ w._31, w._32, w._33 };
 			XMVECTOR vdir = XMVector3Normalize(XMLoadFloat3(&dir));
@@ -613,6 +621,7 @@ void JokeEngine::RenderImGuizo()
 		auto* cam = m_Scene->GetEditorCamera();
 		if (m_PlayMode)
 			cam = m_Scene->GetCurrentMainCamera();
+		if (!cam) return;
 		ImGuizmo::SetOrthographic(cam->GetProjFactor().bOrtho);
 
 		ImGuizmo::SetDrawlist();

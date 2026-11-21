@@ -140,6 +140,12 @@ bool JObject::RenderInspector(UINT currentFrameIndex)
 	{	// General
 		float cursorx = 94.f;
 		ImGui::SeparatorText("General");
+		ImGui::Text("Active"); ImGui::SameLine();
+		ImGui::SetCursorPosX(cursorx);
+		if (ImGui::Checkbox("##activecheck", &m_InitialActive)) {
+			SetActiveState(m_InitialActive, true);
+		}
+
 		ImGui::Text("Name"); ImGui::SameLine();
 		char cname[128]{};
 		strcpy(cname, m_name.c_str());

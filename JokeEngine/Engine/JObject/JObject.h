@@ -24,6 +24,8 @@ public:
 	JObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT uid, const char* name = nullptr);
 	virtual ~JObject() {}
 
+	// 파일 없이 생성할 때만 호출(Default로 만드는것)
+	virtual void Initialize() {}
 	virtual void Reset();
 
 	void Attach(JObject* leaf);

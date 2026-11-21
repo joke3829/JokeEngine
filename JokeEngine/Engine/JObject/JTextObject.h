@@ -24,6 +24,7 @@ public:
 	JTextObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT uid, const char* name = nullptr);
 	~JTextObject();
 
+	virtual void Initialize();
 	virtual void Reset();
 
 	void Update(float elapsedTime, XMFLOAT4X4* parent = nullptr);

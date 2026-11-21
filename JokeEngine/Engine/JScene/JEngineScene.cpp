@@ -142,7 +142,8 @@ void JEngineScene::Update(float elapsedTime)
 	m_InputThread->GetInputs(inputs);
 
 #if DEV_MODE
-	g_GlobalSceneInfo.camera = m_Cameras[m_CurrentMainCamera];
+	if(m_Cameras.size() > m_CurrentMainCamera && m_CurrentMainCamera >= 0)
+		g_GlobalSceneInfo.camera = m_Cameras[m_CurrentMainCamera];
 
 	if (m_PlayMode && !m_Pause) {
 		if (m_CurrentPlayer > -1) {
