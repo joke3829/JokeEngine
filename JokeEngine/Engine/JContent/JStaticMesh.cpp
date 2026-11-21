@@ -442,7 +442,9 @@ void JStaticMesh::CreateContentFile()
 #if DEV_MODE
 void JStaticMesh::RenderGUI(ImVec2 startPos, void* imageref)
 {
-    JContent::RenderGUI(startPos, JGlobalContentManager::GetInstance()->GetManager()->GetContentTable()["Resource/JKEngine/Textures/StaticMeshFile.dds"]->GetDedicatedFactor());
+    auto& content = JGlobalContentManager::GetInstance()->GetManager()->GetContentTable();
+    void* imagep = content.contains("Resource/JKEngine/Textures/StaticMeshFile.dds") ? content["Resource/JKEngine/Textures/StaticMeshFile.dds"]->GetDedicatedFactor() : nullptr;
+    JContent::RenderGUI(startPos, imagep);
 }
 
 void JStaticMesh::RenderDetailPanel()

@@ -158,7 +158,7 @@ JEngineDefaultSpriteShaderDX11::JEngineDefaultSpriteShaderDX11(const char* name)
 	// VS
 	{
 		ComPtr<ID3DBlob> vs{};
-		vs = CompileHLSL(L"Shaders/Default/UVTransformShader.hlsl", nullptr, "UVTransformVS", "vs_5_0");
+		vs = CompileHLSL(L"Shaders/Default/MappingShader.hlsl", nullptr, "UVTransformVS", "vs_5_0");
 
 		ThrowIfFailed(device->CreateVertexShader(vs->GetBufferPointer(), vs->GetBufferSize(), nullptr, m_VS.ReleaseAndGetAddressOf()));
 	}
@@ -166,7 +166,67 @@ JEngineDefaultSpriteShaderDX11::JEngineDefaultSpriteShaderDX11(const char* name)
 	// PS
 	{
 		ComPtr<ID3DBlob> ps{};
-		ps = CompileHLSL(L"Shaders/Default/UVTransformShader.hlsl", nullptr, "AlbedoTextureMappingPS", "ps_5_0");
+		D3D_SHADER_MACRO macro[] = { "WITH_MATERIAL_CONSTANT", "1", nullptr, nullptr};
+		ps = CompileHLSL(L"Shaders/Default/MappingShader.hlsl", macro, "AlbedoTextureMappingPS", "ps_5_0");
+
+		ThrowIfFailed(device->CreatePixelShader(ps->GetBufferPointer(), ps->GetBufferSize(), nullptr, m_PS.ReleaseAndGetAddressOf()));
+	}
+
+	// BlendState
+	{
+		D3D11_BLEND_DESC desc{};
+		auto& rt = desc.RenderTarget[0];
+		rt.BlendEnable = true;
+		rt.SrcBlend = D3D11_BLEND_ONE;
+		rt.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+		rt.BlendOp = D3D11_BLEND_OP_ADD;
+
+		rt.SrcBlendAlpha = D3D11_BLEND_ZERO;
+		rt.DestBlendAlpha = D3D11_BLEND_ONE;
+		rt.BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		rt.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		ThrowIfFailed(device->CreateBlendState(&desc, m_BlendState.ReleaseAndGetAddressOf()));
+	}
+
+	// Sampler
+	{
+		D3D11_SAMPLER_DESC desc{};
+		desc.Filter = D3D11_FILTER_ANISOTROPIC;
+		desc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+		desc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+		desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+		desc.MaxAnisotropy = 8;
+		desc.MinLOD = 0;
+		desc.MaxLOD = D3D11_FLOAT32_MAX;
+
+		ComPtr<ID3D11SamplerState> sampler{};
+		ThrowIfFailed(device->CreateSamplerState(&desc, sampler.ReleaseAndGetAddressOf()));
+		m_SamplerStates.emplace_back(sampler);
+		m_Samplers.emplace_back(sampler.Get());
+	}
+}
+
+// =================================================================================
+
+JEngineTextureMappingShaderDX11::JEngineTextureMappingShaderDX11(const char* name)
+	: JEngineShaderDX11(name)
+{
+	auto* device = JD3D11GlobalFactor::GetInstance()->GetDevice();
+	// InputLayout
+	CreateInputLayout(false);
+
+	// VS
+	{
+		ComPtr<ID3DBlob> vs{};
+		vs = CompileHLSL(L"Shaders/Default/MappingShader.hlsl", nullptr, "UVTransformVS", "vs_5_0");
+
+		ThrowIfFailed(device->CreateVertexShader(vs->GetBufferPointer(), vs->GetBufferSize(), nullptr, m_VS.ReleaseAndGetAddressOf()));
+	}
+
+	// PS
+	{
+		ComPtr<ID3DBlob> ps{};
+		ps = CompileHLSL(L"Shaders/Default/MappingShader.hlsl", nullptr, "AlbedoTextureMappingPS", "ps_5_0");
 
 		ThrowIfFailed(device->CreatePixelShader(ps->GetBufferPointer(), ps->GetBufferSize(), nullptr, m_PS.ReleaseAndGetAddressOf()));
 	}

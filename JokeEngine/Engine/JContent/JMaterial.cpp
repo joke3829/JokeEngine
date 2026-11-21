@@ -128,7 +128,9 @@ void JDMaterial::LoadFromFile()
 #if DEV_MODE
 void JMaterial::RenderGUI(ImVec2 startPos, void* imageref)
 {
-	JContent::RenderGUI(startPos, JGlobalContentManager::GetInstance()->GetManager()->GetContentTable()["Resource/JKEngine/Textures/MaterialFile.dds"]->GetDedicatedFactor());
+	auto& content = JGlobalContentManager::GetInstance()->GetManager()->GetContentTable();
+	void* imagep = (content.contains("Resource/JKEngine/Textures/MaterialFile.dds")) ? content["Resource/JKEngine/Textures/MaterialFile.dds"]->GetDedicatedFactor() : nullptr;
+	JContent::RenderGUI(startPos, imagep);
 }
 
 void JMaterial::ReadyTempData()

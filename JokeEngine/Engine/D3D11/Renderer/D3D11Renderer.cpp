@@ -8,7 +8,7 @@ JEngineRendererDX11::JEngineRendererDX11(UINT width, UINT height, const char* na
 	CreateRTV_DSV(width, height);
 	// Shader 정의
 	{
-		std::shared_ptr<JEngineDefaultShaderDX11> shader = std::make_shared<JEngineDefaultShaderDX11>("DefaultShader");
+		std::shared_ptr<JEngineDefaultShaderDX11> shader = std::make_shared<JEngineDefaultShaderDX11>();
 		auto[iter, inserted] = m_PSOMap.try_emplace(shader->GetName(), shader);
 #if DEV_MODE
 		if (not inserted)  ShowInsertedFailed(shader->GetName(), "Renderer");
@@ -16,6 +16,13 @@ JEngineRendererDX11::JEngineRendererDX11(UINT width, UINT height, const char* na
 	}
 	{
 		std::shared_ptr<JEngineDefaultSpriteShaderDX11> shader = std::make_shared<JEngineDefaultSpriteShaderDX11>();
+		auto [iter, inserted] = m_PSOMap.try_emplace(shader->GetName(), shader);
+#if DEV_MODE
+		if (not inserted)  ShowInsertedFailed(shader->GetName(), "Renderer");
+#endif
+	}
+	{
+		std::shared_ptr<JEngineTextureMappingShaderDX11> shader = std::make_shared<JEngineTextureMappingShaderDX11>();
 		auto [iter, inserted] = m_PSOMap.try_emplace(shader->GetName(), shader);
 #if DEV_MODE
 		if (not inserted)  ShowInsertedFailed(shader->GetName(), "Renderer");
@@ -50,7 +57,8 @@ void JEngineRendererDX11::RenderFrame()
 	// PSO
 	void* rtv[] = { m_RenderTargetView[m_CurrentFrameIndex].Get() };
 	m_PSOMap["DefaultShader"]->RenderObjects(m_CurrentFrameIndex, rtv, 1, m_DepthStencilView[m_CurrentFrameIndex].Get());
-	m_PSOMap["UVTransformShader"]->RenderObjects(m_CurrentFrameIndex, rtv, 1, m_DepthStencilView[m_CurrentFrameIndex].Get());
+	m_PSOMap["DefaultSpriteShader"]->RenderObjects(m_CurrentFrameIndex, rtv, 1, m_DepthStencilView[m_CurrentFrameIndex].Get());
+	m_PSOMap["TextureMappingShader"]->RenderObjects(m_CurrentFrameIndex, rtv, 1, m_DepthStencilView[m_CurrentFrameIndex].Get());
 }
 
 void JEngineRendererDX11::CopyResult(void* outBuffer)

@@ -134,7 +134,9 @@ void JSpriteAnimationSet::LoadFromFile()
 #if DEV_MODE 
 void JSpriteAnimationSet::RenderGUI(ImVec2 startPos, void* imageref)
 {
-	JContent::RenderGUI(startPos, JGlobalContentManager::GetInstance()->GetManager()->GetContentTable()["Resource/JKEngine/Textures/SpriteAnimationSetFile.dds"]->GetDedicatedFactor());
+	auto& content = JGlobalContentManager::GetInstance()->GetManager()->GetContentTable();
+	void* imagep = content.contains("Resource/JKEngine/Textures/SpriteAnimationSetFile.dds") ? content["Resource/JKEngine/Textures/SpriteAnimationSetFile.dds"]->GetDedicatedFactor() : nullptr;
+	JContent::RenderGUI(startPos, imagep);
 }
 
 extern HWND g_Hwnd;

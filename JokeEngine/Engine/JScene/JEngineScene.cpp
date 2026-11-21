@@ -238,35 +238,35 @@ void JEngineScene::BuildDefaultEditorScene()
 		m_Objects.try_emplace(camera->GetUID(), std::move(camera));
 	}
 
-	{	// StaticMesh 추가 예제
-		if (not CreateObject("JStaticMeshObject"))
-			spdlog::error("JStaticMeshObject 추가 실패");
-		else {
-			JStaticMeshObject* meshobject = dynamic_cast<JStaticMeshObject*>(m_Objects[m_WorldMatrices.size() - 1].get());
-			meshobject->AddMaterial(contents["Resource/JKEngine/Materials/DefaultMaterial.jkmt"].get());
-			meshobject->SetShaderName("DefaultShader");
-			meshobject->SetStaticMesh(contents["Resource/JKEngine/Meshes/Cube.jkmh"].get());
-		}
-	}
+	//{	// StaticMesh 추가 예제
+	//	if (not CreateObject("JStaticMeshObject"))
+	//		spdlog::error("JStaticMeshObject 추가 실패");
+	//	else {
+	//		JStaticMeshObject* meshobject = dynamic_cast<JStaticMeshObject*>(m_Objects[m_WorldMatrices.size() - 1].get());
+	//		meshobject->AddMaterial(contents["Resource/JKEngine/Materials/DefaultMaterial.jkmt"].get());
+	//		meshobject->SetShaderName("DefaultShader");
+	//		meshobject->SetStaticMesh(contents["Resource/JKEngine/Meshes/Cube.jkmh"].get());
+	//	}
+	//}
 
 
-	// player + camera
-	{
-		if(not CreateObject("JPlayerObject"))
-			spdlog::error("JPlayerObject 추가 실패");
-		else {
-			JPlayerObject* player = dynamic_cast<JPlayerObject*>(m_Objects[m_WorldMatrices.size() - 1].get());
-			player->SetPosition(0.f, 0.f, -15.f, true);
+	//// player + camera
+	//{
+	//	if(not CreateObject("JPlayerObject"))
+	//		spdlog::error("JPlayerObject 추가 실패");
+	//	else {
+	//		JPlayerObject* player = dynamic_cast<JPlayerObject*>(m_Objects[m_WorldMatrices.size() - 1].get());
+	//		player->SetPosition(0.f, 0.f, -15.f, true);
 
-			if (not CreateObject("JCameraObject")) {
-				spdlog::error("JCameraObject 추가 실패");
-			}
-			else {
-				JCameraObject* camera = dynamic_cast<JCameraObject*>(m_Objects[m_WorldMatrices.size() - 1].get());
-				player->Attach(camera);
-			}
-		}
-	}
+	//		if (not CreateObject("JCameraObject")) {
+	//			spdlog::error("JCameraObject 추가 실패");
+	//		}
+	//		else {
+	//			JCameraObject* camera = dynamic_cast<JCameraObject*>(m_Objects[m_WorldMatrices.size() - 1].get());
+	//			player->Attach(camera);
+	//		}
+	//	}
+	//}
 
 
 	SetDirty();

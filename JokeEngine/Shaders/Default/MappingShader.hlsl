@@ -1,5 +1,5 @@
 // ==========================================
-// TextureMappingShader.hlsl
+// MappingShader.hlsl
 // 
 // 2DTextureMapping 관련 shadercode 부
 // ==========================================
@@ -37,10 +37,12 @@ DefaultPSInput UVTransformVS(DefaultVSInput input)
 
 float4 AlbedoTextureMappingPS(DefaultPSInput input) : SV_Target
 {
-    float4 finalColor;
+    float4 finalColor = float4(0.f, 0.f, 0.f, 0.f);
 #ifdef D3D12_TEXTURE_REGISTER
     return float4(1.f, 1.f, 0.f, 1.f);
 #endif
+    
+#ifdef WITH_MATERIAL_CONSTANT
     if (g_Material.BaseColorTexIndex != -1)
     {
         finalColor = g_Material.BaseColor * g_Texture[0].Sample(g_Sampler, input.TexCoord0);
@@ -49,6 +51,9 @@ float4 AlbedoTextureMappingPS(DefaultPSInput input) : SV_Target
     {
         finalColor = g_Material.BaseColor;
     }
+#else
+    finalColor = g_Texture[0].Sample(g_Sampler, input.TexCoord0);
+#endif
     
     clip(finalColor.a - 0.05f);
     // premultiplied

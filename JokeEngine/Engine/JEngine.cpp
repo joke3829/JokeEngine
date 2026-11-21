@@ -334,7 +334,7 @@ void JokeEngine::RenderContentManager()
 		ImGui::End();
 
 		if (ImGui::Begin("Shader", &m_ShowContentManager, flag)) {
-
+			m_Renderer->RenderPSOMapImGui();
 		}
 		ImGui::End();
 	}

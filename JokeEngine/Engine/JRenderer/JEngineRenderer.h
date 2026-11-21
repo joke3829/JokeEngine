@@ -20,6 +20,10 @@ public:
 	const XMUINT2& GetTargetSize() { return m_TargetSize; }
 
 	UINT GetCurrentFrameIndex() { return m_CurrentFrameIndex; }
+#if DEV_MODE
+public:
+	void RenderPSOMapImGui();
+#endif
 protected:
 	virtual void CreateRTV_DSV(UINT width, UINT height) {}
 

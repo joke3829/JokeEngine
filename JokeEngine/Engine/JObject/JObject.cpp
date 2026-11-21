@@ -167,6 +167,16 @@ bool JObject::RenderInspector(UINT currentFrameIndex)
 			m_ShaderName = cname;
 			dirty = true;
 		}
+		if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right, false)) {
+			m_ShaderName = ""; dirty = true;
+		}
+		if (ImGui::BeginDragDropTarget()) {
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DRAG_SHADERNAME")) {
+				const char* tname = static_cast<const char*>(payload->Data);
+				m_ShaderName = tname;
+				dirty = true;
+			}
+		}
 	}
 	{	// Transform
 		ImGui::SeparatorText("Transform");
