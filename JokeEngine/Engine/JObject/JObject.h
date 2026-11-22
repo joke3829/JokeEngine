@@ -28,6 +28,10 @@ public:
 	virtual void Initialize() {}
 	virtual void Reset();
 
+	// 이건 부모 안정해줌
+	virtual void LoadObjectFromFile(nlohmann::json& object);
+	void SetParentFromFile(JObject* parent);
+
 	void Attach(JObject* leaf);
 	void Dettach(UINT uid);
 	void MoveOut();				// 부모에게서 떨어져 나오기

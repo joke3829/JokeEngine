@@ -19,7 +19,7 @@ public:
 	// scene 파일 읽어 Scene 구성하는 함수
 	JEngineScene();
 
-	void LoadSceneFromFile(nlohmann::json& scn);
+	void LoadSceneFromFile(nlohmann::json& scn, bool clear = true);
 
 	void ClearScene();
 

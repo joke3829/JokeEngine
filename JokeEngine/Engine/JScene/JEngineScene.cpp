@@ -18,19 +18,95 @@ JEngineScene::JEngineScene()
 	m_name = "NewScene";
 }
 
-void JEngineScene::LoadSceneFromFile(nlohmann::json& scn)
+void JEngineScene::LoadSceneFromFile(nlohmann::json& scn, bool clear)
 {
+	if (clear) {
+		ClearScene();
+#if DEV_MODE
+		// Editor player, camera 추가
+		{
+			m_WorldMatrices.emplace_back();
+			m_WorldMatricesTP.emplace_back();
+			std::unique_ptr<JEditorPlayerObject> eplayer = std::make_unique<JEditorPlayerObject>(
+				m_WorldMatrices,
+				m_WorldMatricesTP,
+				static_cast<UINT>(m_WorldMatrices.size() - 1),
+				"EditorPlayer"
+			);
+			eplayer->SetRotation(45.f, -45.f, 0.f, true);
+			eplayer->SetPosition(35.f, 35.f, -35.f, true);
+			m_EditorPlayer = eplayer.get();
 
+			m_Objects.try_emplace(eplayer->GetUID(), std::move(eplayer));
+
+			// Camera 추가 예제
+			m_WorldMatrices.emplace_back();
+			m_WorldMatricesTP.emplace_back();
+			std::unique_ptr<JCameraObject> camera = std::make_unique<JCameraObject>(
+				m_WorldMatrices,
+				m_WorldMatricesTP,
+				static_cast<UINT>(m_WorldMatrices.size() - 1),
+				"EditorCamera"
+			);
+			m_EditorCamera = camera.get();
+			m_Cameras.emplace_back(m_EditorCamera);
+
+			m_EditorPlayer->Attach(camera.get());
+			m_Objects.try_emplace(camera->GetUID(), std::move(camera));
+		}
+#endif
+	}
+	if (scn.contains("Scene")) {
+		auto& jscn = scn["Scene"];
+		if (jscn.contains("SceneSetting")) {
+			auto& screensetting = jscn["SceneSetting"];
+			LoadSceneDataToFile(screensetting);
+		}
+		if (jscn.contains("Objects")) {
+			auto& objs = jscn["Objects"];
+			LoadObjectDataToFile(objs);
+		}
+		if (jscn.contains("GameStates")) {
+			auto& states = jscn["GameStates"];
+			LoadGameStateDataToFile(states);
+		}
+	}
 }
 
 void JEngineScene::LoadSceneDataToFile(nlohmann::json& scn)
 {
-
+	m_name = scn.value("Name", "NewScene");
+	m_CurrentMainCamera = m_InitialCameraIdx = scn.value("CamIndex", -1);
+#if DEV_MODE
+	m_TempCameraIndex = m_InitialCameraIdx;
+#endif
+	m_CurrentPlayer = m_InitialPlayerIdx = scn.value("PlayerIndex", -1);
 }
 
 void JEngineScene::LoadObjectDataToFile(nlohmann::json& scn)
 {
+	// 멀티스레드화 고려하기 // concurrent unodered map 사용해서
 
+	// key: localindex, value: object
+	std::unordered_map<UINT, JObject*> local2object{}; // 여기에 모든 object 담고
+	std::unordered_map<UINT, UINT> local2localparent;	// 여기에 로컬 자신, 로컬 부모 담고 local2object에서 뽑아쓴다.
+
+	for (int i = 0; i < scn.size(); ++i) {
+		auto& obj = scn[i];
+		if (not obj) continue;
+		std::string type = obj.value("Type", "JObject");
+		JObject* newObj = CreateObject(type.c_str());
+		newObj->LoadObjectFromFile(obj);
+		local2object.try_emplace(i, newObj);
+		if (obj.contains("ParentIndex")) {
+			local2localparent.try_emplace(i, obj["ParentIndex"]);
+		}
+	}
+
+	// 이거는 주의, attach가 멀티스레드 안전이 아님
+	for (auto& ll : local2localparent) {
+		local2object[ll.first]->SetParentFromFile(local2object[ll.second]);
+	}
 }
 
 void JEngineScene::LoadGameStateDataToFile(nlohmann::json& scn)

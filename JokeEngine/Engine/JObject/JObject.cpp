@@ -27,6 +27,28 @@ void JObject::Reset()
 	m_Scale = m_InitialScale;
 }
 
+void JObject::LoadObjectFromFile(nlohmann::json& object)
+{
+	m_name = object.value("Name", "NoName");
+	m_ShaderName = object.value("ShaderName", "");
+	SetActiveState(object.value("Active", false), true);
+
+	XMFLOAT4 temp{};
+	if (object.contains("Transform")) {
+		auto& tt = object["Transform"];
+		if (tt.contains("Position")) {
+
+		}
+		SetPosition(temp.x, temp.y, temp.z, true);
+	}
+}
+
+void JObject::SetParentFromFile(JObject* parent)
+{
+	SetParent(parent);
+	parent->Attach(this);
+}
+
 void JObject::Attach(JObject* leaf)
 {
 	leaf->SetParent(this);
