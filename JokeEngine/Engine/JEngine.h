@@ -15,6 +15,9 @@
 class JokeEngine {
 public:
 	virtual void Initialize(HWND hWnd, HINSTANCE hInstance);
+
+	void LoadSceneFromFile(std::filesystem::path filepath);
+
 	virtual void ResizeSwapChain(UINT width, UINT height, bool FullScreenState);
 	virtual void ResizeRenderer(UINT width, UINT height);
 	
@@ -44,6 +47,8 @@ protected:
 	void RenderCreateWindowPopup();
 	void RenderToolBar();
 	void RenderImGuizo();
+
+	void LoadSceneFromSelectFile();
 	virtual void RenderSceneImage() {};
 	
 	// ImageDest ReSize

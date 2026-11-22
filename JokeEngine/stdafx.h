@@ -163,8 +163,11 @@ inline void ThrowIfFailed(HRESULT hr)
 		std::string ss = ConvertHelper::WideToUtf8(err.ErrorMessage());
 		spdlog::critical("[FATAL ERROR] DirectX API Failed, HRESULT: 0x{0:X} | Message: {1}",
 			static_cast<unsigned int>(hr), ss.c_str());
-#endif
 		assert(0);
+#else
+        MessageBoxW(nullptr, L"Critical Error", L"Fatal Error", MB_OK);
+        PostQuitMessage(0);
+#endif
 	}
 }
 

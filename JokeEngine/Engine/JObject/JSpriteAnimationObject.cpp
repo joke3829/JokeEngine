@@ -131,6 +131,18 @@ void JSpriteAnimationObject::SetSpriteSet(JContent* spriteSet)
 
 
 #if DEV_MODE
+void JSpriteAnimationObject::SaveObjectToFile(nlohmann::json& json, std::unordered_map<UINT, UINT>& IDtable)
+{
+	JStaticMeshObject::SaveObjectToFile(json, IDtable);
+	json["Type"] = "JSpriteAnimationObject";
+
+	json["bMirror"] = m_bInitialMirror;
+	json["InitialAnimation"] = m_InitialAnimation;
+	json["InitialElapsedTime"] = m_InitialElapsedTime;
+	if (m_SpriteSet)
+		json["SpriteSet"] = m_SpriteSet->GetFullFilePath().string();
+}
+
 bool JSpriteAnimationObject::RenderInspector(UINT currentFrameIndex)
 {
 	bool ret = JStaticMeshObject::RenderInspector(currentFrameIndex);

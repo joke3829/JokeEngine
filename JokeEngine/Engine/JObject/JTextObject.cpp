@@ -345,6 +345,32 @@ void JTextObject::MakeDirtyFlag()
 
 
 #if DEV_MODE
+void JTextObject::SaveObjectToFile(nlohmann::json& json, std::unordered_map<UINT, UINT>& IDtable)
+{
+	JObject::SaveObjectToFile(json, IDtable);
+	json["Type"] = "JTextObject";
+	json["Text"] = ConvertHelper::WideToUtf8(m_InitialText);
+	json["FontFamily"] = ConvertHelper::WideToUtf8(m_InitialFontFamily);
+	json["FontSize"] = m_InitialFontSize;
+	json["FontWeight"] = m_InitialFontWeight;
+	json["FontWidth"] = m_InitialFontWidth;
+	json["LeadingSpacinig"] = m_InitialLeadingSpacing;
+	json["TrailingSpacing"] = m_InitialTrailingSpacing;
+	json["MinimumAdvanceWidth"] = m_InitialMinimumAdvanceWidth;
+
+	json["BrushColor"]["r"] = m_InitialBrushColor.x;
+	json["BrushColor"]["g"] = m_InitialBrushColor.y;
+	json["BrushColor"]["b"] = m_InitialBrushColor.z;
+	json["BrushColor"]["a"] = m_InitialBrushColor.w;
+
+	json["HorizonAlignment"] = static_cast<int>(m_InitialHorizonAlignment);
+	json["VerticalAlignment"] = static_cast<int>(m_InitialVerticalAlignment);
+
+	XMUINT2 rtsize = m_TextResource->GetRTSize();
+	json["RTSize"]["Width"] = rtsize.x;
+	json["RTSize"]["Height"] = rtsize.y;
+}
+
 bool JTextObject::RenderInspector(UINT currentFrameIndex)
 {
 	bool dirty = JObject::RenderInspector(currentFrameIndex);

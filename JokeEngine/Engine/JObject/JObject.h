@@ -71,6 +71,8 @@ public:
 
 #if DEV_MODE
 public:
+	virtual void SaveObjectToFile(nlohmann::json& json, std::unordered_map<UINT, UINT>& IDtable);
+
 	void SetPlayMode(bool mod);
 	virtual bool RenderInspector(UINT currentFrameIndex = 0);	// true: need renderer update
 	const XMFLOAT4X4& GetParentWorldTransform() { return m_ParentWorldMatix; }

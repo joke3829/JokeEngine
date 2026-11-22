@@ -52,6 +52,7 @@ public:
 
 #if DEV_MODE
 public:
+	virtual void SaveObjectToFile(nlohmann::json& json, std::unordered_map<UINT, UINT>& IDtable);
 	virtual bool RenderInspector(UINT currentFrameIndex = 0);
 protected:
 	unsigned char m_Selected_HAlign{};
@@ -97,9 +98,6 @@ protected:
 protected:
 	std::unique_ptr<JTextResource>	m_TextResource;
 	JTextMetrics					m_TextMetrics;
-
-	XMFLOAT3						m_TextScale{};
-	XMFLOAT3						m_MeshScale{};
 
 	// staticMesh 5개(plane 방향별 5개를 미리 세팅 해 놓고 alignment에 따라 바꿔 사용)
 	// 0: center, 1: 1quad, 2: 2quad, 3: 3quad, 4: 4quad

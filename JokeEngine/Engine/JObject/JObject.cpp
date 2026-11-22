@@ -125,6 +125,37 @@ void JObject::MakeLocalTransform()
 }
 
 #if DEV_MODE
+void JObject::SaveObjectToFile(nlohmann::json& json, std::unordered_map<UINT, UINT>& IDtable)
+{
+	json["Name"] = m_name;
+	json["ShaderName"] = m_ShaderName;
+	json["Active"] = m_InitialActive;
+	if (m_ParentObject)
+		json["ParentIndex"] = IDtable[m_ParentObject->GetUID()];
+	auto& t = json["Transform"] = nlohmann::json::object();
+
+	t["Position"]["x"] = m_InitialPosition.x;
+	t["Position"]["y"] = m_InitialPosition.y;
+	t["Position"]["z"] = m_InitialPosition.z;
+
+	t["Rotation"]["x"] = m_InitialRotation.x;
+	t["Rotation"]["y"] = m_InitialRotation.y;
+	t["Rotation"]["z"] = m_InitialRotation.z;
+
+	t["Scale"]["x"] = m_InitialScale.x;
+	t["Scale"]["y"] = m_InitialScale.y;
+	t["Scale"]["z"] = m_InitialScale.z;
+
+	t["Quaternion"]["x"] = m_InitialQuaternion.x;
+	t["Quaternion"]["y"] = m_InitialQuaternion.y;
+	t["Quaternion"]["z"] = m_InitialQuaternion.z;
+	t["Quaternion"]["w"] = m_InitialQuaternion.w;
+
+
+	// override 하면 json[Type] = "J---Object"를 추가해줘야한다.
+	// 또한 자신의 부모의 SaveObject----- 를 호출해주고 시작해야한다.
+}
+
 void JObject::SetPlayMode(bool mod)
 {
 	m_PlayMode = mod;

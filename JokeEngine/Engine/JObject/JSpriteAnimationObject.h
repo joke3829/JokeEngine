@@ -25,6 +25,7 @@ public:
 	void SetSpriteSet(JContent* spriteSet);
 #if DEV_MODE
 public:
+	virtual void SaveObjectToFile(nlohmann::json& json, std::unordered_map<UINT, UINT>& IDtable);
 	virtual bool RenderInspector(UINT currentFrameIndex = 0);
 #endif
 protected:

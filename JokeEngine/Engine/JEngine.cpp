@@ -27,6 +27,19 @@ void JokeEngine::Initialize(HWND hWnd, HINSTANCE hInstance)
 	CreateSwapChain();
 }
 
+void JokeEngine::LoadSceneFromFile(std::filesystem::path filepath)
+{
+	if (filepath.extension() != ".jkscn") {
+		ThrowIfFailed(E_FAIL);
+		return;
+	}
+
+	std::ifstream inFile{ filepath };
+	if (not inFile) ThrowIfFailed(E_FAIL);
+	nlohmann::json scn = nlohmann::json::parse(inFile);
+	m_Scene->LoadSceneFromFile(scn);
+}
+
 void JokeEngine::ResizeSwapChain(UINT width, UINT height, bool FullScreenState)
 {
 	// 렌더러 사이즈 변경 및 스왑체인 크기 변경
@@ -103,9 +116,9 @@ void JokeEngine::RenderMenubar()
 			// File Menu
 			if (ImGui::BeginMenu("File")) {
 				if (ImGui::MenuItem("New Scene", "Ctrl+N")) { spdlog::info("누름"); }
-				if (ImGui::MenuItem("Open Scene", "Ctrl+O")) { spdlog::info("누름"); }
+				if (ImGui::MenuItem("Open Scene", "Ctrl+O")) { LoadSceneFromSelectFile(); }
 				if (ImGui::MenuItem("Save", "Ctrl+S")) { spdlog::info("누름"); }
-				if (ImGui::MenuItem("Save As", "Ctrl+Shitf+S")) { spdlog::info("누름"); }
+				if (ImGui::MenuItem("Save As", "Ctrl+Shitf+S")) { m_Scene->SaveSceneToFile(); }
 
 				ImGui::Separator();
 
@@ -676,6 +689,27 @@ void JokeEngine::RenderImGuizo()
 				m_SelectedObject->SetScale(scale, true);
 			}
 		}
+	}
+}
+void JokeEngine::LoadSceneFromSelectFile()
+{
+	wchar_t filePath[256]{};
+
+	OPENFILENAME ofn{};
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = g_Hwnd;
+	ofn.lpstrFile = filePath;
+	ofn.nMaxFile = sizeof(filePath) / sizeof(wchar_t);
+	ofn.lpstrFilter = L"Sprite YamlFile\0*.yaml\0";
+	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+	std::wstring fpath = std::filesystem::absolute(L"Resource").wstring();
+	ofn.lpstrInitialDir = fpath.c_str();
+	if (GetOpenFileName(&ofn) == TRUE) {
+		std::filesystem::path rpath = filePath;
+		LoadSceneFromFile(rpath);
+	}
+	else {
+		spdlog::error("Scene Load Failed");
 	}
 }
 #endif

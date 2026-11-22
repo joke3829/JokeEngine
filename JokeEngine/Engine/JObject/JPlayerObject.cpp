@@ -55,6 +55,12 @@ void JPlayerObject::UpdateInputWindowMessage(UINT msg, WPARAM wParam, LPARAM lPa
 }
 
 #if DEV_MODE
+void JPlayerObject::SaveObjectToFile(nlohmann::json& json, std::unordered_map<UINT, UINT>& IDtable)
+{
+	JObject::SaveObjectToFile(json, IDtable);
+	json["Type"] = "JPlayerObject";
+}
+
 bool JPlayerObject::RenderInspector(UINT currentFrameIndex)
 {
 	bool ret = JObject::RenderInspector(currentFrameIndex);

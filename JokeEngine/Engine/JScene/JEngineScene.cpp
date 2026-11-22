@@ -18,6 +18,26 @@ JEngineScene::JEngineScene()
 	m_name = "NewScene";
 }
 
+void JEngineScene::LoadSceneFromFile(nlohmann::json& scn)
+{
+
+}
+
+void JEngineScene::LoadSceneDataToFile(nlohmann::json& scn)
+{
+
+}
+
+void JEngineScene::LoadObjectDataToFile(nlohmann::json& scn)
+{
+
+}
+
+void JEngineScene::LoadGameStateDataToFile(nlohmann::json& scn)
+{
+
+}
+
 void JEngineScene::ClearScene()
 {
 	// 모든 오브젝트 제거 + 행렬 모음 제거
@@ -32,7 +52,7 @@ void JEngineScene::ClearScene()
 	m_CurrentPlayer = -1;
 	m_InitialPlayerIdx = -1;
 	m_CurrentMainCamera = 0;
-	m_InitialCameraIdx = 0;
+	m_InitialCameraIdx = -1;
 
 	m_Objects.clear();
 }
@@ -65,10 +85,13 @@ JObject* JEngineScene::CreateObject(const char* ObjectType)
 	if (JPlayerObject* player = dynamic_cast<JPlayerObject*>(ret)) {
 		if (m_CurrentPlayer < 0) { m_CurrentPlayer = 0; }
 		m_Players.emplace_back(player);
+#if DEV_MODE
+		if (m_CurrentPlayer < 0) m_CurrentPlayer = 0; m_InitialPlayerIdx = 0;
+#endif
 	}
 	else if (JCameraObject* camera = dynamic_cast<JCameraObject*>(ret)) {
 #if DEV_MODE
-		if (m_TempCameraIndex < 0) m_TempCameraIndex = 0;
+		if (m_TempCameraIndex < 0) m_TempCameraIndex = 0; m_InitialCameraIdx = m_TempCameraIndex;
 #endif
 		if (m_CurrentMainCamera < 0) { m_CurrentMainCamera = 0; }
 		m_Cameras.emplace_back(camera);
@@ -96,10 +119,12 @@ void JEngineScene::DeleteObject(UINT uid)
 				m_CameraMatrices.erase(m_CameraMatrices.begin() + i);
 				m_CameraMatricesTP.erase(m_CameraMatricesTP.begin() + i);
 				if (m_CurrentMainCamera >= m_Cameras.size() - 1) {
-					m_CurrentMainCamera = m_Cameras.size() - 2;
+					m_CurrentMainCamera = 0;
 				}
-				if (m_TempCameraIndex >= m_Cameras.size() - 1)
+				if (m_TempCameraIndex >= m_Cameras.size() - 1) {
 					m_TempCameraIndex = m_Cameras.size() - 2;
+					m_InitialCameraIdx = m_Cameras.size() - 2;
+				}
 			}
 		}
 #else
@@ -119,8 +144,12 @@ void JEngineScene::DeleteObject(UINT uid)
 		for (int i = 0; i < m_Players.size(); ++i) {
 			if (pp == m_Players[i]) {
 				m_Players.erase(m_Players.begin() + i);
-				if (m_CurrentPlayer >= m_Players.size())
+				if (m_CurrentPlayer >= m_Players.size()) {
 					m_CurrentPlayer = m_Players.size() - 1;
+#if DEV_MODE
+					m_InitialPlayerIdx = m_Players.size() - 1;
+#endif
+				}
 			}
 		}
 	}
@@ -201,7 +230,84 @@ void JEngineScene::WindowMessageProcessor(UINT msg, WPARAM wParam, LPARAM lParam
 #endif
 }
 
+
 #if DEV_MODE
+
+extern HWND g_Hwnd;
+
+void JEngineScene::SaveSceneToFile()
+{
+	nlohmann::json scn;
+	scn["Scene"] = nlohmann::json::object();
+	auto& scenesetting = scn["Scene"]["SceneSetting"] = nlohmann::json::object();
+	SaveSceneDataToFile(scenesetting);
+
+	auto& objects = scn["Scene"]["Objects"] = nlohmann::json::array();
+	SaveObjectDataToFile(objects);
+
+	auto& gamestates = scn["Scene"]["GameStates"] = nlohmann::json::array();
+	SaveGameStateDataToFile(scn);
+
+	std::wstring fname = ConvertHelper::Utf8ToWide(m_name);
+	fname += L".jkscn";
+	wchar_t filePath[256]{};
+	wcscpy_s(filePath, fname.c_str());
+
+	OPENFILENAME ofn{};
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = g_Hwnd;
+	ofn.lpstrFile = filePath;
+	ofn.nMaxFile = sizeof(filePath) / sizeof(wchar_t);
+	ofn.lpstrFilter = L"SceneFile\0*.jkscn\0";
+	ofn.lpstrDefExt = L"jkscn";
+	ofn.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR;
+	std::wstring fpath = std::filesystem::absolute(L"Resource").wstring();
+	ofn.lpstrInitialDir = fpath.c_str();
+	if (GetSaveFileName(&ofn) == TRUE) {
+		std::string spath = ConvertHelper::WideToUtf8(filePath);
+		std::ofstream outFile{ spath };
+		outFile << std::setw(4) << scn;
+		spdlog::info("{} Save Complete", m_name);
+	}
+	else {
+		spdlog::error("Save Scene Failed");
+	}
+}
+
+void JEngineScene::SaveSceneDataToFile(nlohmann::json& scn)
+{
+	scn["Name"] = m_name;
+	scn["CamIndex"] = m_InitialCameraIdx;
+	scn["PlayerIndex"] = m_InitialPlayerIdx;
+}
+
+void JEngineScene::SaveObjectDataToFile(nlohmann::json& scn)
+{
+	// key: UID, value: localindex
+	std::unordered_map<UINT, UINT> uid2local{};
+	UINT numObject{};
+
+	// Editor에서만 쓰는 함수니까 당장은 상관없다.
+	// 먼저 테이블 준비 
+	for (auto& object : m_Objects) {
+		if (object.first <= 1) continue; // EditorPlayer, Object 제외
+		uid2local.try_emplace(object.first, numObject);
+		++numObject;
+	}
+
+	numObject = 0;
+	for (auto& object : m_Objects) {
+		if (object.first <= 1) continue;
+		object.second->SaveObjectToFile(scn[numObject], uid2local);
+		++numObject;
+	}
+}
+
+void JEngineScene::SaveGameStateDataToFile(nlohmann::json& scn)
+{
+
+}
+
 void JEngineScene::BuildDefaultEditorScene()
 {
 	ClearScene();
@@ -330,7 +436,8 @@ void JEngineScene::RenderSettingImGui()
 	}
 	// camera는 들어감
 	{
-		const char* preview = (m_TempCameraIndex > -1) ? m_Cameras[m_TempCameraIndex + 1]->GetName().c_str() : "No Camera";
+		const char* camname = (m_TempCameraIndex + 1 < m_Cameras.size() && m_TempCameraIndex >= 0) ? m_Cameras[m_TempCameraIndex + 1]->GetName().c_str() : "No Camera";
+		const char* preview = (m_TempCameraIndex > -1) ? camname : "No Camera";
 		if (ImGui::BeginCombo("Camera Select", preview)) {
 			for (int i = 1; i < m_Cameras.size(); ++i) {	// 0번째가 editor이다.
 				bool is_selected = m_TempCameraIndex == i - 1;

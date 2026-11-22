@@ -19,12 +19,12 @@ public:
 	// scene 파일 읽어 Scene 구성하는 함수
 	JEngineScene();
 
+	void LoadSceneFromFile(nlohmann::json& scn);
+
 	void ClearScene();
 
 	JObject* CreateObject(const char* ObjectType);
 	void DeleteObject(UINT uid);
-
-	void CreateSceneFromFile() {}
 
 	virtual void SetGPUBuffer(UINT currentBufferIndex, UINT parameter, JShaderStage stage) {}
 
@@ -48,6 +48,8 @@ public:
 
 #if DEV_MODE
 public:
+	void SaveSceneToFile();
+
 	void BuildDefaultEditorScene();
 	void SetPlayMode(bool pmode);
 	void SetPause(bool pause) { m_Pause = pause; }
@@ -57,6 +59,10 @@ public:
 	JCameraObject* GetEditorCamera() { return m_EditorCamera; }
 	JCameraObject* GetCurrentMainCamera() { return (m_Cameras.size() > m_CurrentMainCamera && m_CurrentMainCamera >= 0) ? m_Cameras[m_CurrentMainCamera] : nullptr; }
 protected:
+	virtual void SaveSceneDataToFile(nlohmann::json& scn);
+	void SaveObjectDataToFile(nlohmann::json& scn);
+	void SaveGameStateDataToFile(nlohmann::json& scn);
+
 	int m_TempCameraIndex{ 0 };
 	bool m_PlayMode{};
 	bool m_Pause{};
@@ -65,6 +71,11 @@ protected:
 	JCameraObject* m_EditorCamera{};
 #endif
 protected:
+	virtual void LoadSceneDataToFile(nlohmann::json& scn);
+	void LoadObjectDataToFile(nlohmann::json& scn);
+	void LoadGameStateDataToFile(nlohmann::json& scn);
+
+
 	// first: uid -> m_WorldMatrices.size()
 	std::unordered_map<UINT, std::unique_ptr<JObject>>			m_Objects;
 	std::vector<JCameraObject*>						m_Cameras{};
@@ -73,7 +84,7 @@ protected:
 	int												m_CurrentPlayer{ -1 };	// -1일땐 Scene에 Player가 없는걸로
 	int												m_InitialPlayerIdx{ -1 };
 	int												m_CurrentMainCamera{ 0 };	// 상수버퍼에 넘길 카메라 인덱스(사용할 것) 카메라는 반드시 존재해야함
-	int												m_InitialCameraIdx{ 0 };	// Scene이 시작할 때 사용할 카메라 인덱스
+	int												m_InitialCameraIdx{ -1 };	// Scene이 시작할 때 사용할 카메라 인덱스
 
 
 	std::vector<XMFLOAT4X4>						m_WorldMatrices{};

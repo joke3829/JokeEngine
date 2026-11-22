@@ -154,6 +154,32 @@ void JCameraObject::MakeColliderFromProjFactor()
 extern TempGlobalSceneInfo g_GlobalSceneInfo;
 
 
+void JCameraObject::SaveObjectToFile(nlohmann::json& json, std::unordered_map<UINT, UINT>& IDtable)
+{
+	JObject::SaveObjectToFile(json, IDtable);
+	json["Type"] = "JCameraObject";
+	
+	auto& vp = json["Viewport"] = nlohmann::json::object();
+	vp["TopLeftX"] = m_Viewport.TopLeftX;
+	vp["TopLeftY"] = m_Viewport.TopLeftY;
+	vp["Width"] = m_Viewport.Width;
+	vp["Height"] = m_Viewport.Height;
+	vp["MinDepth"] = m_Viewport.MinDepth;
+	vp["MaxDepth"] = m_Viewport.MaxDepth;
+
+	auto& pf = json["ProjFactor"] = nlohmann::json::object();
+	pf["bOrtho"] = m_InitialProjFactor.bOrtho;
+	pf["Fov"] = m_InitialProjFactor.Fov;
+	pf["asWidth"] = m_InitialProjFactor.asWidth;
+	pf["asHeight"] = m_InitialProjFactor.asHeight;
+	pf["Near"] = m_InitialProjFactor.Near;
+	pf["Far"] = m_InitialProjFactor.Far;
+	pf["Left"] = m_InitialProjFactor.Left;
+	pf["Right"] = m_InitialProjFactor.Right;
+	pf["Bottom"] = m_InitialProjFactor.Bottom;
+	pf["Top"] = m_InitialProjFactor.Top;
+}
+
 bool JCameraObject::RenderInspector(UINT currentFrameIndex)
 {
 	bool ret = JObject::RenderInspector(currentFrameIndex);
@@ -165,13 +191,15 @@ bool JCameraObject::RenderInspector(UINT currentFrameIndex)
 	ImGui::SeparatorText("JCameraObject");
 	const char* tag[] = { "Perspective", "Orthograph" };
 	int num = (m_ProjFactor.bOrtho) ? 1 : 0;
+	bool modified = false;
 	ImGui::Text("CameraType"); ImGui::SameLine(); ImGui::SetCursorPosX(cursorx);
 	if (ImGui::BeginCombo("##CameraType", tag[num])) {
 		for (int i = 0; i < 2; ++i) {
 			bool is_selected = num == i;
 			if (ImGui::Selectable((std::string(tag[i]) + "##CameraCombo").c_str(), &is_selected)) {
 				if (i == 1) { m_ProjFactor.bOrtho = true; m_InitialProjFactor.bOrtho = true; }
-				else { m_ProjFactor.bOrtho = false; m_ProjFactor.bOrtho = false; }
+				else { m_ProjFactor.bOrtho = false; m_InitialProjFactor.bOrtho = false; }
+				modified = true;
 			}
 
 			if (is_selected)
@@ -181,7 +209,6 @@ bool JCameraObject::RenderInspector(UINT currentFrameIndex)
 	}
 	ImGui::Separator();
 	JProjFactor temp = m_ProjFactor;
-	bool modified = false;
 	if (m_ProjFactor.bOrtho) {
 		ImGui::Text("Left"); ImGui::SameLine(); ImGui::SetCursorPosX(cursorx);
 		if (ImGui::DragFloat("##OrthoLeft", &temp.Left, 0.1f, -FLT_MAX, temp.Right - 1.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) modified = true;
@@ -196,8 +223,7 @@ bool JCameraObject::RenderInspector(UINT currentFrameIndex)
 		ImGui::Text("Far"); ImGui::SameLine(); ImGui::SetCursorPosX(cursorx);
 		if (ImGui::DragFloat("##OrthoFar", &temp.Far, 0.1f, temp.Near + 1.f, FLT_MAX, "%.3f", ImGuiSliderFlags_AlwaysClamp)) modified = true;
 
-		if (modified)
-			SetProjFactor(temp, true);
+		if (modified) SetProjFactor(temp, true);
 	}
 	else {
 		ImGui::Text("Fov"); ImGui::SameLine(); ImGui::SetCursorPosX(cursorx);

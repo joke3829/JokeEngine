@@ -157,7 +157,8 @@ void JSpriteAnimationSet::RenderDetailPanel()
 		ofn.nMaxFile = sizeof(filePath) / sizeof(wchar_t);
 		ofn.lpstrFilter = L"Sprite YamlFile\0*.yaml\0";
 		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
-		ofn.lpstrInitialDir = L"Resource";
+		std::wstring fpath = std::filesystem::absolute(L"Resource").wstring();
+		ofn.lpstrInitialDir = fpath.c_str();
 		if (GetOpenFileName(&ofn) == TRUE){
 			std::string spath = ConvertHelper::WideToUtf8(filePath);
 			LoadAnimationFactorFromYaml(spath.c_str());

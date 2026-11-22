@@ -135,7 +135,20 @@ void JStaticMeshObject::SetStaticMesh(JContent* mesh)
 
 
 #if DEV_MODE
-#include "Engine/JContent/JContentManager.h"
+void JStaticMeshObject::SaveObjectToFile(nlohmann::json& json, std::unordered_map<UINT, UINT>& IDtable)
+{
+	JObject::SaveObjectToFile(json, IDtable);
+	json["Type"] = "JStaticMeshObject";
+	auto& mats = json["Materials"] = nlohmann::json::array();
+	for (int i = 0; i < m_Materials.size(); ++i) {
+		if (m_Materials[i]) {
+			mats[i] = m_Materials[i]->GetFullFilePath().string();
+		}
+	}
+	if (m_StaticMesh)
+		json["StaticMesh"] = m_StaticMesh->GetFullFilePath().string();
+}
+
 bool JStaticMeshObject::RenderInspector(UINT currentFrameIndex)
 {
 	bool ret = JObject::RenderInspector(currentFrameIndex);
