@@ -199,7 +199,7 @@ set(D3D11_INTEGRATE
 set(SHADER_FILES
   Shaders/Default/Common.hlsl
   Shaders/Default/DefaultMaterialShader.hlsl
-  Shaders/Default/UVTransformShader.hlsl
+  Shaders/Default/MappingShader.hlsl
 )
 
 set(TEXTURE_LOADER
