@@ -177,6 +177,10 @@ bool JSpriteAnimationObject::RenderInspector(UINT currentFrameIndex)
 			ImGui::Text("");
 
 	ImGui::SeparatorText("JSpriteAnimationObject");
+
+	ImGui::Text("Mirror"); ImGui::SameLine();
+	ImGui::SetCursorPosX(94.f);
+	if (ImGui::Checkbox("##MirrorCheck", &m_bMirror))  SetMirror(m_bMirror, true);
 	ImVec2 curScreenPos = ImGui::GetCursorScreenPos();
 	{
 		ImVec2 curPos = ImGui::GetCursorPos();

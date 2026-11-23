@@ -25,7 +25,7 @@ struct cLight
 };
 
 // temp
-static const cLight g_Light = { float3(1.f, 0.98, 0.95f) * 0.7f, normalize(float3(-1.f, -1.f, 1.f)) };
+static const cLight g_Light = { float3(1.f, 0.98, 0.95f) * 0.7f, normalize(float3(-1.f, -2.f, 2.f)) };
 
 DefaultPSInput DefaultVS(DefaultVSInput input)
 {

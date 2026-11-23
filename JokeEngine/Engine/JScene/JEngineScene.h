@@ -50,7 +50,6 @@ public:
 public:
 	void SaveSceneToFile();
 
-	void BuildDefaultEditorScene();
 	void SetPlayMode(bool pmode);
 	void SetPause(bool pause) { m_Pause = pause; }
 	void SetControlEditorScene(bool ces) { m_ControlEditorScene = ces; }

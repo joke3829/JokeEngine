@@ -27,6 +27,8 @@ public:
 	virtual void UpdateBuffer(UINT currentFrameIndex) {}
 
 	virtual void Render(UINT currentFrameIndex) {}
+
+	virtual void* GetDedicatedFactor() { return nullptr; }
 #if DEV_MODE
 public:
 	virtual void RenderGUI(ImVec2 startPos, void* imageref = nullptr);
@@ -34,7 +36,6 @@ public:
 	// first true일 시 이름 바뀐것
 	bool CheckRenderDetailPanelAndRender();
 	virtual void RenderDetailPanel() { RenderGeneralInspect(); }
-	virtual void* GetDedicatedFactor() { return nullptr; }
 
 	void SetDetailPanelOn() { ReadyTempData(); m_ShowDetailGui = true; }
 	bool GetShowDetailPanel() { return m_ShowDetailGui; }

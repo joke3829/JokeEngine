@@ -86,16 +86,16 @@ protected:
 	std::wstring m_InitialText{};
 	std::wstring m_InitialFontFamily{};
 	float m_InitialFontSize{};
-	float m_InitialFontWeight{};
-	float m_InitialFontWidth{};
+	float m_InitialFontWeight{ 400.f };
+	float m_InitialFontWidth{ 100.f };
 
 	float m_InitialLeadingSpacing{};
 	float m_InitialTrailingSpacing{};
 	float m_InitialMinimumAdvanceWidth{};
 
 	XMFLOAT4 m_InitialBrushColor{1.f, 1.f, 1.f, 1.f};
-	JText_Alignment m_InitialHorizonAlignment;
-	JText_Alignment m_InitialVerticalAlignment;
+	JText_Alignment m_InitialHorizonAlignment = JText_Alignment::Left;
+	JText_Alignment m_InitialVerticalAlignment = JText_Alignment::Top;
 
 protected:
 	std::unique_ptr<JTextResource>	m_TextResource;

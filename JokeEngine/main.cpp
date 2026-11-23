@@ -48,9 +48,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #endif
     // CoInitialize
     HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
-    if (S_OK != hr) {
-        spdlog::critical("CoInitializeEX Failed");
-    }
+    if (S_OK != hr) ThrowIfFailed(E_FAIL);
     // 전역 문자열을 초기화합니다.
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_JOKEENGINE, szWindowClass, MAX_LOADSTRING);

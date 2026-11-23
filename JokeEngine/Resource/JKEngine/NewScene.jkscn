@@ -1,0 +1,137 @@
+{
+    "Scene": {
+        "GameStates": [],
+        "Objects": [
+            {
+                "Active": true,
+                "Name": "JPlayerObject",
+                "ShaderName": "",
+                "Transform": {
+                    "Position": {
+                        "x": 0.0,
+                        "y": 10.0,
+                        "z": -20.0
+                    },
+                    "Quaternion": {
+                        "w": 1.0,
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": -0.0
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0,
+                        "z": 1.0
+                    }
+                },
+                "Type": "JPlayerObject"
+            },
+            {
+                "Active": true,
+                "Name": "JCameraObject",
+                "ParentIndex": 0,
+                "ProjFactor": {
+                    "Bottom": -45.0,
+                    "Far": 500.0,
+                    "Fov": 60.0,
+                    "Left": -80.0,
+                    "Near": 0.009999999776482582,
+                    "Right": 80.0,
+                    "Top": 45.0,
+                    "asHeight": 720,
+                    "asWidth": 1280,
+                    "bOrtho": false
+                },
+                "ShaderName": "",
+                "Transform": {
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0
+                    },
+                    "Quaternion": {
+                        "w": 1.0,
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": -0.0
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0,
+                        "z": 1.0
+                    }
+                },
+                "Type": "JCameraObject",
+                "Viewport": {
+                    "Height": 720.0,
+                    "MaxDepth": 1.0,
+                    "MinDepth": 0.0,
+                    "TopLeftX": 0.0,
+                    "TopLeftY": 0.0,
+                    "Width": 1280.0
+                }
+            },
+            {
+                "Active": true,
+                "Materials": [
+                    "Resource\\JKEngine\\Materials\\DefaultMaterial.jkmt"
+                ],
+                "Name": "Plane",
+                "ShaderName": "DefaultShader",
+                "StaticMesh": "Resource\\JKEngine\\Meshes\\100x100Plane.jkmh",
+                "Transform": {
+                    "Position": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0
+                    },
+                    "Quaternion": {
+                        "w": 0.7071067094802856,
+                        "x": 0.7071067690849304,
+                        "y": 0.0,
+                        "z": 0.0
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 0.9999897480010986,
+                        "z": 0.9999897480010986
+                    }
+                },
+                "Type": "JStaticMeshObject"
+            },
+            {
+                "Active": true,
+                "Materials": [
+                    "Resource\\JKEngine\\Materials\\DefaultMaterial.jkmt"
+                ],
+                "Name": "Cube",
+                "ShaderName": "DefaultShader",
+                "StaticMesh": "Resource\\JKEngine\\Meshes\\Cube.jkmh",
+                "Transform": {
+                    "Position": {
+                        "x": 0.0,
+                        "y": 10.0,
+                        "z": 0.0
+                    },
+                    "Quaternion": {
+                        "w": 1.0,
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": -0.0
+                    },
+                    "Scale": {
+                        "x": 1.0,
+                        "y": 1.0,
+                        "z": 1.0
+                    }
+                },
+                "Type": "JStaticMeshObject"
+            }
+        ],
+        "SceneSetting": {
+            "CamIndex": 0,
+            "Name": "NewScene",
+            "PlayerIndex": 0
+        }
+    }
+}

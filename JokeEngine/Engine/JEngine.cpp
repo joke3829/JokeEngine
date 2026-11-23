@@ -752,19 +752,17 @@ void JokeEngineDX11::Initialize(HWND hWnd, HINSTANCE hInstance)
 	m_Scene = std::make_shared<JEngineDefaultSceneDX11>();
 	m_Scene->SetName("NewScene");
 	m_Scene->SetInputThread(m_InputThread);
-#if DEV_MODE
-	m_Scene->BuildDefaultEditorScene();
-	m_Scene->SetPlayMode(m_PlayMode);
-#else
-	//m_Scene->BuildSceneFromFile(scene file path); or m_Scene->BuildScene(); // virtual로 상속받아 쓰는것도 되고
-#endif
+
 	m_Renderer = std::make_shared<JEngineRendererDX11>(config->WindowsWidth, config->WindowsHeight);
 	m_Renderer->SetScene(m_Scene);
 
 	// 키입력 시작
 	m_InputThread->SetInputCheckState(true);
 
+	// 첫 Scene Load
 #if DEV_MODE
+	LoadSceneFromFile("Resource/JKEngine/NewScene.jkscn");
+	m_Scene->SetPlayMode(m_PlayMode);
 	{
 		auto* device = m_GlobalFactor->GetDevice();
 		
@@ -779,6 +777,8 @@ void JokeEngineDX11::Initialize(HWND hWnd, HINSTANCE hInstance)
 	}
 	// imgui 초기화
 	ImGuiInitialize();
+#else
+	LoadSceneFromFile("Resource/JKEngine/testscene.jkscn");
 #endif
 }
 

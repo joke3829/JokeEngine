@@ -392,7 +392,7 @@ void JTextObject::SaveObjectToFile(nlohmann::json& json, std::unordered_map<UINT
 	json["FontSize"] = m_InitialFontSize;
 	json["FontWeight"] = m_InitialFontWeight;
 	json["FontWidth"] = m_InitialFontWidth;
-	json["LeadingSpacinig"] = m_InitialLeadingSpacing;
+	json["LeadingSpacing"] = m_InitialLeadingSpacing;
 	json["TrailingSpacing"] = m_InitialTrailingSpacing;
 	json["MinimumAdvanceWidth"] = m_InitialMinimumAdvanceWidth;
 
@@ -510,7 +510,7 @@ bool JTextObject::RenderInspector(UINT currentFrameIndex)
 		ImGui::Text("Brush Color"); ImGui::SameLine();
 		ImGui::SetCursorPosX(cursorx);
 		if (ImGui::ColorEdit4("##BrushColor", reinterpret_cast<float*>(&m_BrushColor), ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_Float)) {
-			SetBrushColor(m_BrushColor);
+			SetBrushColor(m_BrushColor, true);
 		}
 	}
 	{
