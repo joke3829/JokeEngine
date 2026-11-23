@@ -33,6 +33,20 @@ JSpriteAnimationObject::~JSpriteAnimationObject()
 {
 }
 
+void JSpriteAnimationObject::LoadObjectFromFile(nlohmann::json& object)
+{
+	JStaticMeshObject::LoadObjectFromFile(object);
+	SetMirror(object.value("bMirror", false), true);
+	std::string iani = object.value("InitialAnimation", "");
+	SetAnimationSet(iani, object.value("InitialElapsedTime", 0.f), 0.f, true);
+	if (object.contains("SpriteSet")) {
+		std::filesystem::path mpath = object["SpriteSet"];
+		auto& content = JGlobalContentManager::GetInstance()->GetManager()->GetContentTable();
+		if (content.contains(mpath))
+			SetSpriteSet(content[mpath].get());
+	}
+}
+
 void JSpriteAnimationObject::Initialize()
 {
 	auto& content = JGlobalContentManager::GetInstance()->GetManager()->GetContentTable();
@@ -70,6 +84,12 @@ void JSpriteAnimationObject::Update(float elapsedTime, XMFLOAT4X4* parent)
 	}
 
 	JStaticMeshObject::Update(elapsedTime, parent);
+}
+
+void JSpriteAnimationObject::SetMirror(bool mirror, bool edit)
+{
+	m_bMirror = mirror;
+	if (edit) m_bInitialMirror = mirror;
 }
 
 // 말 그대로 minustime에는 음수가 들어가야한다.

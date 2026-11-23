@@ -35,6 +35,32 @@ JStaticMeshObject::~JStaticMeshObject()
 
 }
 
+void JStaticMeshObject::LoadObjectFromFile(nlohmann::json& object)
+{
+	JObject::LoadObjectFromFile(object);
+
+	auto& content = JGlobalContentManager::GetInstance()->GetManager()->GetContentTable();
+
+	if (object.contains("Materials")) {
+		int si = object["Materials"].size();
+		
+		for (int i = 0; i < si; ++i) {
+			AddMaterial();
+			std::filesystem::path mpath = object["Materials"][i];
+			if (content.contains(mpath)) 
+				AddMaterial(content[mpath].get(), i);
+			else if (content.contains("Resource/JKEngine/Materials/DefaultMaterial.jkmt")) 
+				AddMaterial(content["Resource/JKEngine/Materials/DefaultMaterial.jkmt"].get(), 0);
+		}
+	}
+
+	if (object.contains("StaticMesh")) {
+		std::filesystem::path mpath = object["StaticMesh"];
+		if (content.contains(mpath))
+			SetStaticMesh(content[mpath].get());
+	}
+}
+
 void JStaticMeshObject::Initialize()
 { 
 	auto& content = JGlobalContentManager::GetInstance()->GetManager()->GetContentTable();

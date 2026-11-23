@@ -10,6 +10,14 @@ JEngineRenderer::JEngineRenderer(UINT width, UINT height, const char* name)
 	m_TargetSize.x = width; m_TargetSize.y = height;
 }
 
+// pso가 가진 object들 제거
+void JEngineRenderer::ClearScene()
+{
+	for (auto& pso : m_PSOMap) {
+		pso.second->ClearObject();
+	}
+}
+
 void JEngineRenderer::ResizeTarget(UINT width, UINT height)
 {
 	CreateRTV_DSV(width, height);

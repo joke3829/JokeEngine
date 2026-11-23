@@ -11,11 +11,13 @@ public:
 	JSpriteAnimationObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT uid, const char* name = nullptr);
 	~JSpriteAnimationObject();
 
+	virtual void LoadObjectFromFile(nlohmann::json& object);
 	virtual void Initialize();
 	void Reset();
 
 	void Update(float elapsedTime, XMFLOAT4X4* parent = nullptr);
-	
+
+	void SetMirror(bool mirror, bool edit = false);
 	void SetAnimationSet(const char* setName, float elapsedTime = 0.f, float minustime = 0.f, bool edit = false);
 	void SetAnimationSet(std::string& setName, float elapsedTime = 0.f, float minustime = 0.f, bool edit = false);
 

@@ -21,7 +21,7 @@ public:
 
 	void LoadSceneFromFile(nlohmann::json& scn, bool clear = true);
 
-	void ClearScene();
+	virtual void ClearScene();
 
 	JObject* CreateObject(const char* ObjectType);
 	void DeleteObject(UINT uid);

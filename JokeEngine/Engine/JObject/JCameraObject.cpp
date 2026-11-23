@@ -19,6 +19,36 @@ JCameraObject::JCameraObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOA
 }
 
 
+void JCameraObject::LoadObjectFromFile(nlohmann::json& object)
+{
+	JObject::LoadObjectFromFile(object);
+	if (object.contains("Viewport")) {
+		common_viewport tvp{};
+		tvp.TopLeftX = object["Viewport"].value("TopLeftX", m_Viewport.TopLeftX);
+		tvp.TopLeftY = object["Viewport"].value("TopLeftY", m_Viewport.TopLeftY);
+		tvp.Width = object["Viewport"].value("Width", m_Viewport.Width);
+		tvp.Height = object["Viewport"].value("Height", m_Viewport.Height);
+		tvp.MinDepth = object["Viewport"].value("MinDepth", m_Viewport.MinDepth);
+		tvp.MaxDepth = object["Viewport"].value("MaxDepth", m_Viewport.MaxDepth);
+		SetViewport(tvp);
+	}
+
+	if (object.contains("ProjFactor")) {
+		JProjFactor tpf{};
+		tpf.bOrtho = object["ProjFactor"].value("bOrtho", m_ProjFactor.bOrtho);
+		tpf.Fov = object["ProjFactor"].value("Fov", m_ProjFactor.Fov);
+		tpf.asWidth = object["ProjFactor"].value("asWidth", m_ProjFactor.asWidth);
+		tpf.asHeight = object["ProjFactor"].value("asHeight", m_ProjFactor.asHeight);
+		tpf.Near = object["ProjFactor"].value("Near", m_ProjFactor.Near);
+		tpf.Far = object["ProjFactor"].value("Far", m_ProjFactor.Far);
+		tpf.Left = object["ProjFactor"].value("Left", m_ProjFactor.Left);
+		tpf.Right = object["ProjFactor"].value("Right", m_ProjFactor.Right);
+		tpf.Bottom = object["ProjFactor"].value("Bottom", m_ProjFactor.Bottom);
+		tpf.Top = object["ProjFactor"].value("Top", m_ProjFactor.Top);
+		SetProjFactor(tpf, true);
+	}
+}
+
 void JCameraObject::Reset()
 {
 	JObject::Reset();

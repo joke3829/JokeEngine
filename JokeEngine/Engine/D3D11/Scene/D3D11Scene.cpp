@@ -2,6 +2,15 @@
 #include "Engine/D3D11/D3D11GlobalFactor.h"
 #include "Engine/JObject/JCameraObject.h"
 
+void JEngineSceneDX11::ClearScene()
+{
+	JEngineScene::ClearScene();
+	for (int i = 0; i < kNumRenderTarget; ++i) {
+		m_nAlignCameraMatrices[i] = 0;
+		m_nAlignWorldMatrices[i] = 0;
+	}
+}
+
 void JEngineSceneDX11::SetGPUBuffer(UINT currentBufferIndex, UINT parameter, JShaderStage stage)
 {
 	auto* gFactor = JD3D11GlobalFactor::GetInstance();

@@ -6,6 +6,8 @@
 
 class JEngineSceneDX11 : public JEngineScene {
 public:
+	virtual void ClearScene();
+
 	virtual void SetGPUBuffer(UINT currentBufferIndex, UINT parameter, JShaderStage stage);
 	virtual void UpdateBuffers(UINT currentBufferIndex);
 

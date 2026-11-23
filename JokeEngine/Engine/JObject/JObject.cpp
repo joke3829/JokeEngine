@@ -37,9 +37,26 @@ void JObject::LoadObjectFromFile(nlohmann::json& object)
 	if (object.contains("Transform")) {
 		auto& tt = object["Transform"];
 		if (tt.contains("Position")) {
-
+			temp.x = tt["Position"].value("x", 0.f);
+			temp.y = tt["Position"].value("y", 0.f);
+			temp.z = tt["Position"].value("z", 0.f);
 		}
 		SetPosition(temp.x, temp.y, temp.z, true);
+		temp.x = temp.y = temp.z = 0.f;
+		if (tt.contains("Quaternion")) {
+			temp.x = tt["Quaternion"].value("x", 0.f);
+			temp.y = tt["Quaternion"].value("y", 0.f);
+			temp.z = tt["Quaternion"].value("z", 0.f);
+			temp.w = tt["Quaternion"].value("w", 1.f);
+		}
+		SetRotation(temp, true);
+		temp.x = temp.y = temp.z = temp.w = 0.f;
+		if (tt.contains("Scale")) {
+			temp.x = tt["Scale"].value("x", 1.f);
+			temp.y = tt["Scale"].value("y", 1.f);
+			temp.z = tt["Scale"].value("z", 1.f);
+		}
+		SetScale(temp.x, temp.y, temp.z, true);
 	}
 }
 
@@ -160,9 +177,9 @@ void JObject::SaveObjectToFile(nlohmann::json& json, std::unordered_map<UINT, UI
 	t["Position"]["y"] = m_InitialPosition.y;
 	t["Position"]["z"] = m_InitialPosition.z;
 
-	t["Rotation"]["x"] = m_InitialRotation.x;
-	t["Rotation"]["y"] = m_InitialRotation.y;
-	t["Rotation"]["z"] = m_InitialRotation.z;
+	//t["Rotation"]["x"] = m_InitialRotation.x;
+	//t["Rotation"]["y"] = m_InitialRotation.y;
+	//t["Rotation"]["z"] = m_InitialRotation.z;
 
 	t["Scale"]["x"] = m_InitialScale.x;
 	t["Scale"]["y"] = m_InitialScale.y;
@@ -181,8 +198,6 @@ void JObject::SaveObjectToFile(nlohmann::json& json, std::unordered_map<UINT, UI
 void JObject::SetPlayMode(bool mod)
 {
 	m_PlayMode = mod;
-	for (auto& child : m_LeafObjects)
-		child->SetPlayMode(m_PlayMode);
 }
 
 bool JObject::RenderInspector(UINT currentFrameIndex)

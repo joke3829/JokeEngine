@@ -34,6 +34,44 @@ JTextObject::~JTextObject()
 
 }
 
+void JTextObject::LoadObjectFromFile(nlohmann::json& object)
+{
+	JObject::LoadObjectFromFile(object);
+
+	std::string temp = object.value("Text", "Text");
+	SetText(ConvertHelper::Utf8ToWide(temp).c_str(), true);
+	temp = object.value("FontFamily", "Arial");
+	SetFontFamily(ConvertHelper::Utf8ToWide(temp).c_str(), true);
+	SetFontSize(object.value("FontSize", 32.f), true);
+	SetFontWeight(object.value("FontWeight", 400.f), true);
+	SetFontWidth(object.value("FontWidth", 100.f), true);
+	SetLeadingSpacing(object.value("LeadingSpacing", 0.f), true);
+	SetTrailingSpacing(object.value("TrailingSpacing", 0.f), true);
+	SetMinimumAdvanceWidth(object.value("MinimumAdvanceWidth", 0.f), true);
+
+	XMFLOAT4 color{ 1.f, 1.f,1.f,1.f };
+	if (object.contains("BrushColor")) {
+		color.x = object["BrushColor"].value("r", 1.f);
+		color.y = object["BrushColor"].value("g", 1.f);
+		color.z = object["BrushColor"].value("b", 1.f);
+		color.w = object["BrushColor"].value("a", 1.f);
+	}
+	SetBrushColor(color, true);
+
+	int h = object.value("HorizonAlignment", 0);
+	int v = object.value("VerticalAlignment", 3);
+
+	SetHorizonAlignment(JText_Alignment(h), true);
+	SetVerticalAlignment(JText_Alignment(v), true);
+
+	XMUINT2 rtsize{ 1920, 96 };
+	if (object.contains("RTSize")) {
+		rtsize.x = object["RTSize"].value("Width", 1920);
+		rtsize.y = object["RTSize"].value("Height", 96);
+	}
+	m_TextResource->ResizeRT(rtsize);
+}
+
 void JTextObject::Initialize()
 {
 	SetText(L"Text", true);

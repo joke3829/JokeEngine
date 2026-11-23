@@ -93,7 +93,7 @@ void JEngineScene::LoadObjectDataToFile(nlohmann::json& scn)
 
 	for (int i = 0; i < scn.size(); ++i) {
 		auto& obj = scn[i];
-		if (not obj) continue;
+		if (obj.is_null()) continue;
 		std::string type = obj.value("Type", "JObject");
 		JObject* newObj = CreateObject(type.c_str());
 		newObj->LoadObjectFromFile(obj);

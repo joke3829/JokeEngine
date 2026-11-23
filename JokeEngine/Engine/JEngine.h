@@ -23,6 +23,7 @@ public:
 	
 	virtual void WindowMessageProcessor(UINT msg, WPARAM wParam, LPARAM lParam);
 
+	virtual void PreRender();
 	virtual void Render() {};
 protected:
 	virtual void CreateSwapChain() {}
@@ -72,6 +73,8 @@ protected:
 	bool m_LocalGizmo{};
 	
 	std::filesystem::path m_ContentManagerFilePath{"Resource"};	// 기본이 Resource이다.
+	std::filesystem::path m_DelayLoadScenefilepath{};
+	bool m_DelayLoadScene{};
 
 	JObject* m_SelectedObject = nullptr;
 #endif
@@ -96,6 +99,7 @@ public:
 	virtual void Initialize(HWND hWnd, HINSTANCE hInstance);
 	void ResizeSwapChain(UINT width, UINT height, bool FullScreenState);
 
+	void PreRender();
 	virtual void Render();
 
 private:

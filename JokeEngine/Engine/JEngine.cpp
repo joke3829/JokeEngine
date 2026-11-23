@@ -37,7 +37,16 @@ void JokeEngine::LoadSceneFromFile(std::filesystem::path filepath)
 	std::ifstream inFile{ filepath };
 	if (not inFile) ThrowIfFailed(E_FAIL);
 	nlohmann::json scn = nlohmann::json::parse(inFile);
+	// 이건 NewScene을 불러오는거라 Clear가 동반됨
+#if DEV_MODE
+	m_SelectedObject = nullptr;
+	m_Renderer->ClearScene();
 	m_Scene->LoadSceneFromFile(scn);
+	m_Scene->EditorCameraResize(static_cast<float>(m_NewImageDestSize.x), static_cast<float>(m_NewImageDestSize.y));
+#else
+	m_Renderer->ClearScene();
+	m_Scene->LoadSceneFromFile(scn);
+#endif
 }
 
 void JokeEngine::ResizeSwapChain(UINT width, UINT height, bool FullScreenState)
@@ -60,6 +69,17 @@ void JokeEngine::ResizeRenderer(UINT width, UINT height)
 void JokeEngine::WindowMessageProcessor(UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	m_Scene->WindowMessageProcessor(msg, wParam, lParam);
+}
+
+// 렌더링 전 해야할것 ex) 렌더 타겟 사이즈 변경, scene 변경 등 
+void JokeEngine::PreRender()
+{
+#if DEV_MODE
+	if (m_DelayLoadScene) {
+		LoadSceneFromFile(m_DelayLoadScenefilepath);
+		m_DelayLoadScene = false;
+	}
+#endif
 }
 
 
@@ -116,6 +136,7 @@ void JokeEngine::RenderMenubar()
 			// File Menu
 			if (ImGui::BeginMenu("File")) {
 				if (ImGui::MenuItem("New Scene", "Ctrl+N")) { spdlog::info("누름"); }
+				// 눌렀을 땐 다음 프레임 시작 전에 신호만 보내라
 				if (ImGui::MenuItem("Open Scene", "Ctrl+O")) { LoadSceneFromSelectFile(); }
 				if (ImGui::MenuItem("Save", "Ctrl+S")) { spdlog::info("누름"); }
 				if (ImGui::MenuItem("Save As", "Ctrl+Shitf+S")) { m_Scene->SaveSceneToFile(); }
@@ -700,13 +721,13 @@ void JokeEngine::LoadSceneFromSelectFile()
 	ofn.hwndOwner = g_Hwnd;
 	ofn.lpstrFile = filePath;
 	ofn.nMaxFile = sizeof(filePath) / sizeof(wchar_t);
-	ofn.lpstrFilter = L"Sprite YamlFile\0*.yaml\0";
+	ofn.lpstrFilter = L"JKEngineSceneFile\0*.jkscn\0";
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
 	std::wstring fpath = std::filesystem::absolute(L"Resource").wstring();
 	ofn.lpstrInitialDir = fpath.c_str();
 	if (GetOpenFileName(&ofn) == TRUE) {
-		std::filesystem::path rpath = filePath;
-		LoadSceneFromFile(rpath);
+		m_DelayLoadScenefilepath = filePath;
+		m_DelayLoadScene = true;
 	}
 	else {
 		spdlog::error("Scene Load Failed");
@@ -824,14 +845,15 @@ void JokeEngineDX11::Update(float elapsedTime)
 
 }
 
-void JokeEngineDX11::Render()
+void JokeEngineDX11::PreRender()
 {
-	auto* gfactor = JEngineDefaultGlobalConfig::GetInstance()->GetConfigFactor();
-	// update section
-	// 
-	float elapsedTime = m_Timer.Tick(gfactor->LimitFPS);
-
 #if DEV_MODE
+	auto* gfactor = JEngineDefaultGlobalConfig::GetInstance()->GetConfigFactor();
+
+	// load 요청 처리
+	
+	JokeEngine::PreRender();
+
 	StartImGuiRender();
 	auto* context = m_GlobalFactor->GetDeviceContext();
 	float clearcolor[4] = { 0.2f, 0.2f, 0.2f, 1.0f };
@@ -840,9 +862,10 @@ void JokeEngineDX11::Render()
 	// 렌더링 전 렌더타겟 크기 바꾸기
 	XMUINT2 renderer_size = m_Renderer->GetTargetSize();
 	if (m_PlayMode) {
-		if(renderer_size.x != gfactor->WindowsWidth || renderer_size.y != gfactor->WindowsHeight)
-		m_Renderer->ResizeTarget(gfactor->WindowsWidth, gfactor->WindowsHeight);
-		ResizeImageDest(gfactor->WindowsWidth, gfactor->WindowsHeight);
+		if (renderer_size.x != gfactor->WindowsWidth || renderer_size.y != gfactor->WindowsHeight) {
+			m_Renderer->ResizeTarget(gfactor->WindowsWidth, gfactor->WindowsHeight);
+			ResizeImageDest(gfactor->WindowsWidth, gfactor->WindowsHeight);
+		}
 	}
 	else {
 		if (renderer_size.x != m_NewImageDestSize.x || renderer_size.y != m_NewImageDestSize.y) {
@@ -870,7 +893,19 @@ void JokeEngineDX11::Render()
 			}
 		}
 	}
+#endif
+}
 
+void JokeEngineDX11::Render()
+{
+	auto* gfactor = JEngineDefaultGlobalConfig::GetInstance()->GetConfigFactor();
+	auto* context = m_GlobalFactor->GetDeviceContext();
+
+	float elapsedTime = m_Timer.Tick(gfactor->LimitFPS);
+
+	PreRender();
+
+#if DEV_MODE
 	if (!m_PlayMode || m_Pause) elapsedTime = 0.f;
 #endif
 

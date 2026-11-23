@@ -7,6 +7,8 @@ class JEngineRenderer : public JCommon {
 public:
 	JEngineRenderer(UINT width, UINT height, const char* name = nullptr);
 
+	void ClearScene();
+
 	virtual void ResizeTarget(UINT width, UINT height);
 
 	virtual void RenderFrame();
