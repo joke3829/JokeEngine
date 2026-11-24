@@ -37,7 +37,7 @@ void JokeEngine::LoadSceneFromFile(std::filesystem::path filepath)
 		return;
 	}
 
-	std::ifstream inFile{ filepath };
+	std::ifstream inFile{ filepath, std::ios::binary };
 	if (not inFile) ThrowIfFailed(E_FAIL);
 	nlohmann::json scn = nlohmann::json::parse(inFile);
 	// 이건 NewScene을 불러오는거라 Clear가 동반됨
@@ -211,7 +211,7 @@ void JokeEngine::RenderMenubar()
 		}
 		{ // Create Menu
 			if (!m_PlayMode) {
-				if (ImGui::IsKeyPressed(ImGuiKey_A) && io.KeyShift && not m_CreateWindowPopup && not m_ControlEditorScene) {
+				if (ImGui::IsKeyPressed(ImGuiKey_A) && io.KeyShift && not m_CreateWindowPopup && not m_ControlEditorScene && not io.WantTextInput) {
 					m_CreateWindowPopup = true;
 					m_SelectedObjectInCreatePopup = 0;
 				}

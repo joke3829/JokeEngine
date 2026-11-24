@@ -341,7 +341,7 @@ void JEngineScene::SaveSceneToFile()
 	ofn.lpstrInitialDir = fpath.c_str();
 	if (GetSaveFileName(&ofn) == TRUE) {
 		std::string spath = ConvertHelper::WideToUtf8(filePath);
-		std::ofstream outFile{ spath };
+		std::ofstream outFile{ spath, std::ios::binary };
 		outFile << std::setw(4) << scn;
 		spdlog::info("{} Save Complete", m_name);
 	}
