@@ -47,6 +47,8 @@
 #include <DirectXMath.h>
 #include <DirectXCollision.h>
 
+#include <xaudio2.h>
+
 #include <comdef.h>
 
 #pragma comment(lib, "d3d11.lib")

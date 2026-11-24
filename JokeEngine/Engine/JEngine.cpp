@@ -2,6 +2,7 @@
 #include "D3D11/Scene/D3D11Scene.h"
 #include "D3D11/Renderer/D3D11Renderer.h"
 #include "JObject/JObjectRegistry.h"
+#include "Engine/JSoundEngine/JSoundEngine.h"
 #if DEV_MODE
 #include "Engine/JObject/JCameraObject.h"
 #include "Engine/JObject/JEditorPlayer.h"
@@ -17,6 +18,8 @@ void JokeEngine::Initialize(HWND hWnd, HINSTANCE hInstance)
 {
 	g_Hwnd = hWnd;
 	m_hWnd = hWnd; m_hInstance = hInstance;
+
+	JSoundEngine::GetInstance();
 
 	auto* p = JD2DTextEngine::GetInstance();
 	p->CreateFontCollectionFromDirectory("Resource/JKEngine/Font");

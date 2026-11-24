@@ -118,6 +118,11 @@ set(ENGINE_SHADER
   Engine/JShader/JEngineShader.cpp
 )
 
+set(ENGINE_SOUND
+  Engine/JSoundEngine/JSoundEngine.h
+  Engine/JSoundEngine/JSoundEngine.cpp
+)
+
 set(ENGINE_INTEGRATE
   ${ENGINE}
   ${ENGINE_GRESOURCE}
@@ -126,6 +131,7 @@ set(ENGINE_INTEGRATE
   ${ENGINE_RENDERER}
   ${ENGINE_SCENE}
   ${ENGINE_SHADER}
+  ${ENGINE_SOUND}
 )
 
 # D2D 관련 Set ===================================================
@@ -272,6 +278,7 @@ source_group("Engine\\JContent" FILES ${ENGINE_CONTENT})
 source_group("Engine\\JRenderer" FILES ${ENGINE_RENDERER})
 source_group("Engine\\JScene" FILES ${ENGINE_SCENE})
 source_group("Engine\\JShader" FILES ${ENGINE_SHADER})
+source_group("Engine\\JSoundEngine" FILES ${ENGINE_SOUND})
 
 source_group("Engine\\D2D" FILES ${D2D})
 
