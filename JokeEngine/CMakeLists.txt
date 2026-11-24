@@ -101,6 +101,8 @@ set(ENGINE_CONTENT
   Engine/JContent/JTexture.cpp
   Engine/JContent/JSpriteAnimationSet.h
   Engine/JContent/JSpriteAnimationSet.cpp
+  Engine/JContent/JSound.h
+  Engine/JContent/JSound.cpp
 )
 
 set(ENGINE_RENDERER
@@ -121,6 +123,10 @@ set(ENGINE_SHADER
 set(ENGINE_SOUND
   Engine/JSoundEngine/JSoundEngine.h
   Engine/JSoundEngine/JSoundEngine.cpp
+  Engine/JSoundEngine/SoundFileImporter.h
+  Engine/JSoundEngine/SoundFileImporter.cpp
+  Engine/JSoundEngine/wavImporter.h
+  Engine/JSoundEngine/wavImporter.cpp
 )
 
 set(ENGINE_INTEGRATE

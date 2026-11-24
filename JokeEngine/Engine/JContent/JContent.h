@@ -12,6 +12,7 @@ public:
 	// 무조건 파일 경로 넣기
 	JContent(const char* name = nullptr);
 	JContent(std::filesystem::path filepath);
+	virtual ~JContent() {}
 
 	// 반드시 처음에 호출
 	void Initialize();
