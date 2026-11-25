@@ -1,6 +1,8 @@
 #include "JContentManager.h"
 #include "Engine/D3D11/Content/D3D11ContentManager.h"
 #include "Engine/JokeEngineConfig.h"
+#include "JSpriteAnimationSet.h"
+#include "JSound.h"
 
 
 // 그 디렉토리 안에 하위 폴더를 전부 탐색 및 콘텐츠 생성
@@ -25,6 +27,26 @@ void JContentManager::AddContentFromDirectory(std::filesystem::path filepath, bo
 	for (auto& matpath : matFiles) {
 		AddContentFromFile(matpath);
 	}
+}
+
+bool JContentManager::AddContentFromFile(std::filesystem::path filepath)
+{
+	if (filepath.has_extension()) {
+		const auto& ext = filepath.extension();
+		if (ext == ".jkspt") {
+			std::shared_ptr<JSpriteAnimationSet> aset = std::make_shared<JSpriteAnimationSet>(filepath);
+			aset->Initialize();
+			m_ContentLookupTable.try_emplace(filepath, aset);
+			return true;
+		}
+		else if (ext == ".wav" || ext == ".mp3" || ext == ".ogg") {	// 사운드 파일 등등등
+			std::shared_ptr<JSound> sound = std::make_shared<JSound>(filepath);
+			sound->Initialize();
+			m_ContentLookupTable.try_emplace(filepath, sound);
+			return true;
+		}
+	}
+	return false;
 }
 
 void JContentManager::ReadyMissingTexture()

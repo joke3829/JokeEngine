@@ -4,8 +4,7 @@
 
 class JContentManagerDX11 final : public JContentManager {
 public:
-	void ReadyDefaultContent();							// Null Texture도 만들어 두기
-	void AddContentFromFile(std::filesystem::path filepath);
+	bool AddContentFromFile(std::filesystem::path filepath);
 #if DEV_MODE
 public:
 	void AddMeshWithFlag(BYTE& flag, std::filesystem::path& filepath);

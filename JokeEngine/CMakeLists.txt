@@ -86,6 +86,8 @@ set(ENGINE_OBJECT
   Engine/JObject/JTextObject.cpp
   Engine/JObject/JEditorPlayer.h
   Engine/JObject/JEditorPlayer.cpp
+  Engine/JObject/JSoundObject.h
+  Engine/JObject/JSoundObject.cpp
 )
 
 set(ENGINE_CONTENT
@@ -125,8 +127,9 @@ set(ENGINE_SOUND
   Engine/JSoundEngine/JSoundEngine.cpp
   Engine/JSoundEngine/SoundFileImporter.h
   Engine/JSoundEngine/SoundFileImporter.cpp
-  Engine/JSoundEngine/wavImporter.h
-  Engine/JSoundEngine/wavImporter.cpp
+  Engine/JSoundEngine/JSoundResourceInterface.h
+  Engine/JSoundEngine/JSoundResourceXAudio2.h
+  Engine/JSoundEngine/JSoundResourceXAudio2.cpp
 )
 
 set(ENGINE_INTEGRATE

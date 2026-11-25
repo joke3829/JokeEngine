@@ -5,12 +5,8 @@
 
 class JContentManager {
 public:
-	
-	virtual void ReadyDefaultContent() {}							// Null Texture도 만들어 두기, 이거 기능 바꿔라, 없을 때 만들어내는걸로
-
-
 	void AddContentFromDirectory(std::filesystem::path filepath, bool clear = true);
-	virtual void AddContentFromFile(std::filesystem::path filepath) {}	// 하나의 특정 파일만 로드 할 때 -> override
+	virtual bool AddContentFromFile(std::filesystem::path filepath);	// 하나의 특정 파일만 로드 할 때 -> override
 	void AddContent(std::filesystem::path filepath);
 	void ReSaveAll();
 

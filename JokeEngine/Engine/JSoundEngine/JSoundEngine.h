@@ -6,6 +6,7 @@ class JSoundEngine {
 public:
 	static JSoundEngine* GetInstance();
 
+	IXAudio2* GetXAudio2() { return m_XAudio2.Get(); }
 protected:
 	static JSoundEngine* m_Instance;
 

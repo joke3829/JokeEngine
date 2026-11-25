@@ -1,6 +1,11 @@
 #include "JSound.h"
+#include "Engine/JSoundEngine/SoundFileImporter.h"
 
-JSound::~JSound()
+void JSound::LoadFromFile()
 {
-	if (m_SourceVoice) m_SourceVoice->DestroyVoice();
+	auto ext = m_FullFilePath.extension();
+	if (".wav" == ext) {
+		if (not WavTool::Import(m_FullFilePath, m_RawAudioData, m_WaveFormatEX))
+			return;
+	}
 }
