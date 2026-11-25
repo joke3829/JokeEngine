@@ -11,8 +11,9 @@ public:
 	JSound(const char* name = nullptr) : JContent(name) {}
 	JSound(std::filesystem::path filepath) : JContent(filepath) {}
 
-	const WAVEFORMATEXTENSIBLE& GetWaveFormatEX() { return m_WaveFormatEX; }
+	const WAVEFORMATEX* GetWaveFormatEX() { return reinterpret_cast<WAVEFORMATEX*>(m_WaveFormat.get()); }
 	const BYTE* GetRawAudioData() { return m_RawAudioData.get(); }
+	const uint32_t& GetRawAudioDataSize() { return m_RawAudioDataSize; }
 
 protected:
 	// Sound는 만들 수 없음, 아무 파일도 만들지 않는다.
@@ -20,6 +21,7 @@ protected:
 	void LoadFromFile();
 
 protected:
+	uint32_t m_RawAudioDataSize{};
 	std::unique_ptr<BYTE[]> m_RawAudioData{};
-	WAVEFORMATEXTENSIBLE	m_WaveFormatEX{};
+	std::unique_ptr<BYTE[]> m_WaveFormat{};
 };

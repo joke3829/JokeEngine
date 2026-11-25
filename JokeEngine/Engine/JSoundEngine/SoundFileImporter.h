@@ -14,5 +14,5 @@ namespace WavTool {
 		char8_t wave[4]{};
 	};
 #pragma pop
-	bool Import(std::filesystem::path filepath, std::unique_ptr<BYTE[]>& rawData, WAVEFORMATEXTENSIBLE& waveformat);
+	bool Import(std::filesystem::path filepath, uint32_t& datasize, std::unique_ptr<BYTE[]>& rawData, std::unique_ptr<BYTE[]>& waveformat);
 }

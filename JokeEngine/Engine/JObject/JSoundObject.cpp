@@ -4,10 +4,17 @@
 #include "Engine/JSoundEngine/JSoundEngine.h"
 #include "Engine/JSoundEngine/JSoundResourceXAudio2.h"
 
+// 예비
+#include "Engine/JContent/JContentManager.h"
+
 JSoundObject::JSoundObject(std::vector<XMFLOAT4X4>& vWorld, std::vector<XMFLOAT4X4>& vWorldTP, UINT uid, const char* name)
 	: JObject(vWorld, vWorldTP, uid, name)
 {
 	m_SoundResource = std::make_unique<JSoundResourceXAudio2>();
+
+	auto& test = JGlobalContentManager::GetInstance()->GetManager()->GetContentTable();
+	SetSound(test["Resource/wavTest/ok_pcm16_mono_fmt16.wav"].get());
+	Play();
 }
 
 void JSoundObject::Reset()
@@ -22,7 +29,7 @@ void JSoundObject::LoadObjectFromFile(nlohmann::json& object)
 
 void JSoundObject::Play(bool begin)
 {
-	
+	m_SoundResource->Play();
 }
 
 void JSoundObject::Pause()
@@ -30,7 +37,7 @@ void JSoundObject::Pause()
 
 }
 
-void JSoundObject::Stop()
+void JSoundObject::Stop(bool AllStop)
 {
 
 }

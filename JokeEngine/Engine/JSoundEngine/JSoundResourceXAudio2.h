@@ -1,13 +1,16 @@
 #pragma once
 #include "JSoundResourceInterface.h"
 
+class JSound;
+
 class SourceVoicePtr {
 public:
+	SourceVoicePtr() = default;
 	SourceVoicePtr(JSound* sound);
 	~SourceVoicePtr();
 
 	void ReMakeVoice(JSound* sound);
-	IXAudio2SourceVoice* m_Voice;
+	IXAudio2SourceVoice* m_Voice{};
 };
 
 class JSoundResourceXAudio2 : public JSoundResource {

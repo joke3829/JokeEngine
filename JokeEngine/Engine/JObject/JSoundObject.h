@@ -35,6 +35,7 @@ public:
 	virtual bool RenderInspector(UINT currentFrameIndex = 0);
 #endif
 protected:
+	UINT							m_NumSourceVoice{ 1 };
 
 	JSound* m_Sound{};
 	std::unique_ptr<JSoundResource> m_SoundResource{};

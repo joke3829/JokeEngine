@@ -1,6 +1,6 @@
 #include "SoundFileImporter.h"
 
-bool WavTool::Import(std::filesystem::path filepath, std::unique_ptr<BYTE[]>& rawData, WAVEFORMATEXTENSIBLE& waveformat)
+bool WavTool::Import(std::filesystem::path filepath, uint32_t& datasize, std::unique_ptr<BYTE[]>& rawData, std::unique_ptr<BYTE[]>& waveformat)
 {
 	std::ifstream inFile{ filepath, std::ios::binary };
 	if (not inFile) {
@@ -37,11 +37,13 @@ bool WavTool::Import(std::filesystem::path filepath, std::unique_ptr<BYTE[]>& ra
 	while (inFile.read(conptr(chunkID), sizeof(char8_t) * 4)) {
 		inFile.read(conptr(&remainSize), sizeof(uint32_t));
 		if (not std::memcmp("fmt ", chunkID, 4)) {
-			ZeroMemory(&waveformat, sizeof(WAVEFORMATEXTENSIBLE));
-			inFile.read(conptr(&waveformat), remainSize);
+			waveformat.reset();
+			waveformat = std::make_unique<BYTE[]>(remainSize < 18 ? 18 : remainSize);
+			inFile.read(conptr(waveformat.get()), remainSize);
 		}
 		else if (not std::memcmp("data", chunkID, 4)) {
 			rawData.reset();
+			datasize = remainSize;
 			rawData = std::make_unique<BYTE[]>(remainSize);
 			inFile.read(conptr(rawData.get()), remainSize);
 		}
