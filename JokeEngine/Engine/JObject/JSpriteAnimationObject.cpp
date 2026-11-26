@@ -224,7 +224,7 @@ bool JSpriteAnimationObject::RenderInspector(UINT currentFrameIndex)
 	{
 		ImGui::SetCursorScreenPos(ImVec2(curScreenPos.x, curScreenPos.y + 65.f));
 		ImGui::Separator();
-		ImGui::Text("test");
+		ImGui::Text("Animation Info");
 		if (m_SpriteSet && m_SpriteSet->GetHasKeyFrame()) {
 			// 애니메니이션 콤보 박스
 			auto& play = m_SpriteSet->GetPlayTimeMap();
