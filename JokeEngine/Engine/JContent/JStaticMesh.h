@@ -44,8 +44,8 @@ public:
 	virtual void RenderDetailPanel();
 #endif
 protected:
-	virtual void LoadFromFile();
-	virtual void CreateContentFile();
+	virtual bool LoadFromFile();
+	virtual bool CreateContentFile();
 
 protected:
 	virtual void BuffersReady() {}

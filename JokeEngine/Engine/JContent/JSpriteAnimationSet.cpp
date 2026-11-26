@@ -88,7 +88,7 @@ void JSpriteAnimationSet::LoadAnimationFactorFromYaml(const char* filepath)
 	}
 }
 
-void JSpriteAnimationSet::CreateContentFile()
+bool JSpriteAnimationSet::CreateContentFile()
 {
 	JContent::CreateContentFile();
 	std::ofstream out{ m_FullFilePath, std::ios::binary };
@@ -111,11 +111,13 @@ void JSpriteAnimationSet::CreateContentFile()
 		out.write(reinterpret_cast<const char*>(&vssize), sizeof(unsigned int));
 		out.write(reinterpret_cast<const char*>(vs.data()), sizeof(JSAnimData) * vssize);
 	}
+	return true;
 }
 
-void JSpriteAnimationSet::LoadFromFile()
+bool JSpriteAnimationSet::LoadFromFile()
 {
 	std::ifstream in{ m_FullFilePath, std::ios::binary };
+	if (not in) return false;
 	unsigned int numAni{};
 	in.read(reinterpret_cast<char*>(&numAni), sizeof(unsigned int));
 	for (unsigned int i = 0; i < numAni; ++i) {
@@ -129,6 +131,7 @@ void JSpriteAnimationSet::LoadFromFile()
 		m_KeyFrame.try_emplace(key, std::move(tempdata));
 		m_PlayTime.try_emplace(key, anitime);
 	}
+	return true;
 }
 
 #if DEV_MODE 

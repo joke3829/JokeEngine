@@ -63,7 +63,7 @@ void JDMaterial::DettachTexture(unsigned char order)
 	}
 }
 
-void JDMaterial::CreateContentFile()
+bool JDMaterial::CreateContentFile()
 {
 	JContent::CreateContentFile();
 	std::ofstream out{ m_FullFilePath, std::ios::binary };
@@ -88,11 +88,15 @@ void JDMaterial::CreateContentFile()
 		}
 		out.write(reinterpret_cast<const char*>(&exist), sizeof(bool));
 	}
+	return true;
 }
 
-void JDMaterial::LoadFromFile()
+bool JDMaterial::LoadFromFile()
 {
+	bool ret = true;
 	std::ifstream in{ m_FullFilePath, std::ios::binary };
+	if (not in) return false;
+
 	in.read(reinterpret_cast<char*>(&m_SimpleMaterial.BaseColor), sizeof(XMFLOAT4));
 	in.read(reinterpret_cast<char*>(&m_SimpleMaterial.MetallicRoughnessFactor), sizeof(XMFLOAT2));
 	in.read(reinterpret_cast<char*>(&m_SimpleMaterial.Emissive), sizeof(XMFLOAT4));
@@ -121,6 +125,7 @@ void JDMaterial::LoadFromFile()
 			}
 		}
 	}
+	return ret;
 }
 
 

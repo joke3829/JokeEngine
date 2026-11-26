@@ -9,6 +9,6 @@ public:
 
 	virtual void MakeMissingTexture() {}
 protected:
-	virtual void CreateContentFile() { if(not m_Created) MakeMissingTexture(); }
+	virtual bool CreateContentFile() { if (not m_Created) MakeMissingTexture(); return true; }
 	bool m_Created{}; // 이미 만들어졌나?
 };

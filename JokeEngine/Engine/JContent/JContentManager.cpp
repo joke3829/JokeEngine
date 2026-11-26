@@ -17,6 +17,7 @@ void JContentManager::AddContentFromDirectory(std::filesystem::path filepath, bo
 
 	std::vector<std::filesystem::path> matFiles;
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(filepath)) {
+		if (std::filesystem::is_directory(entry.path())) continue;
 		if (entry.path().extension() != ".jkmt") {
 			AddContentFromFile(entry.path());
 			continue;
@@ -33,16 +34,20 @@ bool JContentManager::AddContentFromFile(std::filesystem::path filepath)
 {
 	if (filepath.has_extension()) {
 		const auto& ext = filepath.extension();
-		if (ext == ".jkspt") {
-			std::shared_ptr<JSpriteAnimationSet> aset = std::make_shared<JSpriteAnimationSet>(filepath);
-			aset->Initialize();
-			m_ContentLookupTable.try_emplace(filepath, aset);
-			return true;
-		}
-		else if (ext == ".wav" || ext == ".mp3" || ext == ".ogg") {	// 사운드 파일 등등등
-			std::shared_ptr<JSound> sound = std::make_shared<JSound>(filepath);
-			sound->Initialize();
-			m_ContentLookupTable.try_emplace(filepath, sound);
+		std::shared_ptr<JContent> content{};
+		if (ext == ".jkspt") 
+			content = std::make_shared<JSpriteAnimationSet>(filepath);
+		else if (ext == ".wav" || ext == ".mp3" || ext == ".ogg")
+			content = std::make_shared<JSound>(filepath);
+
+		if (content) {
+			if (not content->Initialize()) {
+#if DEV_MODE
+				spdlog::warn("{}: Load Failed - Currupted or Not Supported File", filepath.string());
+#endif
+				return false;
+			}
+			m_ContentLookupTable.try_emplace(filepath, content);
 			return true;
 		}
 	}

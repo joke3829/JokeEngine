@@ -9,22 +9,22 @@ bool JContentManagerDX11::AddContentFromFile(std::filesystem::path filepath)
 
 	if (filepath.has_extension() && not ret) {
 		const auto& ext = filepath.extension();
-		if (ext == ".dds" || ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp" || ext == ".tiff" || ext == ".tif" || ext == ".gif" || ext == ".ico" || ext == ".cur") {
-			std::shared_ptr<JTextureDX11> texture = std::make_shared<JTextureDX11>(filepath);
-			texture->Initialize();
-			m_ContentLookupTable.try_emplace(filepath, texture);
-			return true;
-		}
-		else if (ext == ".jkmh") {
-			std::shared_ptr<JStaticMeshDX11> mesh = std::make_shared<JStaticMeshDX11>(filepath);
-			mesh->Initialize();
-			m_ContentLookupTable.try_emplace(filepath, mesh);
-			return true;
-		}
-		else if (ext == ".jkmt") {
-			std::shared_ptr<JMaterialDX11> material = std::make_shared<JMaterialDX11>(filepath);
-			material->Initialize();
-			m_ContentLookupTable.try_emplace(filepath, material);
+		std::shared_ptr<JContent> content{};
+		if (ext == ".dds" || ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp" || ext == ".tiff" || ext == ".tif" || ext == ".gif" || ext == ".ico" || ext == ".cur") 
+			content = std::make_shared<JTextureDX11>(filepath);
+		else if (ext == ".jkmh")
+			content = std::make_shared<JStaticMeshDX11>(filepath);
+		else if (ext == ".jkmt")
+			content = std::make_shared<JMaterialDX11>(filepath);
+
+		if (content) {
+			if (not content->Initialize()) {
+#if DEV_MODE
+				spdlog::warn("{}: Load Failed - Currupted or Not Supported File", filepath.string());
+#endif
+				return false;
+			}
+			m_ContentLookupTable.try_emplace(filepath, content);
 			return true;
 		}
 	}

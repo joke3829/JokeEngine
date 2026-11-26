@@ -17,8 +17,8 @@ public:
 
 protected:
 	// Sound는 만들 수 없음, 아무 파일도 만들지 않는다.
-	void CreateContentFile() {}
-	void LoadFromFile();
+	bool CreateContentFile() { return false; }
+	bool LoadFromFile();
 
 protected:
 	uint32_t m_RawAudioDataSize{};

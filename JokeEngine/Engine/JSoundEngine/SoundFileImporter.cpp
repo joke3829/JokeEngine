@@ -4,9 +4,6 @@ bool WavTool::Import(std::filesystem::path filepath, uint32_t& datasize, std::un
 {
 	std::ifstream inFile{ filepath, std::ios::binary };
 	if (not inFile) {
-#if DEV_MODE
-		spdlog::error("{} 파일이 존재하지 않아 Load에 실패했습니다.", filepath.string());
-#endif
 		return false;
 	}
 
@@ -18,15 +15,9 @@ bool WavTool::Import(std::filesystem::path filepath, uint32_t& datasize, std::un
 		RIFFChunk riff{};
 		inFile.read(conptr(&riff), sizeof(RIFFChunk));
 		if (std::memcmp("RIFF", riff.id, 4)) {
-#if DEV_MODE
-			spdlog::error("{} 잘못된 .wav 파일로 Load에 실패했습니다.", filepath.string());
-#endif
 			return false;
 		}
 		if (std::memcmp("WAVE", riff.wave, 4)) {
-#if DEV_MODE
-			spdlog::error("{} 잘못된 .wav 파일로 Load에 실패했습니다.", filepath.string());
-#endif
 			return false;
 		}
 	}

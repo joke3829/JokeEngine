@@ -23,7 +23,7 @@ protected:
 	void MakeMissingTexture();
 
 	// 있다면 그걸 Load하라
-	void LoadFromFile();
+	bool LoadFromFile();
 
 	ComPtr<ID3D11Texture2D>				m_Texture{};
 	ComPtr<ID3D11ShaderResourceView>	m_SRV{};

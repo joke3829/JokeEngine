@@ -70,8 +70,8 @@ protected:
 	cbSimpleMaterial							m_TempSimpleMaterial;
 #endif
 protected:
-	virtual void CreateContentFile();
-	virtual void LoadFromFile();
+	virtual bool CreateContentFile();
+	virtual bool LoadFromFile();
 
 	cbSimpleMaterial							m_SimpleMaterial{};
 	// 실제 텍스쳐 리스트는 DX쪽에서 자신의 버젼에 맞는 것의 리스트로 가진다.

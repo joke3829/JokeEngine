@@ -52,7 +52,7 @@ void JTextureDX11::MakeMissingTexture()
 }
 
 
-void JTextureDX11::LoadFromFile()
+bool JTextureDX11::LoadFromFile()
 {
 	auto ext = m_FullFilePath.extension();
 
@@ -77,6 +77,7 @@ void JTextureDX11::LoadFromFile()
 	}
 
     m_Created = true;
+    return true;
 }
 
 #if DEV_MODE

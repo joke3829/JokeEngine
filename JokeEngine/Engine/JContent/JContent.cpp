@@ -19,19 +19,22 @@ JContent::JContent(std::filesystem::path filepath)
 	m_name = m_FullFilePath.filename().string();
 }
 
-void JContent::Initialize()
+bool JContent::Initialize()
 {
+	bool ret = false;
 	if (std::filesystem::exists(m_FullFilePath))
-		LoadFromFile();
+		ret = LoadFromFile();
 	else
-		CreateContentFile();
+		ret = CreateContentFile();
+	return ret;
 }
 
-void JContent::CreateContentFile()
+bool JContent::CreateContentFile()
 {
 	// 작성한 경로가 실제 디스크에 없으면 생성
 	if (not std::filesystem::exists(m_FullFilePath.parent_path()))
 		std::filesystem::create_directories(m_FullFilePath.parent_path());
+	return true;
 }
 
 #if DEV_MODE 

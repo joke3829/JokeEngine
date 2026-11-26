@@ -276,101 +276,103 @@ JStaticMesh::JStaticMesh(XMFLOAT3 center, float width, float height, JSMPlane qu
         MeshOwnerFlag_HasIndices;
 }
 
-void JStaticMesh::LoadFromFile()
+bool JStaticMesh::LoadFromFile()
 {
     std::ifstream in{ m_FullFilePath, std::ios::binary };
-    unsigned int num{};
+	if (not in) return false;
+	unsigned int num{};
 
-    // Primitive Topology
-    in.read(reinterpret_cast<char*>(&num), sizeof(unsigned int));
-    m_d3dTopology = ConvertPrimitiveTopologyIntToD3D(num);
+	// Primitive Topology
+	in.read(reinterpret_cast<char*>(&num), sizeof(unsigned int));
+	m_d3dTopology = ConvertPrimitiveTopologyIntToD3D(num);
 
-    // vertex
-    in.read(reinterpret_cast<char*>(&num), sizeof(unsigned int));
-    if (num > 0) {
-        m_Vertices.assign(num, {});
-        in.read(reinterpret_cast<char*>(m_Vertices.data()), sizeof(XMFLOAT3) * num);
-        m_MeshOwnerFlag |= MeshOwnerFlag_HasVertex;
-    }
-    else { // 사실 정점이 없으면 메시 자체가 의미가 없는거긴 한데 일단 방어 넣기
-        m_Vertices.emplace_back();
-    }
-    // color
-    in.read(reinterpret_cast<char*>(&num), sizeof(unsigned int));
-    if (num > 0) {
-        m_Colors.assign(num, {});
-        in.read(reinterpret_cast<char*>(m_Colors.data()), sizeof(XMFLOAT4) * num);
-        m_MeshOwnerFlag |= MeshOwnerFlag_HasColor;
-    }
-    else {
-        m_Colors.emplace_back();
-    }
-    // normal
-    in.read(reinterpret_cast<char*>(&num), sizeof(unsigned int));
-    if (num > 0) {
-        m_Normals.assign(num, {});
-        in.read(reinterpret_cast<char*>(m_Normals.data()), sizeof(XMFLOAT3) * num);
-        m_MeshOwnerFlag |= MeshOwnerFlag_HasNormal;
-    }
-    else {
-        m_Normals.emplace_back();
-    }
-    // tangent
-    in.read(reinterpret_cast<char*>(&num), sizeof(unsigned int));
-    if (num > 0) {
-        m_Tangents.assign(num, {});
-        in.read(reinterpret_cast<char*>(m_Tangents.data()), sizeof(XMFLOAT3) * num);
-        m_MeshOwnerFlag |= MeshOwnerFlag_HasTangent;
-    }
-    else {
-        m_Tangents.emplace_back();
-    }
-    // bitangent
-    in.read(reinterpret_cast<char*>(&num), sizeof(unsigned int));
-    if (num > 0) {
-        m_BiTangents.assign(num, {});
-        in.read(reinterpret_cast<char*>(m_BiTangents.data()), sizeof(XMFLOAT3) * num);
-        m_MeshOwnerFlag |= MeshOwnerFlag_HasBiTangent;
-    }
-    else {
-        m_BiTangents.emplace_back();
-    }
-    // tex0
-    in.read(reinterpret_cast<char*>(&num), sizeof(unsigned int));
-    if (num > 0) {
-        m_TexCoord0.assign(num, {});
-        in.read(reinterpret_cast<char*>(m_TexCoord0.data()), sizeof(XMFLOAT2) * num);
-        m_MeshOwnerFlag |= MeshOwnerFlag_HasTexCoord0;
-    }
-    else {
-        m_TexCoord0.emplace_back();
-    }
-    // tex1
-    in.read(reinterpret_cast<char*>(&num), sizeof(unsigned int));
-    if (num > 0) {
-        m_TexCoord1.assign(num, {});
-        in.read(reinterpret_cast<char*>(m_TexCoord1.data()), sizeof(XMFLOAT2) * num);
-        m_MeshOwnerFlag |= MeshOwnerFlag_HasTexCoord1;
-    }
-    else {
-        m_TexCoord1.emplace_back();
-    }
+	// vertex
+	in.read(reinterpret_cast<char*>(&num), sizeof(unsigned int));
+	if (num > 0) {
+		m_Vertices.assign(num, {});
+		in.read(reinterpret_cast<char*>(m_Vertices.data()), sizeof(XMFLOAT3) * num);
+		m_MeshOwnerFlag |= MeshOwnerFlag_HasVertex;
+	}
+	else { // 사실 정점이 없으면 메시 자체가 의미가 없는거긴 한데 일단 방어 넣기
+		m_Vertices.emplace_back();
+	}
+	// color
+	in.read(reinterpret_cast<char*>(&num), sizeof(unsigned int));
+	if (num > 0) {
+		m_Colors.assign(num, {});
+		in.read(reinterpret_cast<char*>(m_Colors.data()), sizeof(XMFLOAT4) * num);
+		m_MeshOwnerFlag |= MeshOwnerFlag_HasColor;
+	}
+	else {
+		m_Colors.emplace_back();
+	}
+	// normal
+	in.read(reinterpret_cast<char*>(&num), sizeof(unsigned int));
+	if (num > 0) {
+		m_Normals.assign(num, {});
+		in.read(reinterpret_cast<char*>(m_Normals.data()), sizeof(XMFLOAT3) * num);
+		m_MeshOwnerFlag |= MeshOwnerFlag_HasNormal;
+	}
+	else {
+		m_Normals.emplace_back();
+	}
+	// tangent
+	in.read(reinterpret_cast<char*>(&num), sizeof(unsigned int));
+	if (num > 0) {
+		m_Tangents.assign(num, {});
+		in.read(reinterpret_cast<char*>(m_Tangents.data()), sizeof(XMFLOAT3) * num);
+		m_MeshOwnerFlag |= MeshOwnerFlag_HasTangent;
+	}
+	else {
+		m_Tangents.emplace_back();
+	}
+	// bitangent
+	in.read(reinterpret_cast<char*>(&num), sizeof(unsigned int));
+	if (num > 0) {
+		m_BiTangents.assign(num, {});
+		in.read(reinterpret_cast<char*>(m_BiTangents.data()), sizeof(XMFLOAT3) * num);
+		m_MeshOwnerFlag |= MeshOwnerFlag_HasBiTangent;
+	}
+	else {
+		m_BiTangents.emplace_back();
+	}
+	// tex0
+	in.read(reinterpret_cast<char*>(&num), sizeof(unsigned int));
+	if (num > 0) {
+		m_TexCoord0.assign(num, {});
+		in.read(reinterpret_cast<char*>(m_TexCoord0.data()), sizeof(XMFLOAT2) * num);
+		m_MeshOwnerFlag |= MeshOwnerFlag_HasTexCoord0;
+	}
+	else {
+		m_TexCoord0.emplace_back();
+	}
+	// tex1
+	in.read(reinterpret_cast<char*>(&num), sizeof(unsigned int));
+	if (num > 0) {
+		m_TexCoord1.assign(num, {});
+		in.read(reinterpret_cast<char*>(m_TexCoord1.data()), sizeof(XMFLOAT2) * num);
+		m_MeshOwnerFlag |= MeshOwnerFlag_HasTexCoord1;
+	}
+	else {
+		m_TexCoord1.emplace_back();
+	}
 
-    // .jkmh는 무조건 index가 기록되어있다. index가 없을 땐 만들어서 저장하기 때문이다.
-    in.read(reinterpret_cast<char*>(&num), sizeof(unsigned int));
-    m_vIndices.assign(num, {});
-    m_MeshOwnerFlag |= MeshOwnerFlag_HasIndices;
-    for (unsigned int i = 0; i < num; ++i) {
-        unsigned int vnum{};
-        in.read(reinterpret_cast<char*>(&vnum), sizeof(unsigned int));
-        m_vIndices[i].assign(vnum, 0);
-        in.read(reinterpret_cast<char*>(m_vIndices[i].data()), sizeof(UINT) * vnum);
-    }
+	// .jkmh는 무조건 index가 기록되어있다. index가 없을 땐 만들어서 저장하기 때문이다.
+	in.read(reinterpret_cast<char*>(&num), sizeof(unsigned int));
+	m_vIndices.assign(num, {});
+	m_MeshOwnerFlag |= MeshOwnerFlag_HasIndices;
+	for (unsigned int i = 0; i < num; ++i) {
+		unsigned int vnum{};
+		in.read(reinterpret_cast<char*>(&vnum), sizeof(unsigned int));
+		m_vIndices[i].assign(vnum, 0);
+		in.read(reinterpret_cast<char*>(m_vIndices[i].data()), sizeof(UINT) * vnum);
+	}
 
-    BuffersReady();
+	BuffersReady();
+	return true;
 }
 
-void JStaticMesh::CreateContentFile()
+bool JStaticMesh::CreateContentFile()
 {
     JContent::CreateContentFile();
     std::ofstream out{ m_FullFilePath, std::ios::binary };
@@ -435,6 +437,8 @@ void JStaticMesh::CreateContentFile()
         out.write(reinterpret_cast<const char*>(&vnum), sizeof(unsigned int));
         out.write(reinterpret_cast<const char*>(m_vIndices[i].data()), sizeof(UINT) * vnum);
     }
+
+    return true;
 }
 
 

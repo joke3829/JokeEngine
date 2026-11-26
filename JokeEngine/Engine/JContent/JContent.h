@@ -14,8 +14,8 @@ public:
 	JContent(std::filesystem::path filepath);
 	virtual ~JContent() {}
 
-	// 반드시 처음에 호출
-	void Initialize();
+	// 반드시 처음에 호출 성공 시 true
+	bool Initialize();
 
 
 	void SaveFile() { CreateContentFile(); }
@@ -51,8 +51,8 @@ protected:
 
 protected:
 	// 파일이 없다면 새 content 파일 + 기록	(자신의 값을 기록하는걸로 한다, 따라서 default 값을 반드시 지정해야한다.)
-	virtual void CreateContentFile();
+	virtual bool CreateContentFile();
 	// 있다면 그걸 Load하라
-	virtual void LoadFromFile() {}
+	virtual bool LoadFromFile() { return false; }
 	std::filesystem::path m_FullFilePath{};
 };
