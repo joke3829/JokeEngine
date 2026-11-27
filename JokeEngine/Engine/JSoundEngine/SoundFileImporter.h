@@ -15,4 +15,5 @@ namespace WavTool {
 	};
 #pragma pop
 	bool Import(std::filesystem::path filepath, uint32_t& datasize, std::unique_ptr<BYTE[]>& rawData, std::unique_ptr<BYTE[]>& waveformat);
+	static std::set VaildFmtSize{ 16, 18, 50, 40 };
 }

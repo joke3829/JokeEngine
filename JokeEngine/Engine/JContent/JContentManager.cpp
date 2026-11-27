@@ -37,7 +37,7 @@ bool JContentManager::AddContentFromFile(std::filesystem::path filepath)
 		std::shared_ptr<JContent> content{};
 		if (ext == ".jkspt") 
 			content = std::make_shared<JSpriteAnimationSet>(filepath);
-		else if (ext == ".wav" || ext == ".mp3" || ext == ".ogg")
+		else if (ext == ".wav" || ext == ".WAV" || ext == ".mp3" || ext == ".ogg")
 			content = std::make_shared<JSound>(filepath);
 
 		if (content) {
